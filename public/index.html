@@ -94,8 +94,8 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 .dht{display:flex;align-items:center;gap:14px}.dht img{width:56px;height:56px;border-radius:16px;background:#fff;padding:4px;flex:none}.dht>div{flex:1;min-width:0}
 .dht h2{margin:2px 0;font-size:23px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dht p{margin:0;font-size:13px;opacity:.85}
 .rf{width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);color:#fff;font-size:20px;cursor:pointer;flex:none}
-.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}.kp>div{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:10px 8px;text-align:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);min-width:0}
-.kp b{display:block;font-size:19px;line-height:1.25;overflow-wrap:anywhere}.kp span{display:block;font-size:10.5px;opacity:.8;line-height:1.3;margin-top:2px}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}.kp>div{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:12px 8px;text-align:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);min-width:0}
+.kp b{display:block;max-width:100%;font-size:22px;line-height:1.2;overflow-wrap:anywhere}.kp b.kpm{font-size:19px;white-space:nowrap;overflow-wrap:normal}.kp span{display:flex;align-items:flex-start;justify-content:center;min-height:2.6em;font-size:10.5px;opacity:.82;line-height:1.3;margin-top:3px}.kp:has(.kpm){grid-template-columns:minmax(0,.8fr) minmax(0,.8fr) minmax(0,1.4fr)}
 .qa{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:6px}
 .qt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:14px;box-shadow:var(--sh);color:var(--tx);font:inherit;cursor:pointer}
 .qt b{font-size:14.5px;margin-top:8px}.qt small{font-size:12px;color:var(--mut)}
@@ -111,7 +111,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 .lgd{list-style:none;margin:0;padding:0;flex:1;min-width:140px}.lgd li{display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0}.lgd li i{width:10px;height:10px;border-radius:50%;flex:none}.lgd li b{margin-left:auto}
 .rcl{padding:6px 16px}.ri{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--bd)}.ri:last-child{border-bottom:0}
 .ri b{display:block;font-size:14px}.ri>div:first-child>span{display:block;font-size:12px;color:var(--mut)}.ri .tag{white-space:nowrap}.ri .amt{white-space:nowrap}
-@media(min-width:760px){.qa{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.two{grid-template-columns:1.3fr 1fr}.kp b{font-size:22px}}
+@media(min-width:760px){.qa{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.two{grid-template-columns:1.3fr 1fr}.kp b{font-size:26px}.kp b.kpm{font-size:22px}}
 .dh .big{font-size:32px;margin:2px 0;line-height:1.15;overflow-wrap:anywhere}.dh .rp{margin:0;font-size:13px;opacity:.85}
 .pgl{display:flex;justify-content:space-between;font-size:12px;margin-top:14px;opacity:.92}.pgb{height:8px;border-radius:99px;background:rgba(255,255,255,.18);margin-top:6px;overflow:hidden}.pgb i{display:block;height:100%;border-radius:99px;background:var(--gold)}
 .st4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0}
@@ -150,7 +150,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v10</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v11</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -336,7 +336,7 @@ function shortRp(n){return n>=1e6?(n/1e6).toFixed(1).replace('.',',')+' jt':n>=1
 function vRep(){
  var l=repList(),m=can('money'),dn=l.filter(function(x){return x.status=='Selesai'||x.status=='Diambil'}),t=dn.reduce(function(a,x){return a+totalOf(x.d)},0),avg=dn.length?Math.round(t/dn.length):0;
  var hero='<section class="dh"><span class="ey">'+(m?'Total pendapatan':'Total unit')+'</span><h2 class="big">'+(m?R0(t):l.length)+'</h2><p class="rp">Periode: '+repF+'</p>'+
-  '<div class="kp"><div><b>'+l.length+'</b><span>Total unit</span></div><div><b>'+dn.length+'</b><span>Servis selesai</span></div>'+(m?'<div><b>Rp '+shortRp(avg)+'</b><span>Rata-rata / unit</span></div>':'<div><b>'+(l.length-dn.length)+'</b><span>Masih proses</span></div>')+'</div></section>';
+  '<div class="kp"><div><b>'+l.length+'</b><span>Total unit</span></div><div><b>'+dn.length+'</b><span>Servis selesai</span></div>'+(m?'<div><b class="kpm">Rp '+shortRp(avg)+'</b><span>Rata-rata / unit</span></div>':'<div><b>'+(l.length-dn.length)+'</b><span>Masih proses</span></div>')+'</div></section>';
  var chips='<div class="chps">'+['Semua','Hari ini','7 hari','30 hari','Bulan ini'].map(function(k){return '<button class="chp'+(repF==k?' on':'')+'" onclick="setRF(\''+k+'\')">'+k+'</button>'}).join('')+'</div>';
  var HR=['Min','Sen','Sel','Rab','Kam','Jum','Sab'],bars=[],mx=1,i,d,n;
  if(m){for(i=6;i>=0;i--){d=new Date(Date.now()-i*864e5);n=db.jobs.filter(function(x){return (x.status=='Selesai'||x.status=='Diambil')&&new Date(x.ts).toDateString()==d.toDateString()}).reduce(function(a,x){return a+totalOf(x.d)},0);bars.push([HR[d.getDay()],n,i==0]);if(n>mx)mx=n}}
@@ -457,7 +457,7 @@ function vMon(){
  var td=j.filter(function(x){return sameDay(x.ts)}),dn=td.filter(function(x){return x.status=='Selesai'||x.status=='Diambil'}).length,pct=td.length?Math.round(dn/td.length*100):0;
  var inc=j.filter(function(x){return sameDay(x.ts)&&(x.status=='Selesai'||x.status=='Diambil')}).reduce(function(a,x){return a+totalOf(x.d)},0);
  var hero='<section class="dh"><div class="dht"><div><span class="ey">Hari ini</span><h2>Monitor Servis</h2><p>'+tglID(Date.now())+'</p></div>'+(REMOTE?'<button class="rf" onclick="reload2()" aria-label="Muat ulang" title="Muat ulang">&#8635;</button>':'')+'</div>'+
-  '<div class="kp"><div><b>'+td.length+'</b><span>Unit masuk</span></div><div><b>'+(c('Menunggu')+c('Dikerjakan'))+'</b><span>Unit aktif</span></div>'+(m?'<div><b>'+R0(inc)+'</b><span>Pendapatan</span></div>':'<div><b>'+c('Selesai')+'</b><span>Siap diambil</span></div>')+'</div>'+
+  '<div class="kp"><div><b>'+td.length+'</b><span>Unit masuk</span></div><div><b>'+(c('Menunggu')+c('Dikerjakan'))+'</b><span>Unit aktif</span></div>'+(m?'<div><b class="kpm">'+R0(inc)+'</b><span>Pendapatan</span></div>':'<div><b>'+c('Selesai')+'</b><span>Siap diambil</span></div>')+'</div>'+
   '<div class="pgl"><span>Selesai hari ini</span><b>'+dn+' / '+td.length+'</b></div><div class="pgb"><i style="width:'+pct+'%"></i></div></section>';
  var T=[['Menunggu','Menunggu','clock'],['Dikerjakan','Dikerjakan','wrench'],['Selesai','Siap diambil','check'],['Diambil','Sudah diambil','box']];
  var tiles='<div class="st4">'+T.map(function(t){return '<button class="sx'+(monF==t[0]?' on':'')+'" style="--c:'+SC[t[0]]+'" onclick="setMF(\''+t[0]+'\')"><i>'+ic(t[2])+'</i><div><b>'+c(t[0])+'</b><span>'+t[1]+'</span></div></button>'}).join('')+'</div>';
@@ -486,7 +486,7 @@ function vDash(){
  var today=j.filter(function(x){return sameDay(x.ts)}).length,aktif=c('Menunggu')+c('Dikerjakan');
  var inc=j.filter(function(x){return sameDay(x.ts)&&(x.status=='Selesai'||x.status=='Diambil')}).reduce(function(a,x){return a+totalOf(x.d)},0);
  var hero='<section class="dh"><div class="dht"><img src="'+IMG.df+'" alt=""><div><span class="ey">'+sal+'</span><h2>'+esc(nm)+'</h2><p>'+ROLE_DEF[r].n+' · '+tglID(Date.now())+'</p></div>'+(REMOTE?'<button class="rf" onclick="reload2()" aria-label="Muat ulang" title="Muat ulang">&#8635;</button>':'')+'</div>'+
-  '<div class="kp"><div><b>'+today+'</b><span>Unit hari ini</span></div><div><b>'+aktif+'</b><span>Unit aktif</span></div>'+(m?'<div><b>'+R0(inc)+'</b><span>Pendapatan hari ini</span></div>':'<div><b>'+c('Selesai')+'</b><span>Siap diambil</span></div>')+'</div></section>';
+  '<div class="kp"><div><b>'+today+'</b><span>Unit hari ini</span></div><div><b>'+aktif+'</b><span>Unit aktif</span></div>'+(m?'<div><b class="kpm">'+R0(inc)+'</b><span>Pendapatan hari ini</span></div>':'<div><b>'+c('Selesai')+'</b><span>Siap diambil</span></div>')+'</div></section>';
  var qa=[];
  if(can('create'))qa.push(['new','Pendaftaran','plus','Daftarkan unit baru']);
  qa.push(['q','Antrian Servis','list',aktif+' unit aktif']);
@@ -615,6 +615,8 @@ async function akunSave(){
 }
 async function akunStatus(id,s){try{await api('update',{id:id,status:s});akunRefresh()}catch(e){alert(e.message||e)}}
 async function akunDel(id){if(!confirm('Hapus akun ini secara permanen?'))return;try{await api('delete',{id:id});akunRefresh()}catch(e){alert(e.message||e)}}
+function fitKp(){document.querySelectorAll('.kpm').forEach(function(b){b.style.fontSize='';var f=parseFloat(getComputedStyle(b).fontSize),w=b.parentNode.clientWidth-16;while(b.scrollWidth>w&&f>10){f-=.5;b.style.fontSize=f+'px'}})}
+try{new MutationObserver(fitKp).observe($('app'),{childList:true});addEventListener('resize',fitKp);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitKp)}catch(e){}
 boot();
 </script>
 </body>
