@@ -65,7 +65,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:0 14px}
 .btn{background:var(--pri);color:var(--pt);border:0;padding:11px 20px;border-radius:12px;font:inherit;font-weight:600;cursor:pointer}.btn.w{width:100%}
 .btn.s{background:var(--card);color:var(--tx);border:1px solid var(--bd);padding:7px 12px;font-weight:500;font-size:13px;border-radius:10px}.btn.dg{color:var(--red)}
-.tot{position:sticky;bottom:0;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:17px;font-weight:700;box-shadow:var(--sh)}
+.tot{position:sticky;bottom:calc(var(--ftH,56px) + 8px);z-index:5;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:17px;font-weight:700;box-shadow:var(--sh)}
 .job{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.job h3{font-size:16px;margin:0;color:var(--tx)}.job p{margin:2px 0;color:var(--mut);font-size:13px}.amt{font-weight:700;margin:6px 0 0}
 .tag{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;color:#fff}
 .Menunggu{background:var(--amb)}.Dikerjakan{background:#2f6fe0}.Selesai{background:#0e8a5f}.Diambil{background:#778}
@@ -129,6 +129,9 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 .btn.xl{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:13px 20px}
 .ri .amt{display:block;margin-top:4px}
 @media(min-width:760px){.st4{grid-template-columns:repeat(4,1fr)}}
+.rw{border-left:5px solid var(--gold)}.rw0{border-left-color:var(--bd)}.rw0 small{color:var(--mut)}
+.rwn{margin:0 0 6px;font-size:12.5px;color:var(--pri);font-weight:600}
+.rwi{padding:7px 0;border-top:1px dashed var(--bd)}.rwi b{display:block;font-size:13.5px}.rwi span{font-size:12.5px;color:var(--mut)}
 </style>
 
 </head>
@@ -144,7 +147,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 <div class="main">
  <header class="top"><button class="ib" id="burger" onclick="tog(1)" aria-label="Menu"></button><h1 id="ttl"></h1><button class="ib" id="th" title="Ganti tema" aria-label="Ganti tema"></button></header>
  <main id="app"></main>
- <footer class="ft"><span>©2026 | Business Center TBSM | SMKS Darul Fatwa</span> <span class="fts">|</span> <span>supported by Damkar’s Team</span></footer>
+ <footer class="ft" id="ft"><span>©2026 | Business Center TBSM | SMKS Darul Fatwa</span> <span class="fts">|</span> <span>supported by Damkar’s Team</span></footer>
 </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/appwrite@20.0.0"></script>
@@ -260,7 +263,7 @@ function sameDay(t){return new Date(t).toDateString()==new Date().toDateString()
 function R0(n){return 'Rp '+rp(n)}
 function daftar(x){var d=x.d,o=[];['KPB','Service Lengkap Ringan','Ganti Oli','Ganti Part','Turun Mesin'].forEach(function(n,i){if(d['j'+i])o.push(n)});if(d.j5)o.push(d.j5t||'Lainnya');return o.join(', ')||'-'}
 
-function go(t){tab=t;if(t=='new'&&!editId)cur={};if(t!='new')editId=null;render()}
+function go(t){rwKey='';rwAuto={};rwN=0;tab=t;if(t=='new'&&!editId)cur={};if(t!='new')editId=null;render()}
 
 
 function I(k,l,a){return '<div><label>'+l+'</label><input data-k="'+k+'" value="'+esc(cur[k])+'" '+(a||'')+'></div>'}
@@ -271,7 +274,7 @@ var YN=['','Ya','Tidak'];
 function vNew(){
  var no=editId?jf(editId).no:'(otomatis)';
  var job=[['j0','KPB','kpb',['','1','2','3','4']],['j1','Service Lengkap Ringan'],['j2','Ganti Oli','oli',['','MPX','SPX']],['j3','Ganti Part'],['j4','Turun Mesin'],['j5','Lainnya','j5t']];
- var h='<form id="fm" oninput="upd()" onsubmit="return false">';
+ var h='<div id="rwy"></div><form id="fm" oninput="upd();chkPlat(event)" onsubmit="return false">';
  h+='<div class="card"><h3>Data Motor — No. Urut: '+no+'</h3><div class="f">'+I('plat','No. Polisi *','style="text-transform:uppercase"')+I('tipe','Type')+I('tahun','Tahun','inputmode="numeric"')+I('km','KM','inputmode="numeric"')+I('noMesin','No. Mesin')+I('noRangka','No. Rangka')+I('email','Email')+I('sosmed','Sosmed')+'</div></div>';
  h+='<div class="card"><h3>Data Pembawa</h3><div class="f">'+I('pb_nama','Nama')+I('pb_hp','No. Telp/HP','inputmode="tel"')+I('pb_alamat','Alamat')+I('pb_kel','Kel / Kec')+'</div></div>';
  h+='<div class="card"><h3>Data Pemilik</h3><div class="f">'+I('pm_nama','Nama *')+I('pm_hp','No. Telp/HP','inputmode="tel"')+I('pm_alamat','Alamat')+I('pm_kel','Kel / Kec')+'</div></div>';
@@ -289,6 +292,26 @@ function vNew(){
  setTimeout(upd,0);return h;
 }
 function collect(){var o={};document.querySelectorAll('#fm [data-k]').forEach(function(e){o[e.dataset.k]=e.type=='checkbox'?e.checked:e.value.trim()});if(o.plat)o.plat=o.plat.toUpperCase();return o}
+var RWF=['tipe','tahun','noMesin','noRangka','email','sosmed','pb_nama','pb_hp','pb_alamat','pb_kel','pm_nama','pm_hp','pm_alamat','pm_kel','hub'],rwAuto={},rwKey='',rwN=0;
+function np(t){return String(t||'').toUpperCase().replace(/[^A-Z0-9]/g,'')}
+function riwayat(pl){var k=np(pl);if(k.length<4)return [];return db.jobs.filter(function(x){return np(x.d.plat)==k}).sort(function(a,b){return b.ts-a.ts})}
+function rwHtml(l,n){return '<div class="card rw"><h3>Riwayat servis · '+l.length+' kali</h3>'+(n?'<p class="rwn">'+n+' kolom terisi otomatis dari data sebelumnya. Periksa kembali sebelum disimpan.</p>':'')+
+ l.slice(0,3).map(function(x){return '<div class="rwi"><b>'+tglID(x.ts)+(x.d.km?' · KM '+esc(x.d.km):'')+'</b><span>'+esc(daftar(x))+(x.d.keluhan?' — '+esc(x.d.keluhan):'')+'</span></div>'}).join('')+
+ (l.length>3?'<small class="mut">+'+(l.length-3)+' riwayat lainnya ada di Antrian dan Laporan.</small>':'')+'</div>'}
+function fe(f){return document.querySelector('#fm [data-k="'+f+'"]')}
+function chkPlat(ev){
+ var e=ev&&ev.target;if(!e||!e.dataset||e.dataset.k!='plat'||editId)return;
+ var box=$('rwy');if(!box)return;var k=np(e.value),l=riwayat(e.value),km=fe('km');
+ if(!l.length){
+  RWF.forEach(function(f){var el=fe(f);if(el&&rwAuto[f]!=null&&el.value==rwAuto[f])el.value=''});
+  rwAuto={};rwKey='';rwN=0;if(km)km.placeholder='';
+  box.innerHTML=k.length>=4?'<div class="card rw rw0"><small>Belum ada riwayat servis untuk plat ini (unit baru).</small></div>':'';return}
+ if(rwKey!=k){
+  rwKey=k;rwN=0;var na={};
+  RWF.forEach(function(f){var el=fe(f);if(!el)return;var v='';for(var i=0;i<l.length;i++){if(l[i].d[f]){v=l[i].d[f];break}}
+   if(!el.value.trim()||(rwAuto[f]!=null&&el.value==rwAuto[f])){el.value=v;if(v){na[f]=v;rwN++}}});
+  rwAuto=na;if(km)km.placeholder=l[0].d.km?'Terakhir: '+l[0].d.km:'';upd()}
+ box.innerHTML=rwHtml(l,rwN)}
 function upd(){var e=$('tot');if(e)e.textContent=R0(totalOf(collect()))}
 
 function edit(i){editId=i;cur=jf(i).d;tab='new';render()}
@@ -489,6 +512,8 @@ async function boot0(){
  tab=(REMOTE&&!AW.u)?'home':'dash';render();
 }
 async function boot(){try{await boot0()}catch(e){$('app').innerHTML='<div class="card empty">Terjadi kesalahan: '+esc(e.message||e)+'</div>'}}
+function setFt(){var f=$('ft');if(f)document.documentElement.style.setProperty('--ftH',f.offsetHeight+'px')}
+setFt();addEventListener('resize',setFt);addEventListener('load',setFt);
 if('serviceWorker' in navigator)addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
 $('lgdf').src=IMG.df;$('burger').innerHTML=ic('menu');$('th').innerHTML=ic('sun');
 ROLE_DEF.admin.users=1;
