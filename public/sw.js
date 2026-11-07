@@ -1,6 +1,6 @@
 /* Service worker sederhana: jaringan dulu, cadangan dari cache.
    Hanya berkas dari domain situs sendiri; Appwrite dan CDN tidak disentuh. */
-var CACHE = 'bc-tbsm-v1';
+var CACHE = 'bc-tbsm-v2';
 var SHELL = ['./', 'index.html', 'config.js', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', function (e) {
