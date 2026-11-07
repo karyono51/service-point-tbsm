@@ -143,7 +143,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v7</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v8</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -176,7 +176,7 @@ function pdfLayout(d,x,IMG){
  // KOP
  B(M,y,W,28);
  d.addImage(IMG.ah,'JPEG',M+3,y+3,33,21.9);d.addImage(IMG.df,'JPEG',R-27,y+2,24,24);
- T('SERVICE POINT TBSM',C,y+8.5,{align:'center'},15,'bold');
+ T('BUSINESS CENTER TBSM',C,y+8.5,{align:'center'},15,'bold');
  T('SMKS DARUL FATWA',C,y+14,{align:'center'},12,'bold');
  T('Kerjasama AHASS Daya Anugrah Mandiri Jatinangor',C,y+19.5,{align:'center'},9.5,'bold');
  T('Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363',C,y+24.5,{align:'center'},7);
@@ -203,7 +203,7 @@ function pdfLayout(d,x,IMG){
  T('Kondisi Awal SMH',M+30,y+4.3,{align:'center'},8.5,'bold');T('Pekerjaan',M+85,y+4.3,{align:'center'},8.5,'bold');T('Estimasi Biaya',M+125,y+4.3,{align:'center'},8.5,'bold');T('Saran Ganti Sparepart',M+165,y+4.3,{align:'center'},8.5,'bold');
  y+=hh;var rh=6.4;B(M+60,y,50,rh*6);B(M+110,y,30,rh*6);
  var jb=['1. KPB '+(s.kpb?'ke-'+s.kpb:'1 / 2 / 3 / 4'),'2. Service Lengkap Ringan','3. Ganti Oli '+(s.oli||'MPX / SPX'),'4. Ganti Part','5. Turun Mesin','6. '+(s.j5t||'.........................')];
- for(i=0;i<6;i++){var yy=y+i*rh+4.4;CK(M+61.5,yy,s['j'+i]);T(jb[i],M+66,yy,{},8);T('Rp',M+112,yy,{},8);L(M+118,yy+1,20);if(num(s['jb'+i]))T(rp(num(s['jb'+i])),M+137.5,yy-.3,{align:'right'},9,'bold')}
+ for(i=0;i<6;i++){var yy=y+i*rh+4.4;CK(M+61.5,yy,s['j'+i]||num(s['jb'+i])||(i==5&&s.j5t));T(jb[i],M+66,yy,{},8);T('Rp',M+112,yy,{},8);L(M+118,yy+1,20);if(num(s['jb'+i]))T(rp(num(s['jb'+i])),M+137.5,yy-.3,{align:'right'},9,'bold')}
  y+=rh*6;
  B(M+60,y,50,hh,1);B(M+110,y,30,hh,1);T('Suku Cadang',M+85,y+4.3,{align:'center'},8.5,'bold');T('Estimasi Harga',M+125,y+4.3,{align:'center'},8.5,'bold');y+=hh;
  B(M+60,y,50,30);B(M+110,y,30,30);
@@ -249,7 +249,7 @@ function pdfLayout(d,x,IMG){
  ['1. Formulir ini adalah surat kuasa pekerjaan.','2. Bengkel tidak bertanggung jawab terhadap sepeda motor yang','    tidak diambil dalam 30 hari.','3. Bengkel tidak bertanggung jawab jika terjadi Force Majeure.'].forEach(function(t,k){T(t,M+2,y+7.2+k*2.9,{},6.5)});
  T('Garansi',M+97,y+3.8,{},7,'bold');
  ['- 500 Km / 1 minggu untuk Service Reguler','- 1.000 Km / 1 Bulan untuk Bongkar Mesin Reguler','- 1.000 Km / 1 Bulan untuk Service CBR 250 dan PCX 150','- 1.500 Km / 45 Hari untuk Bongkar Mesin CBR 250 dan PCX 150'].forEach(function(t,k){T(t,M+97,y+7.2+k*2.9,{},6.5)});
- y+=17;T('Dicetak '+tglID(Date.now())+'  |  Service Point TBSM SMKS Darul Fatwa - AHASS Daya Anugrah Mandiri Jatinangor',C,y+4,{align:'center'},6.5);
+ y+=17;T('Dicetak '+tglID(Date.now())+'  |  Business Center TBSM SMKS Darul Fatwa - AHASS Daya Anugrah Mandiri Jatinangor',C,y+4,{align:'center'},6.5);
  return y+4;
 }
 if(typeof module!=='undefined')module.exports={pdfLayout:pdfLayout};
@@ -263,7 +263,7 @@ function jf(id){return db.jobs.filter(function(x){return x.id==id})[0]}
 function hhmm(){var t=new Date();return ('0'+t.getHours()).slice(-2)+':'+('0'+t.getMinutes()).slice(-2)}
 function sameDay(t){return new Date(t).toDateString()==new Date().toDateString()}
 function R0(n){return 'Rp '+rp(n)}
-function daftar(x){var d=x.d,o=[];['KPB','Service Lengkap Ringan','Ganti Oli','Ganti Part','Turun Mesin'].forEach(function(n,i){if(d['j'+i])o.push(n)});if(d.j5)o.push(d.j5t||'Lainnya');return o.join(', ')||'-'}
+function daftar(x){var d=x.d,o=[];['KPB','Service Lengkap Ringan','Ganti Oli','Ganti Part','Turun Mesin'].forEach(function(n,i){if(d['j'+i]||num(d['jb'+i]))o.push(n)});if(d.j5||d.j5t||num(d.jb5))o.push(d.j5t||'Lainnya');return o.join(', ')||'-'}
 
 function go(t){rwKey='';rwAuto={};rwN=0;tab=t;if(t=='new'&&!editId)cur={};if(t!='new')editId=null;render()}
 
@@ -335,7 +335,7 @@ function vRep(){
  if(m){for(i=6;i>=0;i--){d=new Date(Date.now()-i*864e5);n=db.jobs.filter(function(x){return (x.status=='Selesai'||x.status=='Diambil')&&new Date(x.ts).toDateString()==d.toDateString()}).reduce(function(a,x){return a+totalOf(x.d)},0);bars.push([HR[d.getDay()],n,i==0]);if(n>mx)mx=n}}
  var ch=m?'<div class="card"><h3>Pendapatan 7 hari terakhir</h3><div class="bars">'+bars.map(function(b){return '<div class="bc'+(b[2]?' td':'')+'"><em>'+(b[1]?shortRp(b[1]):'0')+'</em><i style="height:'+Math.max(4,Math.round(b[1]/mx*100))+'%"></i><span>'+b[0]+'</span></div>'}).join('')+'</div></div>':'';
  var dl='<button class="btn w xl" onclick="xls()">'+ic('download')+'<span>Unduh Excel ('+l.length+' baris)</span></button>';
- var rows=l.length?'<div class="card rcl">'+l.map(function(x){var d=x.d;return '<div class="ri"><div><b>'+esc(d.plat)+' · '+esc(d.tipe||'-')+'</b><span>'+esc(x.no)+' · '+tglID(x.ts)+'</span><span>'+esc(d.pm_nama||'-')+' · '+esc(daftar(x))+'</span></div><div style="text-align:right"><span class="tag '+x.status+'">'+slb(x.status)+'</span>'+(m?'<b class="amt">'+R0(totalOf(d))+'</b>':'')+'</div></div>'}).join('')+'</div>':'<div class="card empty">Belum ada data pada periode ini.</div>';
+ var rows=l.length?'<div class="card rcl">'+l.map(function(x){var d=x.d;return '<div class="ri"><div><b>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</b><span>'+esc(x.no)+' · '+tglID(x.ts)+'</span><span>'+esc(d.pm_nama||'-')+' · '+esc(daftar(x))+'</span></div><div style="text-align:right"><span class="tag '+x.status+'">'+slb(x.status)+'</span>'+(m?'<b class="amt">'+R0(totalOf(d))+'</b>':'')+'</div></div>'}).join('')+'</div>':'<div class="card empty">Belum ada data pada periode ini.</div>';
  return hero+chips+ch+dl+'<h2>Rincian servis <small class="cnt">'+l.length+' unit</small></h2>'+rows;
 }
 function loadXLSX(){return new Promise(function(ok,no){if(window.XLSX)return ok();var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
@@ -438,7 +438,7 @@ var SC={Menunggu:'#d98b00',Dikerjakan:'#2f6fe0',Selesai:'#0e8a5f',Diambil:'#7788
 function slb(t){return t=='Selesai'?'Siap diambil':t}
 function mcard(x){
  var d=x.d,nx=NX[x.status],ok=can('status')&&nx&&!(myRole()=='mekanik'&&nx[0]=='Diambil');
- return '<div class="mc" style="--c:'+SC[x.status]+'"><div class="mch"><div><b>'+esc(d.plat)+' · '+esc(d.tipe||'-')+'</b><span>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</span></div><span class="tag '+x.status+'">'+slb(x.status)+'</span></div>'+
+ return '<div class="mc" style="--c:'+SC[x.status]+'"><div class="mch"><div><b>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</b><span>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</span></div><span class="tag '+x.status+'">'+slb(x.status)+'</span></div>'+
  '<p class="mcp">'+esc(d.pm_nama||'-')+(d.pm_hp?' · '+esc(d.pm_hp):'')+'</p><p class="mcw">'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+
  '<div class="mcf"><div>'+(d.mekanik?'<span class="chip">'+esc(d.mekanik)+'</span>':'')+(can('money')?'<b class="amt">'+R0(totalOf(d))+'</b>':'')+'</div><div class="acts">'+(ok?'<button class="btn s adv" onclick="setS(\''+x.id+'\',\''+nx[0]+'\')">'+nx[1]+'</button>':'')+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button></div></div></div>';
 }
@@ -459,7 +459,7 @@ function vMon(){
 }
 function card(x){
  var d=x.d,mk=myRole()=='mekanik'&&x.status!='Diambil',sts=mk?ST.slice(0,3):ST;
- return '<div class="card"><div class="job"><div><h3>'+esc(d.plat)+' · '+esc(d.tipe||'-')+'</h3><p>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</p><p>Pemilik: '+esc(d.pm_nama)+(d.pm_hp?' · '+esc(d.pm_hp):'')+'</p><p>'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+(d.mekanik?'<p>Mekanik: '+esc(d.mekanik)+'</p>':'')+'</div><div style="text-align:right"><span class="tag '+x.status+'">'+x.status+'</span>'+(can('money')?'<p class="amt">'+R0(totalOf(d))+'</p>':'')+'</div></div>'+
+ return '<div class="card"><div class="job"><div><h3>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</p><p>Pemilik: '+esc(d.pm_nama)+(d.pm_hp?' · '+esc(d.pm_hp):'')+'</p><p>'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+(d.mekanik?'<p>Mekanik: '+esc(d.mekanik)+'</p>':'')+'</div><div style="text-align:right"><span class="tag '+x.status+'">'+x.status+'</span>'+(can('money')?'<p class="amt">'+R0(totalOf(d))+'</p>':'')+'</div></div>'+
  '<div class="acts">'+(can('status')?'<select onchange="setS(\''+x.id+'\',this.value)">'+sts.map(function(s){return '<option'+(s==x.status?' selected':'')+'>'+s+'</option>'}).join('')+'</select>':'')+(can('edit')?'<button class="btn s" onclick="edit(\''+x.id+'\')">Edit / Rincian</button>':'')+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button>'+(can('del')?'<button class="btn s dg" onclick="del(\''+x.id+'\')">Hapus</button>':'')+'</div></div>';
 }
 function vProf(){
