@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Business Center TBSM – SMKS Darul Fatwa</title>
+<meta name="theme-color" content="#0c5a41">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BC TBSM">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -36,7 +44,9 @@ body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 'Plus Jakarta S
 .ib{width:40px;height:40px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);display:grid;place-items:center;cursor:pointer}
 #burger{display:none}
 #app{flex:1;width:100%;max-width:1040px;margin:0 auto;padding:18px 16px 28px}
-.ft{text-align:center;font-size:12px;color:var(--mut);padding:16px 12px calc(18px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--bd)}
+.ft{text-align:center;font-size:12px;line-height:1.7;color:var(--mut);padding:16px 12px calc(18px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--bd);margin-top:auto}
+.ft span{display:inline-block}
+@media(max-width:600px){.ft .fts{display:none}.ft span:last-child{display:block}}
 .scrim{display:none}
 @media(max-width:900px){.sb{position:fixed;left:0;top:0;bottom:0;transform:translateX(-102%);transition:transform .25s ease;box-shadow:12px 0 40px rgba(0,0,0,.35)}.sb.open{transform:none}.scrim.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:25}#burger{display:grid}#app{padding:14px 12px 24px}}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
@@ -89,7 +99,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 <div class="main">
  <header class="top"><button class="ib" id="burger" onclick="tog(1)" aria-label="Menu"></button><h1 id="ttl"></h1><button class="ib" id="th" title="Ganti tema" aria-label="Ganti tema"></button></header>
  <main id="app"></main>
- <footer class="ft">©2026 | Business Center TBSM | SMKS Darul Fatwa | supported by Damkar’s Team</footer>
+ <footer class="ft"><span>©2026 | Business Center TBSM | SMKS Darul Fatwa</span> <span class="fts">|</span> <span>supported by Damkar’s Team</span></footer>
 </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/appwrite@20.0.0"></script>
@@ -294,7 +304,7 @@ function can(a){var r=myRole();return !!(r&&ROLE_DEF[r][a])}
 function tog(o){$('sb').classList.toggle('open',!!o);$('scrim').classList.toggle('show',!!o)}
 function buildMenu(){
  var gu=REMOTE&&!AW.u,it=[],r=myRole();
- if(gu)it=[['home','Beranda','home'],['login','Masuk','login']];
+ if(gu)it=[['home','Beranda','home']];
  else{it.push(['dash','Dashboard','grid']);if(can('create'))it.push(['new','Pendaftaran','plus']);if(r)it.push(['q','Antrian Servis','list']);if(can('rep'))it.push(['rep','Laporan','chart']);if(can('users')&&REMOTE)it.push(['akun','Kelola Akun','users']);it.push(['prof','Profil & Peran','user'])}
  $('menu').innerHTML='<small class="sec">'+(gu?'Menu':'Service Point')+'</small>'+it.map(function(i){return '<button class="mi'+(tab==i[0]?' on':'')+'" onclick="go(\''+i[0]+'\')">'+ic(i[2])+'<span>'+i[1]+'</span></button>'}).join('');
  var nm=AW.u?(AW.u.name||AW.u.email):'Mode lokal';
@@ -369,6 +379,7 @@ async function boot0(){
  tab=(REMOTE&&!AW.u)?'home':'dash';render();
 }
 async function boot(){try{await boot0()}catch(e){$('app').innerHTML='<div class="card empty">Terjadi kesalahan: '+esc(e.message||e)+'</div>'}}
+if('serviceWorker' in navigator)addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
 $('lgdf').src=IMG.df;$('burger').innerHTML=ic('menu');$('th').innerHTML=ic('sun');
 ROLE_DEF.admin.users=1;
 ICO.users='<circle cx="9" cy="8" r="3.5"/><path d="M2 21c0-3.5 3-5.5 7-5.5s7 2 7 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 15.8c2.4.6 4 2.2 4 5.2"/>';

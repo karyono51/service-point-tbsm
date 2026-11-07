@@ -1,0 +1,18 @@
+{
+  "name": "Business Center TBSM – SMKS Darul Fatwa",
+  "short_name": "BC TBSM",
+  "description": "Business Center TBSM SMKS Darul Fatwa: Service Point kerjasama AHASS.",
+  "lang": "id",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a3a2a",
+  "theme_color": "#0c5a41",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
