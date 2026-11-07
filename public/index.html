@@ -73,6 +73,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .kv{display:grid;grid-template-columns:110px 1fr;gap:8px 10px;font-size:14px}.kv span{color:var(--mut)}
 .badge{display:inline-block;font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--gr);color:var(--pri)}
 ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{background:var(--gr);padding:1px 6px;border-radius:6px;font-size:12.5px}
+.unit b.pill{display:inline-block;font-size:13px;font-weight:600;background:var(--gr);color:var(--tx);padding:4px 14px;border-radius:999px;margin-bottom:6px}
 </style>
 
 </head>
@@ -293,8 +294,8 @@ function tog(o){$('sb').classList.toggle('open',!!o);$('scrim').classList.toggle
 function buildMenu(){
  var gu=REMOTE&&!AW.u,it=[],r=myRole();
  if(gu)it=[['home','Beranda','home'],['login','Masuk','login']];
- else{it.push(['dash','Dashboard','grid']);if(can('create'))it.push(['new','Pendaftaran','plus']);if(r)it.push(['q','Antrian Servis','list']);if(can('rep'))it.push(['rep','Laporan','chart']);it.push(['prof','Profil & Peran','user'])}
- $('menu').innerHTML='<small class="sec">'+(gu?'Menu':'Service Point TBSM')+'</small>'+it.map(function(i){return '<button class="mi'+(tab==i[0]?' on':'')+'" onclick="go(\''+i[0]+'\')">'+ic(i[2])+'<span>'+i[1]+'</span></button>'}).join('');
+ else{it.push(['dash','Dashboard','grid']);if(can('create'))it.push(['new','Pendaftaran','plus']);if(r)it.push(['q','Antrian Servis','list']);if(can('rep'))it.push(['rep','Laporan','chart']);if(can('users')&&REMOTE)it.push(['akun','Kelola Akun','users']);it.push(['prof','Profil & Peran','user'])}
+ $('menu').innerHTML='<small class="sec">'+(gu?'Menu':'Service Point')+'</small>'+it.map(function(i){return '<button class="mi'+(tab==i[0]?' on':'')+'" onclick="go(\''+i[0]+'\')">'+ic(i[2])+'<span>'+i[1]+'</span></button>'}).join('');
  var nm=AW.u?(AW.u.name||AW.u.email):'Mode lokal';
  $('acct').innerHTML=gu?'<button class="mi" onclick="go(\'login\')">'+ic('login')+'<span>Masuk</span></button>':'<div class="who"><div class="av">'+esc(nm.charAt(0).toUpperCase())+'</div><div><b>'+esc(nm)+'</b><span>'+(r?ROLE_DEF[r].n:'Belum ada peran')+'</span></div></div>'+(REMOTE?'<button class="mi" onclick="logout()">'+ic('logout')+'<span>Keluar</span></button>':'');
 }
@@ -305,12 +306,13 @@ function render(){
  if(!gu&&!myRole()&&tab!='prof')tab='prof';
  if(tab=='rep'&&!can('rep'))tab='dash';
  if(tab=='new'&&!(can('create')||(editId&&can('edit'))))tab='dash';
- var V={home:vHome,login:vLogin,dash:vDash,new:vNew,q:vQ,rep:vRep,prof:vProf};
+ if(tab=='akun'&&!(can('users')&&REMOTE))tab='dash';
+ var V={akun:vAkun,home:vHome,login:vLogin,dash:vDash,new:vNew,q:vQ,rep:vRep,prof:vProf};
  $('ttl').textContent=TITLES[tab];$('app').innerHTML=V[tab]();buildMenu();tog(0);scrollTo(0,0);
 }
 function vHome(){
  return '<section class="hero"><img src="'+IMG.df+'" alt=""><div><span class="ey">Selamat datang</span><h2>Business Center TBSM</h2><p>SMKS Darul Fatwa</p><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small><button class="btn" onclick="go(\'login\')">Masuk ke Dashboard</button></div></section>'+
- '<h2>Unit usaha</h2><div class="card"><div class="unit"><img src="'+IMG.ah+'" alt=""><div><b>Service Point TBSM</b><span>Layanan servis motor di bengkel sekolah, kerjasama AHASS Daya Anugrah Mandiri Jatinangor.</span></div></div><div class="chips"><i>Pendaftaran</i><i>Antrian servis</i><i>Form Service Advisor (PDF)</i><i>Laporan</i></div></div>'+
+ '<h2>Unit usaha</h2><div class="card"><div class="unit"><img src="'+IMG.ah+'" alt=""><div><b class="pill">Service Point</b><span>Layanan servis motor di bengkel sekolah, kerjasama AHASS Daya Anugrah Mandiri Jatinangor.</span></div></div></div>'+
  '<div class="card"><div class="unit"><div><b>Unit usaha lainnya</b><span>Segera hadir.</span></div></div></div>';
 }
 function vLogin(){
@@ -343,8 +345,8 @@ function vProf(){
  var r=myRole(),u=AW.u||{},ok=function(v){return v?'✓':'–'};
  var h='<div class="card"><h3>Akun</h3><div class="kv"><span>Email</span><b>'+esc(u.email||'-')+'</b><span>Nama</span><b>'+esc(u.name||'-')+'</b><span>Peran</span><b>'+(r?'<span class="badge">'+ROLE_DEF[r].n+'</span>':'Belum diberi peran')+'</b><span>Penyimpanan</span><b>'+(REMOTE?'Appwrite (server)':'Lokal (peramban)')+'</b></div></div>';
  if(!r)h+=noRole();
- h+='<div class="card sc"><h3>Hak akses per peran</h3><table><tr><th>Peran</th><th>Daftar baru</th><th>Ubah data</th><th>Ubah status</th><th>Hapus</th><th>Laporan & biaya</th></tr>'+Object.keys(ROLE_DEF).map(function(k){var d=ROLE_DEF[k];return '<tr'+(k==r?' class="me"':'')+'><td>'+d.n+'</td><td>'+ok(d.create)+'</td><td>'+ok(d.edit)+'</td><td>'+ok(d.status)+'</td><td>'+ok(d.del)+'</td><td>'+ok(d.rep)+'</td></tr>'}).join('')+'</table></div>';
- if(r=='admin'&&REMOTE)h+='<div class="card"><h3>Cara mengatur peran (admin)</h3><ol class="st"><li>Console Appwrite → <b>Auth → Users</b> → pilih pengguna → <b>Labels</b> → isi salah satu: <code>admin</code>, <code>pembimbing</code>, <code>advisor</code>, <code>mekanik</code>.</li><li>Table → <b>Settings → Permissions</b>: ganti role Users dengan role Label. Read: semua label. Create: <code>admin</code>, <code>advisor</code>. Update: semua label. Delete: <code>admin</code>.</li><li>Pengguna keluar lalu masuk lagi agar peran terbaca.</li></ol><p class="mut">Lakukan langkah 2 setelah semua pengguna diberi label.</p></div>';
+ h+='<div class="card sc"><h3>Hak akses per peran</h3><table><tr><th>Peran</th><th>Daftar baru</th><th>Ubah data</th><th>Ubah status</th><th>Hapus</th><th>Laporan & biaya</th><th>Kelola akun</th></tr>'+Object.keys(ROLE_DEF).map(function(k){var d=ROLE_DEF[k];return '<tr'+(k==r?' class="me"':'')+'><td>'+d.n+'</td><td>'+ok(d.create)+'</td><td>'+ok(d.edit)+'</td><td>'+ok(d.status)+'</td><td>'+ok(d.del)+'</td><td>'+ok(d.rep)+'</td><td>'+ok(d.users)+'</td></tr>'}).join('')+'</table></div>';
+ if(r=='admin'&&REMOTE)h+='<div class="card"><h3>Cara mengatur peran (admin)</h3><ol class="st"><li>Buat akun dan atur peran lewat menu <b>Kelola Akun</b>.</li><li>Table → <b>Settings → Permissions</b>: ganti role Users dengan role Label. Read: semua label. Create: <code>admin</code>, <code>advisor</code>. Update: semua label. Delete: <code>admin</code>.</li><li>Pengguna keluar lalu masuk lagi agar peran terbaca.</li></ol><p class="mut">Lakukan langkah 2 setelah semua pengguna diberi label.</p></div>';
  return h;
 }
 async function loadAll(){
@@ -359,7 +361,7 @@ async function boot0(){
  if(CFG.projectId&&!window.Appwrite){$('app').innerHTML='<div class="card empty">Pustaka Appwrite gagal dimuat. Periksa koneksi internet.</div>';return}
  if(REMOTE){
   var c=new Appwrite.Client().setEndpoint(CFG.endpoint).setProject(CFG.projectId);
-  AW.a=new Appwrite.Account(c);AW.t=new Appwrite.TablesDB(c);
+  AW.a=new Appwrite.Account(c);AW.t=new Appwrite.TablesDB(c);AW.f=new Appwrite.Functions(c);
   try{AW.u=await AW.a.get()}catch(e){AW.u=null}
  }
  if((!REMOTE||AW.u)&&myRole()){try{await loadAll()}catch(e){loadErr='Gagal memuat data: '+(e.message||e)}}
@@ -367,6 +369,48 @@ async function boot0(){
 }
 async function boot(){try{await boot0()}catch(e){$('app').innerHTML='<div class="card empty">Terjadi kesalahan: '+esc(e.message||e)+'</div>'}}
 $('lgdf').src=IMG.df;$('burger').innerHTML=ic('menu');$('th').innerHTML=ic('sun');
+ROLE_DEF.admin.users=1;
+ICO.users='<circle cx="9" cy="8" r="3.5"/><path d="M2 21c0-3.5 3-5.5 7-5.5s7 2 7 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 15.8c2.4.6 4 2.2 4 5.2"/>';
+TITLES.akun='Kelola Akun';
+var AK={list:null,err:'',form:null,busy:false};
+async function api(action,data){
+ var ex=await AW.f.createExecution({functionId:CFG.functionId,body:JSON.stringify(Object.assign({action:action},data||{})),async:false,path:'/',method:(Appwrite.ExecutionMethod?Appwrite.ExecutionMethod.POST:'POST')});
+ var r={};try{r=JSON.parse(ex.responseBody||'{}')}catch(e){}
+ if(ex.responseStatusCode>=400||r.ok===false)throw new Error(r.error||('Kesalahan '+ex.responseStatusCode));
+ return r;
+}
+async function akunLoad(){AK.err='';try{var r=await api('list');AK.list=r.users}catch(e){AK.err=e.message||String(e)}AK.busy=false;render()}
+function roleOf(l){for(var k in ROLE_DEF)if((l||[]).indexOf(k)>-1)return k;return ''}
+function vAkun(){
+ if(!CFG.functionId)return '<div class="card"><h3>Kelola Akun</h3><p>functionId belum diisi di config.js.</p></div>';
+ if(AK.list===null&&!AK.err&&!AK.busy){AK.busy=true;akunLoad()}
+ var h='<div class="greet"><div><h2>Kelola Akun</h2><p>Tambah, ubah, nonaktifkan, dan hapus akun pengguna.</p></div><button class="btn" onclick="akunBaru()">Tambah akun</button></div>'+akunForm();
+ if(AK.err)h+='<div class="card"><p class="err">'+esc(AK.err)+'</p><p class="mut">Pastikan Function kelola-akun sudah di-deploy dan akses eksekusinya mencakup admin.</p><button class="btn s" onclick="AK.err=\'\';AK.list=null;render()">Coba lagi</button></div>';
+ else if(AK.list===null)h+='<div class="card empty">Memuat akun…</div>';
+ else h+=AK.list.length?AK.list.map(akunCard).join(''):'<div class="card empty">Belum ada akun.</div>';
+ return h;
+}
+function akunForm(){
+ var f=AK.form;if(!f)return '';var e=!!f.id,me=e&&AW.u&&f.id==AW.u.$id;
+ var ro=['admin','pembimbing','advisor','mekanik',''].map(function(k){return '<option value="'+k+'"'+(f.role==k?' selected':'')+'>'+(k?ROLE_DEF[k].n:'Tanpa peran')+'</option>'}).join('');
+ return '<div class="card"><h3>'+(e?'Ubah akun':'Tambah akun')+'</h3><div class="f"><div><label>Nama</label><input id="ak_n" value="'+esc(f.name)+'"></div><div><label>Email</label><input id="ak_e" type="email" value="'+esc(f.email)+'"></div><div><label>Kata sandi'+(e?' (kosongkan jika tidak diganti)':' (min. 8 karakter)')+'</label><input id="ak_p" type="password" autocomplete="new-password"></div><div><label>Peran</label><select id="ak_r"'+(me?' disabled':'')+'>'+ro+'</select></div></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" onclick="akunSave()">Simpan</button><button class="btn s" onclick="AK.form=null;render()">Batal</button></div><p id="ak_m" class="err"></p></div>';
+}
+function akunCard(u){
+ var r=roleOf(u.labels),me=AW.u&&u.id==AW.u.$id;
+ return '<div class="card"><div class="job"><div><h3>'+esc(u.name||'(tanpa nama)')+(me?' <span class="badge">Anda</span>':'')+'</h3><p>'+esc(u.email)+'</p><p>Bergabung: '+tglID(u.joined)+'</p></div><div style="text-align:right"><span class="badge">'+(r?ROLE_DEF[r].n:'Tanpa peran')+'</span><p class="mut" style="margin:6px 0 0">'+(u.status?'Aktif':'Nonaktif')+'</p></div></div><div class="acts"><button class="btn s" onclick="akunEdit(\''+u.id+'\')">Ubah</button>'+(me?'':'<button class="btn s" onclick="akunStatus(\''+u.id+'\','+(!u.status)+')">'+(u.status?'Nonaktifkan':'Aktifkan')+'</button><button class="btn s dg" onclick="akunDel(\''+u.id+'\')">Hapus</button>')+'</div></div>';
+}
+function akunBaru(){AK.form={id:'',name:'',email:'',role:'advisor'};render()}
+function akunEdit(id){var u=AK.list.filter(function(x){return x.id==id})[0];AK.form={id:id,name:u.name,email:u.email,role:roleOf(u.labels)};render()}
+function akunRefresh(){AK.form=null;AK.list=null;AK.err='';AK.busy=false;render()}
+async function akunSave(){
+ var f=AK.form,m=$('ak_m'),d={name:$('ak_n').value.trim(),email:$('ak_e').value.trim(),password:$('ak_p').value,role:$('ak_r').value};m.textContent='';
+ if(!d.name||!d.email){m.textContent='Nama dan email wajib diisi.';return}
+ if((!f.id||d.password)&&d.password.length<8){m.textContent='Kata sandi minimal 8 karakter.';return}
+ try{if(f.id){d.id=f.id;if(!d.password)delete d.password;await api('update',d)}else await api('create',d);akunRefresh()}
+ catch(e){m.textContent=e.message||String(e)}
+}
+async function akunStatus(id,s){try{await api('update',{id:id,status:s});akunRefresh()}catch(e){alert(e.message||e)}}
+async function akunDel(id){if(!confirm('Hapus akun ini secara permanen?'))return;try{await api('delete',{id:id});akunRefresh()}catch(e){alert(e.message||e)}}
 boot();
 </script>
 </body>
