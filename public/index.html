@@ -134,6 +134,13 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 .rw{border-left:5px solid var(--gold)}.rw0{border-left-color:var(--bd)}.rw0 small{color:var(--mut)}
 .rwn{margin:0 0 6px;font-size:12.5px;color:var(--pri);font-weight:600}
 .rwi{padding:7px 0;border-top:1px dashed var(--bd)}.rwi b{display:block;font-size:13.5px}.rwi span{font-size:12.5px;color:var(--mut)}
+.aud-f{display:flex;gap:6px;overflow-x:auto;margin:0 0 12px;padding-bottom:2px}
+.aud-f button{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:999px;padding:7px 14px;font:inherit;font-size:13px}
+.aud-f button.on{background:var(--pri);color:var(--pt);border-color:var(--pri)}
+.ae{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid var(--bd)}.ae:last-child{border-bottom:0}
+.ae i{flex:none;width:10px;height:10px;border-radius:50%;margin-top:5px;background:var(--c)}
+.ae b{display:block;font-size:14px;line-height:1.35}.ae p{margin:2px 0 0;font-size:13px}.ae span{display:block;font-size:12px;color:var(--mut);margin-top:3px}
+.tos h3{margin:18px 0 6px;font-size:15px;color:var(--pri)}.tos h3:first-child{margin-top:0}.tos p,.tos li{font-size:14px;line-height:1.55}.tos p{margin:6px 0}.tos ul{padding-left:20px;margin:6px 0}
 </style>
 
 </head>
@@ -143,7 +150,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v9</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v10</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -359,7 +366,7 @@ var CFG=window.SP_CONFIG||{},REMOTE=!!(CFG.projectId&&window.Appwrite),AW={};
 function lsLoad(){try{var s=localStorage.getItem(KEY);if(s)db=JSON.parse(s)}catch(e){}}
 function lsSave(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
 function nextNo(){var m=0;db.jobs.forEach(function(x){var n=parseInt(String(x.no).split('-').pop())||0;if(n>m)m=n});return 'SP-'+new Date().getFullYear()+'-'+String(m+1).padStart(4,'0')}
-function pl(x){return JSON.stringify({no:x.no,ts:x.ts,status:x.status,d:x.d,tw:x.tw})}
+function pl(x){return JSON.stringify({no:x.no,ts:x.ts,status:x.status,d:x.d,tw:x.tw,log:x.log})}
 function ids(){return {databaseId:CFG.databaseId,tableId:CFG.tableId}}
 async function saveJob(x,isNew){
  if(!REMOTE){lsSave();return}
@@ -381,40 +388,41 @@ async function logout(){try{await AW.a.deleteSession({sessionId:'current'})}catc
 async function simpan(){
  var d=collect();if(!d.plat||!d.pm_nama){alert('No. Polisi dan Nama Pemilik wajib diisi.');return}
  try{
-  if(editId){var x=jf(editId);x.d=d;await saveJob(x,false)}
-  else{var n={no:nextNo(),ts:Date.now(),status:'Menunggu',d:d,tw:{daftar:hhmm()}};if(!REMOTE){db.n=(db.n||0)+1;n.id=db.n}await saveJob(n,true);db.jobs.unshift(n)}
+  if(editId){var x=jf(editId),df=diffD(x.d,d);x.d=d;if(df.length)aud(x,'ubah','Data diubah: '+df.slice(0,8).join(', ')+(df.length>8?' dan '+(df.length-8)+' lainnya':''));await saveJob(x,false)}
+  else{var n={no:nextNo(),ts:Date.now(),status:'Menunggu',d:d,tw:{daftar:hhmm()}};aud(n,'buat','Pendaftaran dibuat');if(!REMOTE){db.n=(db.n||0)+1;n.id=db.n}await saveJob(n,true);db.jobs.unshift(n)}
  }catch(e){return}
  editId=null;tab='q';render();
 }
-async function setS(i,v){var x=jf(i);x.status=v;x.tw=x.tw||{};if(v=='Dikerjakan'&&!x.tw.kerja)x.tw.kerja=hhmm();if((v=='Selesai'||v=='Diambil')&&!x.tw.selesai)x.tw.selesai=hhmm();try{await saveJob(x,false)}catch(e){}render()}
-async function del(i){if(confirm('Hapus data servis ini?')){try{await removeJob(i)}catch(e){return}render()}}
+async function setS(i,v){var x=jf(i);if(x.status!=v)aud(x,'status',slb(x.status)+' → '+slb(v));x.status=v;x.tw=x.tw||{};if(v=='Dikerjakan'&&!x.tw.kerja)x.tw.kerja=hhmm();if((v=='Selesai'||v=='Diambil')&&!x.tw.selesai)x.tw.selesai=hhmm();try{await saveJob(x,false)}catch(e){}render()}
+async function del(i){if(confirm('Hapus data servis ini?')){var x=jf(i);try{await removeJob(i)}catch(e){return}if(x)await audDel(x);render()}}
 
 
-var ICO={download:'<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',wrench:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L3 17.7 6.3 21l6.3-6.3a4 4 0 0 0 5.1-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/>',check:'<path d="M20 6 9 17l-5-5"/>',box:'<path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2.4.6 4 2.2 4 5.2"/>',pulse:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',home:'<path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',plus:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',login:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'};
+var ICO={shield:'<path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',doc:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',download:'<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',wrench:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L3 17.7 6.3 21l6.3-6.3a4 4 0 0 0 5.1-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/>',check:'<path d="M20 6 9 17l-5-5"/>',box:'<path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2.4.6 4 2.2 4 5.2"/>',pulse:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',home:'<path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',plus:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',login:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'};
 function ic(n){return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICO[n]+'</svg>'}
 var ROLE_DEF={admin:{n:'Admin',create:1,edit:1,status:1,del:1,rep:1,money:1},pembimbing:{n:'Pembimbing',create:0,edit:1,status:1,del:0,rep:1,money:1},advisor:{n:'Service Advisor',create:1,edit:1,status:1,del:0,rep:1,money:1},mekanik:{n:'Mekanik / Siswa Praktik',create:0,edit:0,status:1,del:0,rep:0,money:0}};
-var TITLES={home:'Beranda',login:'Masuk',dash:'Dashboard',mon:'Monitor Servis',new:'Pendaftaran Servis',q:'Antrian Servis',rep:'Laporan',prof:'Profil & Peran'};
+var TITLES={aud:'Audit Trail',tos:'Syarat & Ketentuan',home:'Beranda',login:'Masuk',dash:'Dashboard',mon:'Monitor Servis',new:'Pendaftaran Servis',q:'Antrian Servis',rep:'Laporan',prof:'Profil & Peran'};
 var loadErr='';
 function myRole(){if(!REMOTE)return 'admin';var l=(AW.u&&AW.u.labels)||[];for(var k in ROLE_DEF)if(l.indexOf(k)>-1)return k;return null}
 function can(a){var r=myRole();return !!(r&&ROLE_DEF[r][a])}
 function tog(o){$('sb').classList.toggle('open',!!o);$('scrim').classList.toggle('show',!!o)}
 function buildMenu(){
  var gu=REMOTE&&!AW.u,it=[],r=myRole();
- if(gu)it=[['home','Beranda','home']];
- else{it.push(['dash','Dashboard','grid']);if(r)it.push(['mon','Monitor Servis','pulse']);if(can('create'))it.push(['new','Pendaftaran','plus']);if(r)it.push(['q','Antrian Servis','list']);if(can('rep'))it.push(['rep','Laporan','chart']);if(can('users')&&REMOTE)it.push(['akun','Kelola Akun','users']);it.push(['prof','Profil & Peran','user'])}
+ if(gu)it=[['home','Beranda','home'],['tos','Syarat & Ketentuan','doc']];
+ else{it.push(['dash','Dashboard','grid']);if(r)it.push(['mon','Monitor Servis','pulse']);if(can('create'))it.push(['new','Pendaftaran','plus']);if(r)it.push(['q','Antrian Servis','list']);if(can('rep'))it.push(['rep','Laporan','chart']);if(can('users')&&REMOTE)it.push(['akun','Kelola Akun','users']);if(can('audit'))it.push(['aud','Audit Trail','shield']);it.push(['prof','Profil & Peran','user']);it.push(['tos','Syarat & Ketentuan','doc'])}
  $('menu').innerHTML='<small class="sec">'+(gu?'Menu':'Service Point')+'</small>'+it.map(function(i){return '<button class="mi'+(tab==i[0]?' on':'')+'" onclick="go(\''+i[0]+'\')">'+ic(i[2])+'<span>'+i[1]+'</span></button>'}).join('');
  var nm=AW.u?(AW.u.name||AW.u.email):'Mode lokal';
  $('acct').innerHTML=gu?'<button class="mi" onclick="go(\'login\')">'+ic('login')+'<span>Masuk</span></button>':'<div class="who"><div class="av">'+esc(nm.charAt(0).toUpperCase())+'</div><div><b>'+esc(nm)+'</b><span>'+(r?ROLE_DEF[r].n:'Belum ada peran')+'</span></div></div>'+(REMOTE?'<button class="mi" onclick="logout()">'+ic('logout')+'<span>Keluar</span></button>':'');
 }
 function render(){
  var gu=REMOTE&&!AW.u;
- if(gu&&tab!='home'&&tab!='login')tab='home';
+ if(gu&&tab!='home'&&tab!='login'&&tab!='tos')tab='home';
  if(!gu&&(tab=='home'||tab=='login'))tab='dash';
- if(!gu&&!myRole()&&tab!='prof')tab='prof';
+ if(!gu&&!myRole()&&tab!='prof'&&tab!='tos')tab='prof';
+ if(tab=='aud'&&!can('audit'))tab='dash';
  if(tab=='rep'&&!can('rep'))tab='dash';
  if(tab=='new'&&!(can('create')||(editId&&can('edit'))))tab='dash';
  if(tab=='akun'&&!(can('users')&&REMOTE))tab='dash';
- var V={akun:vAkun,home:vHome,login:vLogin,dash:vDash,mon:vMon,new:vNew,q:vQ,rep:vRep,prof:vProf};
+ var V={aud:vAud,tos:vTos,akun:vAkun,home:vHome,login:vLogin,dash:vDash,mon:vMon,new:vNew,q:vQ,rep:vRep,prof:vProf};
  $('ttl').textContent=TITLES[tab];$('app').innerHTML=V[tab]();buildMenu();tog(0);scrollTo(0,0);
 }
 function vHome(){
@@ -424,7 +432,7 @@ function vHome(){
 }
 function vLogin(){
  if(!REMOTE)return '<div class="card lg"><div class="lgh"><img src="'+IMG.df+'" alt=""><h2>Mode lokal</h2></div><p class="mut">Appwrite belum dikonfigurasi di config.js, jadi login tidak diperlukan.</p><button class="btn w" onclick="go(\'dash\')">Buka Dashboard</button></div>';
- return '<div class="card lg"><div class="lgh"><img src="'+IMG.df+'" alt=""><h2>Masuk</h2><p>Business Center TBSM</p></div><label>Email</label><input id="le" type="email" autocomplete="username"><label>Kata sandi</label><input id="lp" type="password" autocomplete="current-password" onkeydown="if(event.key===\'Enter\')login()"><p id="lm" class="err"></p><button class="btn w" onclick="login()">Masuk</button><p class="mut" style="text-align:center;margin-top:10px">Akun dan peran diatur oleh admin.</p></div>';
+ return '<div class="card lg"><div class="lgh"><img src="'+IMG.df+'" alt=""><h2>Masuk</h2><p>Business Center TBSM</p></div><label>Email</label><input id="le" type="email" autocomplete="username"><label>Kata sandi</label><input id="lp" type="password" autocomplete="current-password" onkeydown="if(event.key===\'Enter\')login()"><p id="lm" class="err"></p><button class="btn w" onclick="login()">Masuk</button><p class="mut" style="text-align:center;margin-top:10px">Akun dan peran diatur oleh admin.</p><p style="text-align:center;margin:8px 0 0;font-size:13px"><a href="#" style="color:var(--pri)" onclick="go(\'tos\');return false">Syarat &amp; Ketentuan</a></p></div>';
 }
 async function login(){
  $('lm').textContent='';
@@ -492,7 +500,7 @@ function vDash(){
  var CL={Menunggu:'#d98b00',Dikerjakan:'#2f6fe0',Selesai:'#0e8a5f',Diambil:'#778899'},tot=j.length,acc=0,seg=[];
  ST.forEach(function(k){var v=c(k);if(v){seg.push(CL[k]+' '+(acc/tot*100)+'% '+((acc+v)/tot*100)+'%');acc+=v}});
  var dn='<div class="card"><h3>Status unit</h3><div class="dnw"><div class="dn" style="background:'+(tot?'conic-gradient('+seg.join(',')+')':'var(--gr)')+'"><div><b>'+tot+'</b><span>unit</span></div></div><ul class="lgd">'+ST.map(function(k){return '<li><i style="background:'+CL[k]+'"></i>'+(k=='Selesai'?'Siap diambil':k)+'<b>'+c(k)+'</b></li>'}).join('')+'</ul></div></div>';
- var rc=j.slice(0,5),rh='<h2>Aktivitas terbaru</h2>'+(rc.length?'<div class="card rcl">'+rc.map(function(x){return '<div class="ri"><div><b>'+esc(x.d.plat)+' · '+esc(x.d.tipe||'-')+'</b><span>'+esc(x.d.pm_nama||'-')+' · '+tglID(x.ts)+'</span></div><span class="tag '+x.status+'">'+x.status+'</span></div>'}).join('')+'</div>':'<div class="card empty">Belum ada aktivitas.</div>');
+ var rc=j.slice(0,5),rh='<h2>Aktivitas terbaru</h2>'+(rc.length?'<div class="card rcl">'+rc.map(function(x){return '<div class="ri"><div><b>'+esc(x.d.plat)+(x.d.tipe?' · '+esc(x.d.tipe):'')+'</b><span>'+esc(x.d.pm_nama||'-')+' · '+tglID(x.ts)+'</span></div><span class="tag '+x.status+'">'+x.status+'</span></div>'}).join('')+'</div>':'<div class="card empty">Belum ada aktivitas.</div>');
  return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hero+qh+'<div class="two">'+ch+dn+'</div>'+rh;
 }
 async function loadAll(){
@@ -500,7 +508,7 @@ async function loadAll(){
  if(!REMOTE){lsLoad();return}
  var o=ids();o.queries=[Appwrite.Query.orderDesc('$createdAt'),Appwrite.Query.limit(500)];
  var r=await AW.t.listRows(o);
- db.jobs=r.rows.map(function(w){var j=JSON.parse(w.payload);j.id=w.$id;return j});
+ db.jobs=[];db.audx=[];r.rows.forEach(function(w){var j;try{j=JSON.parse(w.payload)}catch(e){return}if(j.au){db.audx.push(j);return}j.id=w.$id;db.jobs.push(j)});
 }
 async function reload2(){try{await loadAll()}catch(e){loadErr='Gagal memuat data: '+(e.message||e)}render()}
 async function boot0(){
@@ -519,6 +527,53 @@ setFt();addEventListener('resize',setFt);addEventListener('load',setFt);
 if('serviceWorker' in navigator)addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
 $('lgdf').src=IMG.df;$('burger').innerHTML=ic('menu');$('th').innerHTML=ic('sun');
 ROLE_DEF.admin.users=1;
+ROLE_DEF.admin.audit=1;ROLE_DEF.pembimbing.audit=1;
+var AF='Semua',TS='ket';
+var AL={buat:['Dibuat','#0e8a5f'],ubah:['Diubah','#2f6fe0'],status:['Status','#d98b00'],hapus:['Dihapus','#d71920']};
+var FL={plat:'No. Polisi',tipe:'Type',tahun:'Tahun',km:'KM',noMesin:'No. Mesin',noRangka:'No. Rangka',email:'Email',sosmed:'Sosmed',pb_nama:'Nama pembawa',pb_hp:'Telp pembawa',pb_alamat:'Alamat pembawa',pb_kel:'Kel/Kec pembawa',pm_nama:'Nama pemilik',pm_hp:'Telp pemilik',pm_alamat:'Alamat pemilik',pm_kel:'Kel/Kec pemilik',dealer:'Dari dealer sendiri',hub:'Hubungan',always:'Always Honda',alasan:'Alasan ke AHASS',alasan_e:'Alasan lainnya',pit:'PIT Express',bbm:'BBM',cmb:'MB',cwo:'WO',csor:'SOR',cwor:'WOR',kondisi:'Kondisi motor',j5t:'Nama pekerjaan',keluhan:'Keluhan',analisa:'Analisa',konf:'Konfirmasi',konf_telp:'Telp konfirmasi',bekas:'Part bekas',sa:'Service Advisor',mekanik:'Mekanik',pembimbing:'Pembimbing',saran:'Saran mekanik',kpb:'KPB',oli:'Oli'};
+function fl(k){return FL[k]||(/^j\d$/.test(k)?'Pekerjaan':/^jb\d$/.test(k)?'Biaya pekerjaan':/^p\dn$/.test(k)?'Suku cadang':/^p\dh$/.test(k)?'Harga suku cadang':k)}
+function who(){return AW.u?(AW.u.name||AW.u.email||'-'):'Mode lokal'}
+function roleN(){var r=myRole();return r?ROLE_DEF[r].n:''}
+function norm(v){return v===false||v==null||v==='0'?'':String(v)}
+function diffD(o,n){var k,a={},out=[];o=o||{};n=n||{};for(k in o)a[k]=1;for(k in n)a[k]=1;for(k in a)if(norm(o[k])!=norm(n[k])){var l=fl(k);if(out.indexOf(l)<0)out.push(l)}return out}
+function aud(x,a,m){if(!x.log){x.log=[];if(a!='buat')x.log.push({t:x.ts,u:'',r:'',a:'buat',m:'Pendaftaran dibuat (sebelum audit trail aktif)'})}x.log.push({t:Date.now(),u:who(),r:roleN(),a:a,m:m});if(x.log.length>40)x.log=x.log.slice(-40)}
+async function audDel(x){var e={au:1,t:Date.now(),u:who(),r:roleN(),a:'hapus',m:'Data servis dihapus',no:x.no,plat:x.d.plat,nm:x.d.pm_nama};db.audx=db.audx||[];db.audx.unshift(e);
+ if(!REMOTE){lsSave();return}
+ try{var o=ids();o.rowId=Appwrite.ID.unique();o.data={payload:JSON.stringify(e)};await AW.t.createRow(o)}catch(er){}}
+function jam(t){var d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function audEv(){var e=[];db.jobs.forEach(function(x){var l=x.log;if(!l||!l.length)l=[{t:x.ts,u:'',r:'',a:'buat',m:'Pendaftaran dibuat (sebelum audit trail aktif)'}];l.forEach(function(g){e.push({t:g.t,u:g.u,r:g.r,a:g.a,m:g.m,no:x.no,plat:x.d.plat})})});(db.audx||[]).forEach(function(g){e.push({t:g.t,u:g.u,r:g.r,a:g.a,m:g.m+(g.nm?' ('+g.nm+')':''),no:g.no,plat:g.plat})});e.sort(function(a,b){return b.t-a.t});return e}
+function setAF(v){AF=v;$('app').innerHTML=vAud()}
+function vAud(){
+ var all=audEv(),l=AF=='Semua'?all:all.filter(function(e){return e.a==AF}),sh=l.slice(0,100);
+ var chips='<div class="aud-f">'+['Semua','buat','ubah','status','hapus'].map(function(f){return '<button class="'+(AF==f?'on':'')+'" onclick="setAF(\''+f+'\')">'+(f=='Semua'?'Semua':AL[f][0])+'</button>'}).join('')+'</div>';
+ var hd='<div class="card"><div class="job"><div><h3>Audit Trail</h3><p class="mut">Catatan siapa membuat, mengubah, mengganti status, dan menghapus data servis. '+all.length+' catatan.</p></div>'+(REMOTE?'<button class="btn s" onclick="reload2()">Muat ulang</button>':'')+'</div></div>';
+ var rows=sh.length?'<div class="card rcl">'+sh.map(function(e){var a=AL[e.a]||AL.ubah;return '<div class="ae" style="--c:'+a[1]+'"><i></i><div><b>'+esc(e.m)+'</b><p>'+esc(e.plat||'-')+' · '+esc(e.no||'-')+'</p><span>'+esc(e.u||'Tidak tercatat')+(e.r?' ('+esc(e.r)+')':'')+' · '+tglID(e.t)+' '+jam(e.t)+'</span></div></div>'}).join('')+'</div>':'<div class="card empty">Belum ada catatan.</div>';
+ return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hd+chips+rows+(l.length>100?'<p class="mut" style="text-align:center">Menampilkan 100 terbaru.</p>':'')+'<p class="mut" style="text-align:center;font-size:12px">Pencatatan dimulai sejak fitur ini aktif. Data lama hanya tercatat saat dibuat.</p>';
+}
+function setTS(v){TS=v;$('app').innerHTML=vTos()}
+function vTos(){
+ var tb='<div class="aud-f"><button class="'+(TS=='ket'?'on':'')+'" onclick="setTS(\'ket\')">Ketentuan Penggunaan</button><button class="'+(TS=='priv'?'on':'')+'" onclick="setTS(\'priv\')">Kebijakan Privasi</button></div>';
+ var up='<p class="mut" style="font-size:12px;margin:0 0 10px">Diperbarui 7 November 2026</p>';
+ var K='<h3>1. Tentang aplikasi</h3><p>Business Center TBSM adalah aplikasi internal unit usaha Service Point SMKS Darul Fatwa, kerjasama AHASS Daya Anugrah Mandiri Jatinangor. Aplikasi ini dipakai untuk mencatat pendaftaran, antrian, dan layanan servis motor.</p>'+
+ '<h3>2. Akun dan peran</h3><ul><li>Akun dibuat dan diatur oleh admin. Peran (Admin, Pembimbing, Service Advisor, Mekanik / Siswa Praktik) menentukan apa yang boleh Anda lihat dan ubah.</li><li>Jaga kerahasiaan kata sandi dan jangan membagikan akun. Semua tindakan lewat akun Anda menjadi tanggung jawab Anda.</li><li>Segera beri tahu admin jika akun Anda dicurigai dipakai orang lain.</li></ul>'+
+ '<h3>3. Penggunaan yang diizinkan</h3><ul><li>Gunakan aplikasi hanya untuk keperluan operasional servis di Service Point.</li><li>Isi data dengan benar dan lengkap sesuai keadaan sebenarnya.</li><li>Dilarang membuka data di luar kewenangan peran Anda, mengubah atau menghapus data tanpa alasan, mencoba menembus keamanan, atau memakai data pelanggan untuk keperluan lain.</li></ul>'+
+ '<h3>4. Audit trail</h3><p>Pembuatan, perubahan, pergantian status, dan penghapusan data servis dicatat beserta nama pengguna, peran, dan waktunya. Catatan ini dapat dilihat oleh Admin dan Pembimbing.</p>'+
+ '<h3>5. Dokumen dan data servis</h3><p>Form Service Advisor (PDF) dan laporan Excel dibuat dari data yang diinput pengguna. Pengguna bertanggung jawab atas kebenaran data tersebut. Syarat servis dan garansi mengikuti yang tercetak pada formulir.</p>'+
+ '<h3>6. Ketersediaan layanan</h3><p>Aplikasi membutuhkan internet untuk masuk dan memuat data. Layanan diberikan apa adanya dan dapat berubah atau terhenti sewaktu-waktu, misalnya untuk perawatan atau karena gangguan jaringan.</p>'+
+ '<h3>7. Pembatasan akses</h3><p>Admin dapat menonaktifkan atau menghapus akun yang melanggar ketentuan ini atau sudah tidak diperlukan.</p>'+
+ '<h3>8. Perubahan ketentuan</h3><p>Ketentuan ini dapat diperbarui. Dengan tetap memakai aplikasi setelah pembaruan, Anda dianggap menyetujuinya.</p>'+
+ '<h3>9. Kontak</h3><p>Pertanyaan tentang aplikasi dapat disampaikan kepada admin Business Center TBSM, SMKS Darul Fatwa, Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363.</p>';
+ var P='<h3>1. Data yang kami olah</h3><ul><li><b>Akun:</b> nama, email, dan peran pengguna.</li><li><b>Data motor:</b> No. Polisi, type, tahun, KM, No. Mesin, No. Rangka.</li><li><b>Data pelanggan:</b> nama, alamat, kelurahan/kecamatan, nomor telepon, email, dan sosial media pembawa dan pemilik motor.</li><li><b>Data servis:</b> keluhan, pekerjaan, suku cadang, biaya, nama mekanik dan pembimbing, serta waktu pengerjaan.</li><li><b>Catatan audit:</b> nama pengguna, peran, tindakan, dan waktu.</li></ul>'+
+ '<h3>2. Tujuan penggunaan</h3><p>Data dipakai untuk pendaftaran dan pelayanan servis, antrian, laporan, pengisian otomatis dari riwayat servis, pencetakan form, serta keamanan dan audit. Data tidak dipakai untuk iklan.</p>'+
+ '<h3>3. Tempat penyimpanan</h3><p>Data disimpan di layanan Appwrite Cloud (server wilayah Singapura). Di perangkat Anda, aplikasi menyimpan salinan berkas aplikasi (cache) agar cepat dibuka. Aplikasi tidak memakai pelacak atau analitik pihak ketiga.</p>'+
+ '<h3>4. Pihak ketiga</h3><p>Appwrite menyediakan penyimpanan data dan proses masuk. Pustaka aplikasi (Appwrite, PDF, dan Excel) dimuat dari jsDelivr dan cdnjs, sehingga penyedia tersebut dapat menerima alamat IP dan informasi perangkat Anda saat pustaka dimuat. Data servis tidak dijual. Data hanya dibuka kepada pengguna aplikasi yang berwenang, dan dapat diberikan kepada pihak lain jika diwajibkan hukum atau atas persetujuan pemilik data.</p>'+
+ '<h3>5. Akses data</h3><p>Akses dibatasi menurut peran. Misalnya, Mekanik tidak melihat biaya dan laporan, dan hanya Admin yang dapat mengelola akun serta menghapus data servis.</p>'+
+ '<h3>6. Penyimpanan dan penghapusan</h3><p>Data disimpan selama masih diperlukan untuk operasional dan pelaporan. Admin dapat menghapus data servis. Catatan penghapusannya tetap tersimpan di audit trail.</p>'+
+ '<h3>7. Keamanan</h3><p>Aplikasi memakai login email dan kata sandi, koneksi terenkripsi (HTTPS), dan pembatasan akses menurut peran. Tidak ada sistem yang sepenuhnya bebas risiko, jadi jaga kerahasiaan kata sandi Anda.</p>'+
+ '<h3>8. Hak pemilik data</h3><p>Pelanggan dapat meminta melihat, memperbaiki, atau menghapus data pribadinya melalui Service Advisor atau admin, sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi.</p>'+
+ '<h3>9. Perubahan dan kontak</h3><p>Kebijakan ini dapat diperbarui dan versi terbaru selalu ada di halaman ini. Pertanyaan dapat disampaikan kepada admin Business Center TBSM, SMKS Darul Fatwa.</p>';
+ return tb+'<div class="card tos">'+up+(TS=='ket'?K:P)+'</div>';
+}
 ICO.users='<circle cx="9" cy="8" r="3.5"/><path d="M2 21c0-3.5 3-5.5 7-5.5s7 2 7 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 15.8c2.4.6 4 2.2 4 5.2"/>';
 TITLES.akun='Kelola Akun';
 var AK={list:null,err:'',form:null,busy:false};
