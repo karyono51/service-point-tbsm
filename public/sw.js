@@ -1,6 +1,6 @@
 /* Service worker sederhana: jaringan dulu, cadangan dari cache.
    Hanya berkas dari domain situs sendiri; Appwrite dan CDN tidak disentuh. */
-var CACHE = 'bc-tbsm-v6';
+var CACHE = 'bc-tbsm-v7';
 var SHELL = ['./', 'index.html', 'config.js', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', function (e) {
@@ -29,7 +29,7 @@ self.addEventListener('fetch', function (e) {
   var u = new URL(r.url);
   if (u.origin !== self.location.origin) return;
   e.respondWith(
-    fetch(r).then(function (res) {
+    fetch(r,{cache:'no-cache'}).then(function (res) {
       if (res && res.ok) {
         var copy = res.clone();
         caches.open(CACHE).then(function (c) { c.put(r, copy); });
