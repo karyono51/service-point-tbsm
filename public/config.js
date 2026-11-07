@@ -4,5 +4,6 @@ window.SP_CONFIG = {
   endpoint: 'https://sgp.cloud.appwrite.io/v1',
   projectId: '6aeec7d70036da9eb8e8',
   databaseId: '6aeecb910016e43805e4',
-  tableId: '6aeee0fb002814b990b1'
+  tableId: '6aeee0fb002814b990b1',
+  functionId: 'kelola-akun'
 };

@@ -1,4 +1,6 @@
-# Service Point TBSM – SMKS Darul Fatwa × AHASS Daya Anugrah Mandiri Jatinangor
+# Business Center TBSM – SMKS Darul Fatwa
+
+Unit usaha pertama: **Service Point TBSM** (kerjasama AHASS Daya Anugrah Mandiri Jatinangor).
 
 Aplikasi web statis (HTML + JavaScript) untuk pencatatan servis di bengkel sekolah, dengan cetak PDF Form Service Advisor.
 Hosting: **Appwrite Sites** (dari repo **GitHub**). Data & login: **Appwrite** (Auth + Database).
@@ -40,6 +42,51 @@ service-point-tbsm/
 > Catatan privasi: data berisi nama dan no. HP pelanggan. Batasi akun hanya untuk petugas yang perlu,
 > dan cek pengaturan Auth proyek agar pendaftaran publik tidak terbuka.
 
+## Peran pengguna
+
+Peran dibaca dari **Labels** akun Appwrite. Huruf kecil semua.
+
+| Label | Peran | Daftar baru | Ubah data | Ubah status | Hapus | Laporan & biaya |
+|---|---|---|---|---|---|---|
+| `admin` | Admin | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `pembimbing` | Pembimbing | – | ✓ | ✓ | – | ✓ |
+| `advisor` | Service Advisor | ✓ | ✓ | ✓ | – | ✓ |
+| `mekanik` | Mekanik / Siswa Praktik | – | – | ✓ | – | – |
+
+Cara mengatur:
+1. Auth → Users → pilih pengguna → **Labels** → isi label di atas.
+2. Setelah semua pengguna berlabel, ubah izin table (Settings → Permissions): ganti role *Users* dengan role **Label**.
+   - Read: `admin`, `pembimbing`, `advisor`, `mekanik`
+   - Create: `admin`, `advisor`
+   - Update: `admin`, `pembimbing`, `advisor`, `mekanik`
+   - Delete: `admin`
+3. Pengguna keluar lalu masuk lagi.
+
+Tampilan aplikasi menyembunyikan menu sesuai peran, dan izin table di Appwrite yang menegakkannya di sisi server.
+
+## Kelola Akun (menu admin)
+
+Menu **Kelola Akun** (khusus admin) untuk menambah, mengubah, menonaktifkan/mengaktifkan, dan menghapus akun, serta mengatur peran.
+Karena membuat akun butuh hak server, fungsi ini berjalan di **Appwrite Function** `kelola-akun` (folder `functions/kelola-akun`).
+Function memeriksa sendiri bahwa pemanggilnya berlabel `admin`, dan tidak mengizinkan admin menghapus, menonaktifkan, atau menurunkan perannya sendiri.
+
+### Deploy Function
+
+1. Console → **Functions → Create function → Connect Git repository** → pilih repo yang sama, branch `main`.
+2. Isian:
+   - Name: `Kelola Akun`
+   - **Function ID: `kelola-akun`** (pilih ubah ID, harus persis ini; sama dengan `functionId` di `config.js`)
+   - Runtime: Node.js (versi terbaru yang tersedia)
+   - **Root directory: `functions/kelola-akun`**
+   - Entrypoint: `src/main.js`
+   - Build commands: `npm install`
+3. **Scopes**: centang `users.read` dan `users.write`.
+4. **Execute access** (Settings): tambahkan role **Label → `admin`** (jika tidak tersedia, pilih Users; function tetap menolak non-admin).
+5. Deploy, tunggu **Ready**. Jika Function punya domain sendiri, hapus (Domains) agar hanya bisa dipanggil lewat aplikasi.
+6. Buka aplikasi → login admin → menu **Kelola Akun**.
+
+Akun admin pertama tetap dibuat dan diberi label `admin` lewat Console (Auth → Users → Labels).
+
 ## Langkah 2 – Isi config.js
 
 Edit `public/config.js`:
@@ -49,7 +96,8 @@ window.SP_CONFIG = {
   endpoint: 'https://<REGION>.cloud.appwrite.io/v1',
   projectId: 'ISI_PROJECT_ID',
   databaseId: 'ISI_DATABASE_ID',
-  tableId: 'ISI_TABLE_ID'
+  tableId: 'ISI_TABLE_ID',
+  functionId: 'kelola-akun'
 };
 ```
 
@@ -119,6 +167,8 @@ Berguna untuk uji coba cepat: buka `public/index.html`.
 | "Login gagal … origin" | Domain belum didaftarkan di Platforms (Langkah 5) |
 | 401 / "not authorized" saat memuat data | Izin table belum memberi role **Users** akses CRUD (Langkah 1.7) |
 | "Invalid document structure / attribute" | Kolom `payload` belum dibuat, bukan Text, atau tidak Required |
+| Kelola Akun: "Function ... not found" / gagal | Function belum di-deploy, ID bukan `kelola-akun`, atau scope users.read/users.write belum dicentang |
+| Kelola Akun: "Hanya admin ..." | Akun belum berlabel `admin`; keluar lalu masuk lagi |
 | Teks panjang terpotong / gagal simpan | Perbesar ukuran kolom `payload` atau pakai Longtext |
 | PDF tidak muncul | Butuh internet untuk memuat pustaka jsPDF dan Appwrite dari CDN |
 | Data tidak sama antar perangkat | Tekan **Muat ulang**; pastikan `projectId` terisi (bukan mode lokal) |
