@@ -134,14 +134,21 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 .rw{border-left:5px solid var(--gold)}.rw0{border-left-color:var(--bd)}.rw0 small{color:var(--mut)}
 .rwn{margin:0 0 6px;font-size:12.5px;color:var(--pri);font-weight:600}
 .rwi{padding:7px 0;border-top:1px dashed var(--bd)}.rwi b{display:block;font-size:13.5px}.rwi span{font-size:12.5px;color:var(--mut)}
-.aud-f{display:flex;gap:6px;overflow-x:auto;margin:0 0 12px;padding-bottom:2px}
-.aud-f button{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:999px;padding:7px 14px;font:inherit;font-size:13px}
-.aud-f button.on{background:var(--pri);color:var(--pt);border-color:var(--pri)}
-.ae{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid var(--bd)}.ae:last-child{border-bottom:0}
-.ae i{flex:none;width:10px;height:10px;border-radius:50%;margin-top:5px;background:var(--c)}
-.ae b{display:block;font-size:14px;line-height:1.35}.ae p{margin:2px 0 0;font-size:13px}.ae span{display:block;font-size:12px;color:var(--mut);margin-top:3px}
+.aud-f{display:flex;gap:6px;overflow-x:auto;margin:10px 0 0;padding-bottom:2px;scrollbar-width:none}.aud-f::-webkit-scrollbar{display:none}
+.aud-f button{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:999px;padding:5px 11px;font:inherit;font-size:12px;line-height:1.3}
+.aud-f button.on{background:var(--pri);color:var(--pt);border-color:var(--pri);font-weight:600}
+.ae{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd)}.ae:last-child{border-bottom:0}
+.ae i{flex:none;width:8px;height:8px;border-radius:50%;margin-top:6px;background:var(--c)}
+.ae b{display:block;font-size:13.5px;line-height:1.35}
+.ae p{margin:1px 0 0;font-size:12px;line-height:1.4}.ae span{display:block;font-size:11.5px;color:var(--mut);margin-top:2px;line-height:1.4}
 .tos h3{margin:18px 0 6px;font-size:15px;color:var(--pri)}.tos h3:first-child{margin-top:0}.tos p,.tos li{font-size:14px;line-height:1.55}.tos p{margin:6px 0}.tos ul{padding-left:20px;margin:6px 0}
-.dr{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dr label{display:block;font-size:12px;color:var(--mut)}.dr input{display:block;width:100%;margin-top:4px;box-sizing:border-box}
+.card.au{padding:14px}.au-h{display:flex;align-items:center;justify-content:space-between;gap:10px}.au-h h3{margin:0;font-size:16px}.au-h p{margin:2px 0 0;font-size:12px;color:var(--mut)}
+.au-rf{flex:none;width:34px;height:34px;border-radius:10px;border:1px solid var(--bd);background:var(--gr);color:var(--tx);font-size:16px;line-height:1;padding:0}
+.dr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.dr label{position:relative;display:block;min-width:0}.dr small{display:block;font-size:11px;color:var(--mut);margin-bottom:3px}
+.dv{display:flex;align-items:center;justify-content:space-between;gap:6px;height:36px;padding:0 10px;border:1px solid var(--bd);border-radius:10px;background:var(--gr);font-size:13px;color:var(--mut)}.dv.on{color:var(--tx);border-color:var(--pri)}.dv .ic{width:15px;height:15px;flex:none;opacity:.7}
+.dr input{position:absolute;left:0;bottom:0;width:100%;height:36px;opacity:0;margin:0;padding:0;border:0}
+.au-t{display:flex;align-items:center;gap:8px;margin:14px 2px 8px}.au-t b{font-size:15px}.au-t span{font-size:12px;color:var(--mut);background:var(--gr);border-radius:999px;padding:1px 9px}
+.au-dl{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:10px;border:0;border-radius:12px;background:var(--pri);color:var(--pt);font:inherit;font-size:14px;font-weight:600}.au-dl .ic{width:17px;height:17px}
 </style>
 
 </head>
@@ -151,7 +158,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v12</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v13</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -398,7 +405,7 @@ async function setS(i,v){var x=jf(i);if(x.status!=v)aud(x,'status',slb(x.status)
 async function del(i){if(confirm('Hapus data servis ini?')){var x=jf(i);try{await removeJob(i)}catch(e){return}if(x)await audDel(x);render()}}
 
 
-var ICO={shield:'<path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',doc:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',download:'<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',wrench:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L3 17.7 6.3 21l6.3-6.3a4 4 0 0 0 5.1-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/>',check:'<path d="M20 6 9 17l-5-5"/>',box:'<path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2.4.6 4 2.2 4 5.2"/>',pulse:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',home:'<path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',plus:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',login:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'};
+var ICO={cal:'<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/>',shield:'<path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',doc:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',download:'<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',wrench:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L3 17.7 6.3 21l6.3-6.3a4 4 0 0 0 5.1-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/>',check:'<path d="M20 6 9 17l-5-5"/>',box:'<path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2.4.6 4 2.2 4 5.2"/>',pulse:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',home:'<path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',plus:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',login:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'};
 function ic(n){return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICO[n]+'</svg>'}
 var ROLE_DEF={admin:{n:'Admin',create:1,edit:1,status:1,del:1,rep:1,money:1},pembimbing:{n:'Pembimbing',create:0,edit:1,status:1,del:0,rep:1,money:1},advisor:{n:'Service Advisor',create:1,edit:1,status:1,del:0,rep:1,money:1},mekanik:{n:'Mekanik / Siswa Praktik',create:0,edit:0,status:1,del:0,rep:0,money:0}};
 var TITLES={aud:'Audit Trail',tos:'Syarat & Ketentuan',home:'Beranda',login:'Masuk',dash:'Dashboard',mon:'Monitor Servis',new:'Pendaftaran Servis',q:'Antrian Servis',rep:'Laporan',prof:'Profil & Peran'};
@@ -554,15 +561,16 @@ function audList(){
  else if(AP=='Rentang'){if(AD1)a=new Date(AD1+'T00:00:00').getTime();if(AD2)b=new Date(AD2+'T23:59:59').getTime()}
  return audEv().filter(function(e){return(AF=='Semua'||e.a==AF)&&e.t>=a&&e.t<=b})
 }
+function dfmt(v){return v?v.split('-').reverse().join('/'):'Pilih tanggal'}
 function vAud(){
  var all=audEv(),l=audList(),sh=l.slice(0,100);
  var chips='<div class="aud-f">'+['Semua','buat','ubah','status','hapus'].map(function(f){return '<button class="'+(AF==f?'on':'')+'" onclick="setAF(\''+f+'\')">'+(f=='Semua'?'Semua':AL[f][0])+'</button>'}).join('')+'</div>';
  var per='<div class="aud-f">'+['Semua','Hari ini','7 hari','30 hari'].map(function(f){return '<button class="'+(AP==f?'on':'')+'" onclick="setAP(\''+f+'\')">'+(f=='Semua'?'Semua waktu':f)+'</button>'}).join('')+'</div>';
- var dt='<div class="card"><div class="dr"><label>Dari<input id="ad1" type="date" value="'+esc(AD1)+'" onchange="setAD()"></label><label>Sampai<input id="ad2" type="date" value="'+esc(AD2)+'" onchange="setAD()"></label></div></div>';
- var hd='<div class="card"><div class="job"><div><h3>Audit Trail</h3><p class="mut">Catatan siapa membuat, mengubah, mengganti status, dan menghapus data servis. '+all.length+' catatan.</p></div>'+(REMOTE?'<button class="btn s" onclick="reload2()">Muat ulang</button>':'')+'</div></div>';
+ var dt='<div class="dr"><label><small>Dari</small><div class="dv'+(AD1?' on':'')+'"><span>'+dfmt(AD1)+'</span>'+ic('cal')+'</div><input id="ad1" type="date" value="'+esc(AD1)+'" onchange="setAD()"></label><label><small>Sampai</small><div class="dv'+(AD2?' on':'')+'"><span>'+dfmt(AD2)+'</span>'+ic('cal')+'</div><input id="ad2" type="date" value="'+esc(AD2)+'" onchange="setAD()"></label></div>';
+ var hd='<div class="card au"><div class="au-h"><div><h3>Audit Trail</h3><p>'+all.length+' catatan tersimpan</p></div>'+(REMOTE?'<button class="au-rf" onclick="reload2()" aria-label="Muat ulang" title="Muat ulang">&#8635;</button>':'')+'</div>'+chips+per+dt+'</div>';
  var rows=sh.length?'<div class="card rcl">'+sh.map(function(e){var a=AL[e.a]||AL.ubah;return '<div class="ae" style="--c:'+a[1]+'"><i></i><div><b>'+esc(e.m)+'</b><p>'+esc(e.plat||'-')+' · '+esc(e.no||'-')+'</p><span>'+esc(e.u||'Tidak tercatat')+(e.r?' ('+esc(e.r)+')':'')+' · '+tglID(e.t)+' '+jam(e.t)+'</span></div></div>'}).join('')+'</div>':'<div class="card empty">Tidak ada catatan pada filter ini.</div>';
- var dl='<button class="btn w xl" onclick="audXls()">'+ic('download')+'<span>Unduh Excel ('+l.length+' baris)</span></button>';
- return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hd+chips+per+dt+dl+'<h2>Catatan <small class="cnt">'+l.length+'</small></h2>'+rows+(l.length>100?'<p class="mut" style="text-align:center">Menampilkan 100 terbaru. Unduh Excel untuk semuanya.</p>':'')+'<p class="mut" style="text-align:center;font-size:12px">Pencatatan dimulai sejak fitur ini aktif. Data lama hanya tercatat saat dibuat.</p>';
+ var dl='<button class="au-dl" onclick="audXls()">'+ic('download')+'<span>Unduh Excel ('+l.length+' baris)</span></button>';
+ return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hd+'<div class="au-t"><b>Catatan</b><span>'+l.length+'</span></div>'+rows+(l.length>100?'<p class="mut" style="text-align:center;font-size:12px">Menampilkan 100 terbaru. Unduh Excel untuk semuanya.</p>':'')+dl+'<p class="mut" style="text-align:center;font-size:11.5px;margin:10px 0 0">Pencatatan dimulai sejak fitur ini aktif. Data lama hanya tercatat saat dibuat.</p>';
 }
 async function audXls(){
  var l=audList();if(!l.length){alert('Belum ada catatan untuk diunduh.');return}
