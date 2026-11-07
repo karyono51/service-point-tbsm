@@ -40,6 +40,7 @@ input,select,textarea{width:100%;padding:8px 9px;border:1px solid var(--bd);bord
 .sc{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:7px;border-bottom:1px solid var(--bd);white-space:nowrap}
 .empty{color:var(--mut);text-align:center;padding:22px}.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.row input,.row select{flex:1;min-width:140px;width:auto}
 footer{text-align:center;color:var(--mut);font-size:12px;padding:6px 12px 24px}
+@media(max-width:600px){.kop{padding:6px;gap:4px}.kop img{height:46px}.k1{font-size:15px}.k2{font-size:12.5px}.k3{font-size:10px}.k4{font-size:8px}.bar{font-size:14px}}
 </style>
 </head>
 <body>
@@ -51,7 +52,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:6px 12px 24px}
 <nav id="nav"></nav><main id="app"></main>
 <footer id="ft"></footer>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/appwrite@17.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/appwrite@20.0.0"></script>
 <script src="config.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
@@ -249,7 +250,7 @@ async function login(){
  catch(e){$('lm').textContent='Login gagal: '+e.message}
 }
 async function logout(){try{await AW.a.deleteSession({sessionId:'current'})}catch(e){}location.reload()}
-async function boot(){
+async function boot0(){
  $('ft').textContent=REMOTE?'Terhubung ke Appwrite. Data tersimpan di server.':'Mode lokal (Appwrite belum dikonfigurasi di config.js): data hanya di peramban ini.';
  if(CFG.projectId&&!window.Appwrite){$('app').innerHTML='<div class="card empty">Pustaka Appwrite gagal dimuat. Periksa koneksi internet.</div>';return}
  if(REMOTE){
@@ -272,6 +273,7 @@ async function simpan(){
 async function setS(i,v){var x=jf(i);x.status=v;x.tw=x.tw||{};if(v=='Dikerjakan'&&!x.tw.kerja)x.tw.kerja=hhmm();if((v=='Selesai'||v=='Diambil')&&!x.tw.selesai)x.tw.selesai=hhmm();try{await saveJob(x,false)}catch(e){}render()}
 async function del(i){if(confirm('Hapus data servis ini?')){try{await removeJob(i)}catch(e){return}render()}}
 
+async function boot(){try{await boot0()}catch(e){$('app').innerHTML='<div class="card empty">Terjadi kesalahan: '+esc(e.message||e)+'</div>'}}
 boot();
 </script>
 </body>
