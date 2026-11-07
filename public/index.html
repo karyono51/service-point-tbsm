@@ -141,6 +141,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 .ae i{flex:none;width:10px;height:10px;border-radius:50%;margin-top:5px;background:var(--c)}
 .ae b{display:block;font-size:14px;line-height:1.35}.ae p{margin:2px 0 0;font-size:13px}.ae span{display:block;font-size:12px;color:var(--mut);margin-top:3px}
 .tos h3{margin:18px 0 6px;font-size:15px;color:var(--pri)}.tos h3:first-child{margin-top:0}.tos p,.tos li{font-size:14px;line-height:1.55}.tos p{margin:6px 0}.tos ul{padding-left:20px;margin:6px 0}
+.dr{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dr label{display:block;font-size:12px;color:var(--mut)}.dr input{display:block;width:100%;margin-top:4px;box-sizing:border-box}
 </style>
 
 </head>
@@ -150,7 +151,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v11</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v12</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -493,6 +494,7 @@ function vDash(){
  qa.push(['mon','Monitor Servis','pulse','Pantau status']);
  if(can('rep'))qa.push(['rep','Laporan','chart','Rekap dan unduh']);
  if(can('users')&&REMOTE)qa.push(['akun','Kelola Akun','users','Atur akun dan peran']);
+ if(can('audit'))qa.push(['aud','Audit Trail','shield','Jejak perubahan data']);
  var qh='<h2>Menu cepat</h2><div class="qa">'+qa.map(function(i){return '<button class="qt" onclick="go(\''+i[0]+'\')"><span class="qi">'+ic(i[2])+'</span><b>'+i[1]+'</b><small>'+i[3]+'</small></button>'}).join('')+'</div>';
  var HR=['Min','Sen','Sel','Rab','Kam','Jum','Sab'],bars=[],mx=1,i,d,n;
  for(i=6;i>=0;i--){d=new Date(Date.now()-i*864e5);n=j.filter(function(x){return new Date(x.ts).toDateString()==d.toDateString()}).length;bars.push([HR[d.getDay()],n,i==0]);if(n>mx)mx=n}
@@ -542,13 +544,35 @@ async function audDel(x){var e={au:1,t:Date.now(),u:who(),r:roleN(),a:'hapus',m:
  try{var o=ids();o.rowId=Appwrite.ID.unique();o.data={payload:JSON.stringify(e)};await AW.t.createRow(o)}catch(er){}}
 function jam(t){var d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 function audEv(){var e=[];db.jobs.forEach(function(x){var l=x.log;if(!l||!l.length)l=[{t:x.ts,u:'',r:'',a:'buat',m:'Pendaftaran dibuat (sebelum audit trail aktif)'}];l.forEach(function(g){e.push({t:g.t,u:g.u,r:g.r,a:g.a,m:g.m,no:x.no,plat:x.d.plat})})});(db.audx||[]).forEach(function(g){e.push({t:g.t,u:g.u,r:g.r,a:g.a,m:g.m+(g.nm?' ('+g.nm+')':''),no:g.no,plat:g.plat})});e.sort(function(a,b){return b.t-a.t});return e}
+var AP='Semua',AD1='',AD2='';
 function setAF(v){AF=v;$('app').innerHTML=vAud()}
+function setAP(v){AP=v;AD1='';AD2='';$('app').innerHTML=vAud()}
+function setAD(){AD1=$('ad1').value;AD2=$('ad2').value;AP=(AD1||AD2)?'Rentang':'Semua';$('app').innerHTML=vAud()}
+function audList(){
+ var n=Date.now(),sod=new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()).getTime(),a=0,b=1e15;
+ if(AP=='Hari ini')a=sod;else if(AP=='7 hari')a=n-7*864e5;else if(AP=='30 hari')a=n-30*864e5;
+ else if(AP=='Rentang'){if(AD1)a=new Date(AD1+'T00:00:00').getTime();if(AD2)b=new Date(AD2+'T23:59:59').getTime()}
+ return audEv().filter(function(e){return(AF=='Semua'||e.a==AF)&&e.t>=a&&e.t<=b})
+}
 function vAud(){
- var all=audEv(),l=AF=='Semua'?all:all.filter(function(e){return e.a==AF}),sh=l.slice(0,100);
+ var all=audEv(),l=audList(),sh=l.slice(0,100);
  var chips='<div class="aud-f">'+['Semua','buat','ubah','status','hapus'].map(function(f){return '<button class="'+(AF==f?'on':'')+'" onclick="setAF(\''+f+'\')">'+(f=='Semua'?'Semua':AL[f][0])+'</button>'}).join('')+'</div>';
+ var per='<div class="aud-f">'+['Semua','Hari ini','7 hari','30 hari'].map(function(f){return '<button class="'+(AP==f?'on':'')+'" onclick="setAP(\''+f+'\')">'+(f=='Semua'?'Semua waktu':f)+'</button>'}).join('')+'</div>';
+ var dt='<div class="card"><div class="dr"><label>Dari<input id="ad1" type="date" value="'+esc(AD1)+'" onchange="setAD()"></label><label>Sampai<input id="ad2" type="date" value="'+esc(AD2)+'" onchange="setAD()"></label></div></div>';
  var hd='<div class="card"><div class="job"><div><h3>Audit Trail</h3><p class="mut">Catatan siapa membuat, mengubah, mengganti status, dan menghapus data servis. '+all.length+' catatan.</p></div>'+(REMOTE?'<button class="btn s" onclick="reload2()">Muat ulang</button>':'')+'</div></div>';
- var rows=sh.length?'<div class="card rcl">'+sh.map(function(e){var a=AL[e.a]||AL.ubah;return '<div class="ae" style="--c:'+a[1]+'"><i></i><div><b>'+esc(e.m)+'</b><p>'+esc(e.plat||'-')+' · '+esc(e.no||'-')+'</p><span>'+esc(e.u||'Tidak tercatat')+(e.r?' ('+esc(e.r)+')':'')+' · '+tglID(e.t)+' '+jam(e.t)+'</span></div></div>'}).join('')+'</div>':'<div class="card empty">Belum ada catatan.</div>';
- return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hd+chips+rows+(l.length>100?'<p class="mut" style="text-align:center">Menampilkan 100 terbaru.</p>':'')+'<p class="mut" style="text-align:center;font-size:12px">Pencatatan dimulai sejak fitur ini aktif. Data lama hanya tercatat saat dibuat.</p>';
+ var rows=sh.length?'<div class="card rcl">'+sh.map(function(e){var a=AL[e.a]||AL.ubah;return '<div class="ae" style="--c:'+a[1]+'"><i></i><div><b>'+esc(e.m)+'</b><p>'+esc(e.plat||'-')+' · '+esc(e.no||'-')+'</p><span>'+esc(e.u||'Tidak tercatat')+(e.r?' ('+esc(e.r)+')':'')+' · '+tglID(e.t)+' '+jam(e.t)+'</span></div></div>'}).join('')+'</div>':'<div class="card empty">Tidak ada catatan pada filter ini.</div>';
+ var dl='<button class="btn w xl" onclick="audXls()">'+ic('download')+'<span>Unduh Excel ('+l.length+' baris)</span></button>';
+ return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hd+chips+per+dt+dl+'<h2>Catatan <small class="cnt">'+l.length+'</small></h2>'+rows+(l.length>100?'<p class="mut" style="text-align:center">Menampilkan 100 terbaru. Unduh Excel untuk semuanya.</p>':'')+'<p class="mut" style="text-align:center;font-size:12px">Pencatatan dimulai sejak fitur ini aktif. Data lama hanya tercatat saat dibuat.</p>';
+}
+async function audXls(){
+ var l=audList();if(!l.length){alert('Belum ada catatan untuk diunduh.');return}
+ var A=[['Waktu','Tindakan','Plat','No. Servis','Keterangan','Pengguna','Peran']].concat(l.map(function(e){return [tglID(e.t)+' '+jam(e.t),(AL[e.a]||AL.ubah)[0],e.plat||'',e.no||'',e.m,e.u||'Tidak tercatat',e.r||'']}));
+ var fn='Audit-Trail-Service-Point-'+new Date().toISOString().slice(0,10);
+ try{await loadXLSX();var ws=XLSX.utils.aoa_to_sheet(A);ws['!cols']=[{wch:24},{wch:11},{wch:12},{wch:15},{wch:48},{wch:20},{wch:20}];
+  var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Audit Trail');XLSX.writeFile(wb,fn+'.xlsx')
+ }catch(e){
+  var h='<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><table border="1">'+A.map(function(r,i){return '<tr>'+r.map(function(c){return (i==0?'<th>':'<td>')+esc(c)+(i==0?'</th>':'</td>')}).join('')+'</tr>'}).join('')+'</table></body></html>';
+  saveBlob(new Blob(['\ufeff'+h],{type:'application/vnd.ms-excel'}),fn+'.xls')}
 }
 function setTS(v){TS=v;$('app').innerHTML=vTos()}
 function vTos(){
