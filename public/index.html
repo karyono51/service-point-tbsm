@@ -178,7 +178,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v19</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v20</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -668,8 +668,8 @@ function gBands(G){
  return out}
 function gCrop(G,b){var x0=Math.max(0,b[0]),y0=Math.max(0,b[1]),x1=Math.min(G.w,b[2]),y1=Math.min(G.h,b[3]),w=x1-x0,h=y1-y0,o=new Float32Array(w*h);for(var y=0;y<h;y++)for(var x=0;x<w;x++)o[y*w+x]=G.g[(y0+y)*G.w+x0+x];return {g:o,w:w,h:h}}
 /* ambang adaptif (rata-rata lokal), tinggi teks dibuat th piksel, bingkai putih 16px */
-function gPrep(G,th,inv){
- var nw=Math.max(8,Math.round(G.w*th/G.h)),S=gBlur3(gResize(G,nw,th)),w=S.w,h=S.h,bs=(Math.floor(th/3))|1,r=(bs-1)/2,C=10,
+function gPrep(G,th,inv,CC){
+ var nw=Math.max(8,Math.round(G.w*th/G.h)),S=gBlur3(gResize(G,nw,th)),w=S.w,h=S.h,bs=(Math.floor(th/3))|1,r=(bs-1)/2,C=CC==null?10:CC,
   I=new Float64Array((w+1)*(h+1)),x,y;
  for(y=0;y<h;y++){var rs=0;for(x=0;x<w;x++){rs+=S.g[y*w+x];I[(y+1)*(w+1)+x+1]=I[y*(w+1)+x+1]+rs}}
  var B=16,ow=w+2*B,oh=h+2*B,o=new Uint8Array(ow*oh).fill(255);
@@ -704,7 +704,7 @@ function parseMesin(t){
   var sc=-Math.abs(s.length-12)+(/[A-Z]/.test(s)&&/[0-9]/.test(s)?3:0);
   if(!best||sc>best.sc)best={sc:sc,v:s}});
  return best?best.v:null}
-var VIN_WL='0123456789ABCDEFGHJKLMNPRSTUVWXYZ',VIN_PF=['MH1','MLH'],VCONF={M:'MNW',H:'HNM',L:'L1I',1:'1ILJ7'},D2LV={'5':'S','8':'B','2':'Z','6':'G','4':'A'};
+var VIN_WL='0123456789ABCDEFGHJKLMNPRSTUVWXYZ',VIN_PF=['MH1','MLH'],VCONF={M:'MNW',H:'HNM',L:'L1I',1:'1ILJ7T'},D2LV={'5':'S','8':'B','2':'Z','6':'G','4':'A'};
 function vinPfx(w){var best=null;VIN_PF.forEach(function(t){var m=0;for(var j=0;j<3;j++){var c=w.charAt(j);if(c!=t.charAt(j)&&(VCONF[t.charAt(j)]||'').indexOf(c)<0)m++}if(!best||m<best.m)best={m:m,t:t}});return best}
 function vinFix(w){
  var pf=vinPfx(w);if(pf.m>1)return null;
@@ -767,16 +767,16 @@ async function ocrGo(cv){
   try{await loadTess()}catch(e){camHint(k,'Pembaca teks belum bisa dimuat. Hubungkan internet satu kali, lalu coba lagi.',1);return}
   var wk=await getTW(),parse=k=='plat'?parsePlat:k=='noMesin'?parseMesin:parseRangka,G=gOf(cv),cands=[],bx=gBands(G);
   bx.forEach(function(b){cands.push({g:gCrop(G,b),psm:'7'})});cands.push({g:G,psm:'6'});
-  var pipes=[[130,0],[180,0],[100,0],[130,1]],votes={},order=[],allv=[],n=0,max=Math.min(12,cands.length*pipes.length),res=null;
+  var pipes=k=='noRangka'?[[130,0,-10],[130,0,-15],[100,0,-15],[90,0,-15],[130,0,-5],[130,0,-20],[100,0,-20]]:[[130,0],[180,0],[100,0],[130,1]],votes={},order=[],allv=[],n=0,max=Math.min(k=='noRangka'?14:12,cands.length*pipes.length),res=null;
   var att=async function(i,j){if(n>=max)return null;n++;camHint(k,'Membaca foto… '+n+'/'+max);
    await wk.setParameters({tessedit_char_whitelist:k=='noRangka'?VIN_WL:OCR_WL,tessedit_pageseg_mode:cands[i].psm});
-   var r=await wk.recognize(toCv(gPrep(cands[i].g,pipes[j][0],pipes[j][1]))),p=parse(r&&r.data&&r.data.text);
+   var r=await wk.recognize(toCv(gPrep(cands[i].g,pipes[j][0],pipes[j][1],pipes[j][2]))),p=parse(r&&r.data&&r.data.text);
    if(p){allv.push(p);if(!votes[p]){votes[p]=0;order.push(p)}votes[p]++}return p};
   var win=-1,i,j;
   for(i=0;i<cands.length&&win<0;i++){if(await att(i,0))win=i}
   if(win>=0){for(j=1;j<pipes.length&&!res;j++){await att(win,j);order.forEach(function(v){if(votes[v]>=2)res=v})}}
   else{for(j=1;j<pipes.length&&!res;j++)for(i=0;i<cands.length&&!res;i++){await att(i,j);order.forEach(function(v){if(votes[v]>=2)res=v})}}
-  if(!res&&k=='noRangka'){var c17=allv.filter(function(v){return v.length==17});if(c17.length>=2){var cs='';for(var z=0;z<17;z++){var cc={},bb='',bn=0;c17.forEach(function(v){var h=v.charAt(z);cc[h]=(cc[h]||0)+1;if(cc[h]>bn){bn=cc[h];bb=h}});cs+=bb}res=cs}}
+  if(!res&&k=='noRangka'&&allv.length>=2){var lv=function(x,y){var d=[],i2,j2;for(j2=0;j2<=y.length;j2++)d[j2]=j2;for(i2=1;i2<=x.length;i2++){var pv=d.slice();d[0]=i2;for(j2=1;j2<=y.length;j2++)d[j2]=Math.min(pv[j2]+1,d[j2-1]+1,pv[j2-1]+(x.charAt(i2-1)!=y.charAt(j2-1)?1:0))}return d[y.length]},bm=1e9;allv.forEach(function(x){var t=0;allv.forEach(function(y){t+=lv(x,y)});if(t<bm||(t==bm&&x.length==17&&res&&res.length!=17)){bm=t;res=x}})}
   if(!res&&order.length){res=order.sort(function(a,b){return votes[b]-votes[a]})[0]}
   if(!res){camHint(k,'Teks belum terbaca. Pastikan teks memenuhi kotak, cukup terang, tidak silau, atau ketik manual.',1);return}
   var el=fe(k);if(el){el.value=res;el.dispatchEvent(new Event('input',{bubbles:true}))}
