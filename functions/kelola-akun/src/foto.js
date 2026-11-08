@@ -1,13 +1,9 @@
-import { Client, Users } from 'node-appwrite';
-
-// Function foto-drive: simpan dan ambil foto kondisi motor di Google Drive.
-// Variabel lingkungan (Settings > Environment variables):
+// Aksi "foto" untuk function kelola-akun: foto kondisi motor disimpan di Google Drive.
+// Variabel lingkungan (Settings > Variables):
 //   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN
 //   DRIVE_FOLDER_ID (opsional; kalau kosong, folder dibuat otomatis)
-// Scope function: users.read
 
 const FOLDER_NAME = 'Foto Servis Business Center TBSM';
-const ROLES = ['admin', 'pembimbing', 'advisor', 'mekanik'];
 const CAN_DELETE = ['admin', 'pembimbing', 'advisor'];
 const MAX_BYTES = 3 * 1024 * 1024;
 
@@ -36,8 +32,7 @@ async function accessToken() {
 
 async function gfetch(url, opt = {}) {
   const t = await accessToken();
-  const r = await fetch(url, { ...opt, headers: { Authorization: 'Bearer ' + t, ...(opt.headers || {}) } });
-  return r;
+  return fetch(url, { ...opt, headers: { Authorization: 'Bearer ' + t, ...(opt.headers || {}) } });
 }
 
 async function gjson(url, opt) {
@@ -104,26 +99,12 @@ async function trash(id) {
   });
 }
 
-async function roleOf(req) {
-  const uid = req.headers['x-appwrite-user-id'];
-  const key = req.headers['x-appwrite-key'];
-  if (!uid) return '';
-  const c = new Client()
-    .setEndpoint(process.env.APPWRITE_FUNCTION_API_ENDPOINT)
-    .setProject(process.env.APPWRITE_FUNCTION_PROJECT_ID)
-    .setKey(key);
-  const u = await new Users(c).get(uid);
-  if (u.status === false) return '';
-  const l = u.labels || [];
-  return ROLES.find((r) => l.includes(r)) || '';
-}
-
-export default async ({ req, res, error }) => {
+export async function fotoAction({ b, res, users, callerId, roleOf, error }) {
   try {
-    const role = await roleOf(req);
-    if (!role) return res.json({ ok: false, error: 'Akun belum punya peran' }, 403);
-    let b = {};
-    try { b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.bodyJson || req.body || {}); } catch (e) { b = {}; }
+    const user = await users.get({ userId: callerId });
+    if (user.status === false) return res.json({ ok: false, error: 'Akun dinonaktifkan.' }, 403);
+    const role = roleOf(user.labels);
+    if (!role) return res.json({ ok: false, error: 'Akun belum punya peran.' }, 403);
     const idOk = (v) => /^[A-Za-z0-9_-]{10,100}$/.test(String(v || ''));
 
     if (b.op === 'up') {
@@ -133,18 +114,18 @@ export default async ({ req, res, error }) => {
       return res.json({ ok: true, id });
     }
     if (b.op === 'get') {
-      if (!idOk(b.id)) return res.json({ ok: false, error: 'ID foto tidak valid' }, 400);
+      if (!idOk(b.id)) return res.json({ ok: false, error: 'ID foto tidak valid.' }, 400);
       return res.json({ ok: true, data: await download(b.id) });
     }
     if (b.op === 'del') {
-      if (!CAN_DELETE.includes(role)) return res.json({ ok: false, error: 'Peran ini tidak boleh menghapus foto' }, 403);
-      if (!idOk(b.id)) return res.json({ ok: false, error: 'ID foto tidak valid' }, 400);
+      if (!CAN_DELETE.includes(role)) return res.json({ ok: false, error: 'Peran ini tidak boleh menghapus foto.' }, 403);
+      if (!idOk(b.id)) return res.json({ ok: false, error: 'ID foto tidak valid.' }, 400);
       await trash(b.id);
       return res.json({ ok: true });
     }
-    return res.json({ ok: false, error: 'Aksi tidak dikenal' }, 400);
+    return res.json({ ok: false, error: 'Aksi foto tidak dikenal.' }, 400);
   } catch (e) {
     error(String((e && e.message) || e));
     return res.json({ ok: false, error: String((e && e.message) || e) }, 500);
   }
-};
+}

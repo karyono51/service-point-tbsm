@@ -130,6 +130,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 .chps{display:flex;gap:8px;overflow-x:auto;margin:14px 0 12px;padding-bottom:4px;scrollbar-width:none}.chps::-webkit-scrollbar{display:none}
 .chp{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 15px;border-radius:999px;font:inherit;font-size:13px;cursor:pointer}.chp.on{background:var(--pri);color:var(--pt);border-color:var(--pri);font-weight:600}
 .rmc{border-top:1px solid var(--bd);padding:12px 0}.rmc:first-child{border-top:0}.rmc b{display:block;font-size:14px}.rmc span{display:block;font-size:12.5px;color:var(--mut)}.rmc .rma{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}a.btn.s{text-decoration:none;display:inline-block}.rmc .late{color:var(--red);font-weight:600}
+.fth{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:8px}.fth .ft{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--gr);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--mut)}.fth .ft img{width:100%;height:100%;object-fit:cover;cursor:pointer}.fth .ft b{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px}.fth .ft .x{position:absolute;right:4px;top:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:13px;line-height:1;cursor:pointer}.fbt{display:flex;gap:8px;flex-wrap:wrap}.fbt label.btn{cursor:pointer;display:inline-block}.fbt input{display:none}#lbx{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px}#lbx img{max-width:100%;max-height:82vh;border-radius:8px}#lbx p{color:#fff;font-size:13px;margin:10px 0 0}#lbx button{position:absolute;top:12px;right:12px}
 .btn.xl{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:13px 20px}
 .ri .amt{display:block;margin-top:4px}
 @media(min-width:760px){.st4{grid-template-columns:repeat(4,1fr)}}
@@ -179,7 +180,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v34</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v36</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -327,8 +328,9 @@ function vNew(){
  h+='</div><div class="card"><h3>Saran Ganti Sparepart (periode KM)</h3><div class="cols">'+SPAREPART.map(function(p,k){return K('sp'+k,(p[0]?rp(p[0])+' — ':'')+p[1])}).join('')+'</div><h3 style="margin-top:10px">Paket Tambahan</h3><div class="cols">'+PAKET.map(function(p,k){return K('pk'+k,rp(p[0])+' — '+p[1])}).join('')+'</div></div>';
  h+='<div class="card"><h3>Keluhan & Analisa</h3>'+TA('keluhan','Keluhan konsumen',3)+TA('analisa','Analisa Service Advisor',3)+'<div class="f">'+S('konf','Jika ada tambahan pekerjaan / part',[['','-'],['Konfirmasi dulu','Konfirmasi dulu / telp'],['Langsung dikerjakan','Langsung dikerjakan']])+I('konf_telp','Telp ke')+S('bekas','Part bekas dibawa konsumen',YN)+'</div></div>';
  h+='<div class="card"><h3>Petugas</h3><div class="f">'+I('sa','Service Advisor')+I('mekanik','Nama mekanik / siswa praktik')+I('pembimbing','Pembimbing AHASS')+'</div>'+TA('saran','Saran mekanik')+'</div>';
+ h+=fotoCard();
  h+='</form><div class="tot"><div class="tl"><small>Total</small><b id="tot">Rp 0</b></div><div class="tb"><button class="btn s" onclick="go(\'q\')">Batal</button><button class="btn" onclick="simpan()">'+(editId?'Simpan':'Daftarkan')+'</button></div></div>';
- setTimeout(function(){upd();foldInit()},0);return h;
+ setTimeout(function(){upd();foldInit();fotoThumbs()},0);return h;
 }
 var FOLD=(function(){try{return JSON.parse(localStorage.getItem('bc_fold')||'{}')}catch(e){return {}}})();
 function foldInit(){document.querySelectorAll('#fm>.card').forEach(function(c,i){var h=c.firstElementChild;if(!h||h.tagName!='H3')return;if(FOLD[i])c.classList.add('cl');h.setAttribute('role','button');h.setAttribute('aria-expanded',FOLD[i]?'false':'true');h.onclick=function(){var cl=c.classList.toggle('cl');h.setAttribute('aria-expanded',cl?'false':'true');if(cl)FOLD[i]=1;else delete FOLD[i];try{localStorage.setItem('bc_fold',JSON.stringify(FOLD))}catch(e){}}})}
@@ -392,6 +394,62 @@ function vRem(){
  return '<section class="dh"><span class="ey">Unit jatuh tempo servis</span><h2 class="big">'+l.length+'</h2><p class="rp">Servis terakhir lebih dari '+M+' bulan lalu</p></section>'+chips+
   '<div class="card"><h3>Daftar pengingat</h3>'+rows+'</div>'+
   '<p class="mut">Dihitung dari servis terakhir yang berstatus Selesai atau Diambil (termasuk data arsip). Unit yang sedang diservis tidak ditampilkan. Tanda "Dihubungi" hanya tersimpan di HP ini. Pesan WhatsApp dikirim manual oleh petugas.</p>'}
+
+/* ===== Foto kondisi motor (disimpan di Google Drive lewat function foto-drive) ===== */
+var FMAX=8,FC={};
+function fotoList(d){var a=[];try{a=JSON.parse((d&&d.fotos)||'[]')}catch(e){}return Array.isArray(a)?a:[]}
+function fotoCur(){var e=fe('fotos');return fotoList({fotos:e?e.value:cur.fotos})}
+function fotoSet(a){var e=fe('fotos');if(e)e.value=JSON.stringify(a)}
+async function fapi(o){
+ if(!CFG.functionId)throw new Error('functionId belum diisi di config.js');
+ var ex=await AW.f.createExecution({functionId:CFG.functionId,body:JSON.stringify(Object.assign({action:'foto'},o)),async:false,path:'/',method:(Appwrite.ExecutionMethod?Appwrite.ExecutionMethod.POST:'POST')});
+ var r={};try{r=JSON.parse(ex.responseBody||'{}')}catch(e){}
+ if(ex.responseStatusCode>=400||r.ok===false)throw new Error(r.error||('Kesalahan '+ex.responseStatusCode));
+ return r}
+function fotoCard(){
+ var hid='<input type="hidden" data-k="fotos" value="'+esc(cur.fotos||'[]')+'">';
+ if(!REMOTE||!CFG.functionId)return '<div class="card"><h3>Foto Kondisi Motor</h3>'+hid+'<p class="mut">Fitur foto belum diaktifkan (functionId di config.js belum diisi).</p></div>';
+ return '<div class="card"><h3>Foto Kondisi Motor</h3>'+hid+'<div class="fbt"><label class="btn s">+ Sebelum<input type="file" accept="image/*" multiple onchange="fotoAdd(this,\'sebelum\')"></label><label class="btn s">+ Sesudah<input type="file" accept="image/*" multiple onchange="fotoAdd(this,\'sesudah\')"></label></div><small class="mut" id="fmsg">Maksimal '+FMAX+' foto. Foto dikecilkan otomatis dan disimpan di Google Drive.</small><div class="fth" id="fth"></div></div>'}
+function fotoThumbs(){
+ var b=$('fth');if(!b)return;var a=fotoCur();
+ b.innerHTML=a.map(function(f,i){return '<div class="ft" data-id="'+esc(f.id)+'">'+(FC[f.id]?'<img src="'+FC[f.id]+'" onclick="fotoBig(\''+esc(f.id)+'\',\''+esc(f.k)+'\')" alt="">':'Memuat…')+'<b>'+(f.k=='sesudah'?'Sesudah':'Sebelum')+'</b><button type="button" class="x" onclick="fotoDel('+i+')" aria-label="Hapus foto">×</button></div>'}).join('');
+ a.forEach(function(f){if(!FC[f.id])fotoLoad(f.id,function(){fotoThumbs()})})}
+async function fotoLoad(id,cb){
+ if(FC[id]){cb&&cb();return}
+ try{var r=await fapi({op:'get',id:id});FC[id]='data:image/jpeg;base64,'+r.data}catch(e){FC[id]='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#888"/><text x="50" y="54" font-size="11" fill="#fff" text-anchor="middle">Gagal</text></svg>')}
+ cb&&cb()}
+function fotoShrink(file){return new Promise(function(res,rej){
+ var u=URL.createObjectURL(file),im=new Image();
+ im.onload=function(){var m=1280,w=im.width,h=im.height,k=Math.min(1,m/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);var d=c.toDataURL('image/jpeg',.72);res(d)};
+ im.onerror=function(){URL.revokeObjectURL(u);rej(new Error('Foto tidak bisa dibaca'))};im.src=u})}
+async function fotoAdd(inp,k){
+ var fs=Array.prototype.slice.call(inp.files||[]);inp.value='';if(!fs.length)return;
+ var msg=$('fmsg');
+ if(!navigator.onLine){alert('Foto membutuhkan koneksi internet.');return}
+ var a=fotoCur(),no=editId?(jf(editId)||{}).no:'baru';
+ for(var i=0;i<fs.length;i++){
+  if(a.length>=FMAX){alert('Maksimal '+FMAX+' foto per servis.');break}
+  if(msg)msg.textContent='Mengunggah foto '+(i+1)+' dari '+fs.length+'…';
+  try{var du=await fotoShrink(fs[i]),r=await fapi({op:'up',k:k,no:no,data:du.split(',')[1]});FC[r.id]=du;a.push({id:r.id,k:k,t:Date.now()});fotoSet(a);fotoThumbs()}
+  catch(e){alert('Foto gagal diunggah: '+(e.message||e));break}}
+ if(msg)msg.textContent='Foto tersimpan di Google Drive. Tekan Simpan untuk menautkan ke data servis.'}
+async function fotoDel(i){
+ if(!confirm('Lepas foto ini dari data servis? Berkas di Google Drive tidak dihapus.'))return;
+ var a=fotoCur();a.splice(i,1);fotoSet(a);fotoThumbs()}
+function fotoBig(id,k){fotoLb(id,k)}
+function fotoLb(id,k){
+ var o=document.createElement('div');o.id='lbx';o.onclick=function(){o.remove()};
+ o.innerHTML='<button class="btn s" type="button">Tutup</button><img alt=""><p>'+(k=='sesudah'?'Sesudah':'Sebelum')+'</p>';
+ document.body.appendChild(o);var im=o.querySelector('img');
+ if(FC[id])im.src=FC[id];else fotoLoad(id,function(){im.src=FC[id]})}
+function fotoView(i){
+ var x=jf(i);if(!x)return;var a=fotoList(x.d);if(!a.length)return;
+ var o=document.createElement('div');o.id='lbx';o.style.overflow='auto';o.style.justifyContent='flex-start';
+ o.innerHTML='<button class="btn s" type="button" onclick="this.parentNode.remove()">Tutup</button><p style="margin:36px 0 8px"><b>'+esc(x.d.plat)+'</b> · '+esc(x.no)+'</p><div class="fth" style="width:100%;max-width:640px" id="fvg"></div>';
+ document.body.appendChild(o);
+ var g=o.querySelector('#fvg');
+ function draw(){g.innerHTML=a.map(function(f){return '<div class="ft">'+(FC[f.id]?'<img src="'+FC[f.id]+'" onclick="event.stopPropagation();fotoLb(\''+esc(f.id)+'\',\''+esc(f.k)+'\')" alt="">':'Memuat…')+'<b>'+(f.k=='sesudah'?'Sesudah':'Sebelum')+'</b></div>'}).join('')}
+ draw();a.forEach(function(f){fotoLoad(f.id,draw)})}
 function vRep(){
  var l=repList(),m=can('money'),dn=l.filter(function(x){return x.status=='Selesai'||x.status=='Diambil'}),t=dn.reduce(function(a,x){return a+totalOf(x.d)},0),avg=dn.length?Math.round(t/dn.length):0;
  var hero='<section class="dh"><span class="ey">'+(m?'Total pendapatan':'Total unit')+'</span><h2 class="big">'+(m?R0(t):l.length)+'</h2><p class="rp">Periode: '+repF+'</p>'+
@@ -568,7 +626,7 @@ function vMon(){
 function card(x){
  var d=x.d,mk=myRole()=='mekanik'&&x.status!='Diambil',sts=mk?ST.slice(0,3):ST;
  return '<div class="card"><div class="job"><div><h3>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</p><p>Pemilik: '+esc(d.pm_nama)+(d.pm_hp?' · '+esc(d.pm_hp):'')+'</p><p>'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+(d.mekanik?'<p>Mekanik: '+esc(d.mekanik)+'</p>':'')+'</div><div style="text-align:right"><span class="tag '+x.status+'">'+x.status+'</span>'+(can('money')?'<p class="amt">'+R0(totalOf(d))+'</p>':'')+'</div></div>'+
- '<div class="acts">'+(lockd(x)?'<span class="chip">Terkunci · hanya lihat dan cetak PDF</span>':(can('status')?'<select onchange="setS(\''+x.id+'\',this.value)">'+sts.map(function(s){return '<option'+(s==x.status?' selected':'')+'>'+s+'</option>'}).join('')+'</select>':'')+(can('edit')?'<button class="btn s" onclick="edit(\''+x.id+'\')">Edit / Rincian</button>':''))+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button>'+(can('del')&&x.status=='Diambil'?'<button class="btn s" onclick="arsip(\''+x.id+'\','+(x.arsip?0:1)+')">'+(x.arsip?'Pulihkan':'Arsipkan')+'</button>':'')+(can('del')?'<button class="btn s dg" onclick="del(\''+x.id+'\')">Hapus</button>':'')+'</div></div>';
+ '<div class="acts">'+(lockd(x)?'<span class="chip">Terkunci · hanya lihat dan cetak PDF</span>':(can('status')?'<select onchange="setS(\''+x.id+'\',this.value)">'+sts.map(function(s){return '<option'+(s==x.status?' selected':'')+'>'+s+'</option>'}).join('')+'</select>':'')+(can('edit')?'<button class="btn s" onclick="edit(\''+x.id+'\')">Edit / Rincian</button>':''))+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button>'+(fotoList(d).length?'<button class="btn s" onclick="fotoView(\''+x.id+'\')">Foto ('+fotoList(d).length+')</button>':'')+(can('del')&&x.status=='Diambil'?'<button class="btn s" onclick="arsip(\''+x.id+'\','+(x.arsip?0:1)+')">'+(x.arsip?'Pulihkan':'Arsipkan')+'</button>':'')+(can('del')?'<button class="btn s dg" onclick="del(\''+x.id+'\')">Hapus</button>':'')+'</div></div>';
 }
 function vProf(){
  var r=myRole(),u=AW.u||{},ok=function(v){return v?'✓':'–'};
@@ -905,7 +963,7 @@ async function bakXls(){if(!db.jobs.length){alert('Belum ada data untuk diunduh.
 ROLE_DEF.admin.audit=1;ROLE_DEF.pembimbing.audit=1;
 var AF='Semua',TS='ket';
 var AL={buat:['Dibuat','#0e8a5f'],ubah:['Diubah','#2f6fe0'],status:['Status','#d98b00'],hapus:['Dihapus','#d71920']};
-var FL={plat:'No. Polisi',tipe:'Type',tahun:'Tahun',km:'KM',noMesin:'No. Mesin',noRangka:'No. Rangka',email:'Email',sosmed:'Sosmed',pb_nama:'Nama pembawa',pb_hp:'Telp pembawa',pb_alamat:'Alamat pembawa',pb_kel:'Kel/Kec pembawa',pm_nama:'Nama pemilik',pm_hp:'Telp pemilik',pm_alamat:'Alamat pemilik',pm_kel:'Kel/Kec pemilik',dealer:'Dari dealer sendiri',hub:'Hubungan',always:'Always Honda',alasan:'Alasan ke AHASS',alasan_e:'Alasan lainnya',pit:'PIT Express',bbm:'BBM',cmb:'MB',cwo:'WO',csor:'SOR',cwor:'WOR',kondisi:'Kondisi motor',j5t:'Nama pekerjaan',keluhan:'Keluhan',analisa:'Analisa',konf:'Konfirmasi',konf_telp:'Telp konfirmasi',bekas:'Part bekas',sa:'Service Advisor',mekanik:'Mekanik',pembimbing:'Pembimbing',saran:'Saran mekanik',kpb:'KPB',oli:'Oli'};
+var FL={fotos:'Foto kondisi motor',plat:'No. Polisi',tipe:'Type',tahun:'Tahun',km:'KM',noMesin:'No. Mesin',noRangka:'No. Rangka',email:'Email',sosmed:'Sosmed',pb_nama:'Nama pembawa',pb_hp:'Telp pembawa',pb_alamat:'Alamat pembawa',pb_kel:'Kel/Kec pembawa',pm_nama:'Nama pemilik',pm_hp:'Telp pemilik',pm_alamat:'Alamat pemilik',pm_kel:'Kel/Kec pemilik',dealer:'Dari dealer sendiri',hub:'Hubungan',always:'Always Honda',alasan:'Alasan ke AHASS',alasan_e:'Alasan lainnya',pit:'PIT Express',bbm:'BBM',cmb:'MB',cwo:'WO',csor:'SOR',cwor:'WOR',kondisi:'Kondisi motor',j5t:'Nama pekerjaan',keluhan:'Keluhan',analisa:'Analisa',konf:'Konfirmasi',konf_telp:'Telp konfirmasi',bekas:'Part bekas',sa:'Service Advisor',mekanik:'Mekanik',pembimbing:'Pembimbing',saran:'Saran mekanik',kpb:'KPB',oli:'Oli'};
 function fl(k){return FL[k]||(/^j\d$/.test(k)?'Pekerjaan':/^jb\d$/.test(k)?'Biaya pekerjaan':/^p\dn$/.test(k)?'Suku cadang':/^p\dh$/.test(k)?'Harga suku cadang':k)}
 function who(){return AW.u?(AW.u.name||AW.u.email||'-'):'Mode lokal'}
 function roleN(){var r=myRole();return r?ROLE_DEF[r].n:''}
@@ -963,7 +1021,7 @@ function vTos(){
  var P='<h3>1. Data yang kami olah</h3><ul><li><b>Akun:</b> nama, email, dan peran pengguna.</li><li><b>Data motor:</b> No. Polisi, type, tahun, KM, No. Mesin, No. Rangka.</li><li><b>Data pelanggan:</b> nama, alamat, kelurahan/kecamatan, nomor telepon, email, dan sosial media pembawa dan pemilik motor.</li><li><b>Data servis:</b> keluhan, pekerjaan, suku cadang, biaya, nama mekanik dan pembimbing, serta waktu pengerjaan.</li><li><b>Catatan audit:</b> nama pengguna, peran, tindakan, dan waktu.</li></ul>'+
  '<h3>2. Tujuan penggunaan</h3><p>Data dipakai untuk pendaftaran dan pelayanan servis, antrian, laporan, pengisian otomatis dari riwayat servis, pencetakan form, serta keamanan dan audit. Nomor telepon juga dipakai petugas untuk mengingatkan jadwal servis berikutnya lewat WhatsApp. Data tidak dipakai untuk iklan.</p>'+
  '<h3>3. Tempat penyimpanan</h3><p>Data disimpan di layanan Appwrite Cloud (server wilayah Singapura). Di perangkat Anda, aplikasi menyimpan salinan berkas aplikasi (cache) agar cepat dibuka. Aplikasi tidak memakai pelacak atau analitik pihak ketiga.</p>'+
- '<h3>4. Pihak ketiga</h3><p>Appwrite menyediakan penyimpanan data dan proses masuk. Pustaka aplikasi (Appwrite, PDF, Excel, dan pembaca teks kamera) dimuat dari jsDelivr dan cdnjs, sehingga penyedia tersebut dapat menerima alamat IP dan informasi perangkat Anda saat pustaka dimuat. Foto nomor polisi, mesin, atau rangka dari kamera dibaca langsung di HP Anda, tidak disimpan, dan tidak diunggah. Data servis tidak dijual. Data hanya dibuka kepada pengguna aplikasi yang berwenang, dan dapat diberikan kepada pihak lain jika diwajibkan hukum atau atas persetujuan pemilik data.</p>'+
+ '<h3>4. Pihak ketiga</h3><p>Appwrite menyediakan penyimpanan data dan proses masuk. Pustaka aplikasi (Appwrite, PDF, Excel, dan pembaca teks kamera) dimuat dari jsDelivr dan cdnjs, sehingga penyedia tersebut dapat menerima alamat IP dan informasi perangkat Anda saat pustaka dimuat. Foto nomor polisi, mesin, atau rangka dari kamera dibaca langsung di HP Anda, tidak disimpan, dan tidak diunggah. Foto kondisi motor yang sengaja ditambahkan petugas pada data servis disimpan di Google Drive milik sekolah dan hanya dapat dibuka lewat aplikasi oleh pengguna yang berperan. Data servis tidak dijual. Data hanya dibuka kepada pengguna aplikasi yang berwenang, dan dapat diberikan kepada pihak lain jika diwajibkan hukum atau atas persetujuan pemilik data.</p>'+
  '<h3>5. Akses data</h3><p>Akses dibatasi menurut peran. Misalnya, Mekanik tidak melihat biaya dan laporan, dan hanya Admin yang dapat mengelola akun serta menghapus data servis.</p>'+
  '<h3>6. Penyimpanan dan penghapusan</h3><p>Data disimpan selama masih diperlukan untuk operasional dan pelaporan. Admin dapat mengarsipkan data servis yang sudah selesai (disembunyikan dari antrian, tetap tersimpan untuk riwayat dan laporan) atau menghapusnya. Catatan penghapusannya tetap tersimpan di audit trail.</p>'+
  '<h3>7. Keamanan</h3><p>Aplikasi memakai login email dan kata sandi, koneksi terenkripsi (HTTPS), dan pembatasan akses menurut peran. Tidak ada sistem yang sepenuhnya bebas risiko, jadi jaga kerahasiaan kata sandi Anda.</p>'+

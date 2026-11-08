@@ -2,11 +2,13 @@
 //  1. CRUD akun pengguna untuk dashboard (khusus admin).
 //  2. Aksi "job": menulis data servis dengan pemeriksaan peran dan status di server
 //     (dipanggil semua peran yang sudah login; aturannya ada di rules.js).
+//  3. Aksi "foto": simpan dan ambil foto kondisi motor di Google Drive (lihat foto.js).
 // Dipanggil lewat Functions.createExecution (header x-appwrite-user-id diisi Appwrite).
 // Kunci API dinamis dari header x-appwrite-key.
 // Scope: users.read, users.write, rows.read, rows.write (atau documents.read/write).
 import * as SDK from 'node-appwrite';
 import { decide, roleOf } from './rules.js';
+import { fotoAction } from './foto.js';
 
 const { Client, Users, Query, ID, Permission, Role } = SDK;
 
@@ -101,6 +103,7 @@ export default async ({ req, res, log, error }) => {
     return res.json({ ok: false, error: 'Permintaan tidak valid.' }, 400);
   }
 
+  if (b.action === 'foto') return fotoAction({ b, res, users, callerId, roleOf, error });
   if (b.action === 'job') return jobAction({ b, res, client, users, callerId, log: log || (() => {}), error });
 
   try {
