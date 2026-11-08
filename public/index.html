@@ -178,7 +178,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v27</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v29</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -397,7 +397,7 @@ var CFG=window.SP_CONFIG||{},REMOTE=!!(CFG.projectId&&window.Appwrite),AW={};
 function lsLoad(){try{var s=localStorage.getItem(KEY);if(s)db=JSON.parse(s)}catch(e){}}
 function lsSave(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
 function nextNo(){var d=new Date(),pf='SPK-'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear()+'-',m=0;db.jobs.forEach(function(x){var t=String(x.no||'');if(t.indexOf(pf)!==0)return;var n=parseInt(t.slice(pf.length))||0;if(n>m)m=n});return pf+String(m+1).padStart(4,'0')}
-function pl(x){return JSON.stringify({no:x.no,ts:x.ts,status:x.status,d:x.d,tw:x.tw,log:x.log})}
+function pl(x){return JSON.stringify({no:x.no,ts:x.ts,status:x.status,d:x.d,tw:x.tw,log:x.log,arsip:x.arsip||undefined})}
 function ids(){return {databaseId:CFG.databaseId,tableId:CFG.tableId}}
 async function saveJob(x,isNew){
  if(!REMOTE){lsSave();return}
@@ -584,7 +584,10 @@ function obPush(op){
   else if(o.k=='d'){}
   else{o.p=op.p;o.l=op.l;o.t=op.t}}
  return obSave()}
-async function obSend(o){var a=ids();a.rowId=o.id;
+async function obSend(o){
+ var GID=CFG.guardId||(CFG.guard&&CFG.functionId);
+ if(GID){var ex=await AW.f.createExecution({functionId:GID,body:JSON.stringify({action:'job',k:o.k,id:o.id,p:o.p}),async:false,path:'/',method:(Appwrite.ExecutionMethod?Appwrite.ExecutionMethod.POST:'POST')}),r={};try{r=JSON.parse(ex.responseBody||'{}')}catch(e){}var c=ex.responseStatusCode;if(c>=400||r.ok===false){var er=new Error(r.error||('Kesalahan '+c));er.code=c||500;throw er}return}
+ var a=ids();a.rowId=o.id;
  if(o.k=='c'){a.data={payload:o.p};await AW.t.createRow(a)}
  else if(o.k=='u'){a.data={payload:o.p};await AW.t.updateRow(a)}
  else await AW.t.deleteRow(a)}
