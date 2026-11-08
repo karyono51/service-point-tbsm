@@ -158,7 +158,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 .synp.ok{color:#0e8a5f;border-color:rgba(14,138,95,.45);background:rgba(14,138,95,.1)}.synp.off{color:#b87400;border-color:rgba(217,139,0,.45);background:rgba(217,139,0,.14)}.synp.wait{color:#2f6fe0;border-color:rgba(47,111,224,.4);background:rgba(47,111,224,.1)}.synp.bad{color:#fff;background:#d71920;border-color:#d71920}
 .ah2{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .fc{display:flex;gap:8px;align-items:stretch}.fc input{flex:1;width:auto;min-width:0}.cam{flex:none;width:46px;border:1px solid var(--bd);background:var(--gr);color:var(--pri);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}.cam .ic{width:21px;height:21px}.cam[disabled]{opacity:.5}
-.camh{display:block;font-size:11.5px;line-height:1.35;color:var(--mut);margin-top:4px}.camh:empty{display:none}
+.camh{display:block;font-size:11.5px;line-height:1.35;color:var(--mut);margin-top:4px}.camh:empty{display:none}.camp{display:none;width:auto;max-width:100%;max-height:64px;margin-top:6px;border-radius:8px;border:1px solid var(--bd);background:#fff;object-fit:contain}.camp.on{display:block}
 #cam{display:none;position:fixed;inset:0;z-index:400;background:#000;overscroll-behavior:contain}
 #camv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 #camg{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);border:2px solid #c8a24b;border-radius:10px;box-shadow:0 0 0 100vmax rgba(0,0,0,.58)}
@@ -178,7 +178,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v20</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v21</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -303,7 +303,7 @@ function daftar(x){var d=x.d,o=[];['KPB','Service Lengkap Ringan','Ganti Oli','G
 function go(t){rwKey='';rwAuto={};rwN=0;tab=t;if(t=='new'&&!editId)cur={};if(t!='new')editId=null;render()}
 
 
-function IC(k,l,a){return '<div><label>'+l+'</label><div class="fc"><input data-k="'+k+'" value="'+esc(cur[k])+'" '+(a||'')+'><button type="button" class="cam" data-for="'+k+'" onclick="scan(\''+k+'\')" aria-label="Baca dengan kamera" title="Baca dengan kamera">'+ic('camera')+'</button></div><small class="camh" id="ch_'+k+'"></small></div>'}
+function IC(k,l,a){return '<div><label>'+l+'</label><div class="fc"><input data-k="'+k+'" value="'+esc(cur[k])+'" '+(a||'')+'><button type="button" class="cam" data-for="'+k+'" onclick="scan(\''+k+'\')" aria-label="Baca dengan kamera" title="Baca dengan kamera">'+ic('camera')+'</button></div><small class="camh" id="ch_'+k+'"></small><img class="camp" id="cp_'+k+'" alt="Potongan foto yang dibaca"></div>'}
 function I(k,l,a){return '<div><label>'+l+'</label><input data-k="'+k+'" value="'+esc(cur[k])+'" '+(a||'')+'></div>'}
 function S(k,l,o){return '<div><label>'+l+'</label><select data-k="'+k+'">'+o.map(function(v){var val=Array.isArray(v)?v[0]:v,tx=Array.isArray(v)?v[1]:v;return '<option value="'+val+'"'+(cur[k]==val?' selected':'')+'>'+(tx||'-')+'</option>'}).join('')+'</select></div>'}
 function K(k,l){return '<label class="ck"><input type="checkbox" data-k="'+k+'"'+(cur[k]?' checked':'')+'> '+l+'</label>'}
@@ -728,6 +728,8 @@ function parseRangka(t){
 
 var TESS_JS='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',TESS_LANG='https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng/4.0.0_best_int',OCR_WL='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 var CAMK='',CAMB=false,TW=null,CAMS=null,TORCH=false;
+function camPic(k,cv,b){var im=$('cp_'+k);if(!im)return;try{var x0=0,y0=0,w=cv.width,h=cv.height;if(b){x0=Math.max(0,b[0]);y0=Math.max(0,b[1]);w=Math.min(cv.width,b[2])-x0;h=Math.min(cv.height,b[3])-y0}if(w<8||h<8){x0=0;y0=0;w=cv.width;h=cv.height}var sc=Math.min(1,900/w),c=document.createElement('canvas');c.width=Math.round(w*sc);c.height=Math.round(h*sc);c.getContext('2d').drawImage(cv,x0,y0,w,h,0,0,c.width,c.height);im.src=c.toDataURL('image/jpeg',.7);im.classList.add('on')}catch(e){}}
+function camPicOff(k){var im=$('cp_'+k);if(im){im.classList.remove('on');im.removeAttribute('src')}}
 function camHint(k,t,bad){var h=$('ch_'+k);if(h){h.textContent=t;h.style.color=bad?'#d71920':''}}
 function loadTess(){return new Promise(function(res,rej){if(window.Tesseract)return res();var s=document.createElement('script');s.src=TESS_JS;s.onload=function(){res()};s.onerror=function(){rej(new Error('load'))};document.head.appendChild(s)})}
 async function getTW(){if(!TW)TW=await Tesseract.createWorker('eng',1,{langPath:TESS_LANG});return TW}
@@ -762,7 +764,7 @@ async function camPick(ev){
  try{var bmp=await createImageBitmap(f),k=Math.min(1,1600/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);ocrGo(c)}
  catch(e){camHint(CAMK,'Foto tidak bisa dibaca. Coba lagi atau ketik manual.',1)}}
 async function ocrGo(cv){
- var k=CAMK,btn=document.querySelector('#fm .cam[data-for="'+k+'"]');CAMB=true;if(btn)btn.disabled=true;camHint(k,'Menyiapkan pembaca teks…');
+ var k=CAMK,btn=document.querySelector('#fm .cam[data-for="'+k+'"]');CAMB=true;camPicOff(k);if(btn)btn.disabled=true;camHint(k,'Menyiapkan pembaca teks…');
  try{
   try{await loadTess()}catch(e){camHint(k,'Pembaca teks belum bisa dimuat. Hubungkan internet satu kali, lalu coba lagi.',1);return}
   var wk=await getTW(),parse=k=='plat'?parsePlat:k=='noMesin'?parseMesin:parseRangka,G=gOf(cv),cands=[],bx=gBands(G);
@@ -779,7 +781,7 @@ async function ocrGo(cv){
   if(!res&&k=='noRangka'&&allv.length>=2){var lv=function(x,y){var d=[],i2,j2;for(j2=0;j2<=y.length;j2++)d[j2]=j2;for(i2=1;i2<=x.length;i2++){var pv=d.slice();d[0]=i2;for(j2=1;j2<=y.length;j2++)d[j2]=Math.min(pv[j2]+1,d[j2-1]+1,pv[j2-1]+(x.charAt(i2-1)!=y.charAt(j2-1)?1:0))}return d[y.length]},bm=1e9;allv.forEach(function(x){var t=0;allv.forEach(function(y){t+=lv(x,y)});if(t<bm||(t==bm&&x.length==17&&res&&res.length!=17)){bm=t;res=x}})}
   if(!res&&order.length){res=order.sort(function(a,b){return votes[b]-votes[a]})[0]}
   if(!res){camHint(k,'Teks belum terbaca. Pastikan teks memenuhi kotak, cukup terang, tidak silau, atau ketik manual.',1);return}
-  var el=fe(k);if(el){el.value=res;el.dispatchEvent(new Event('input',{bubbles:true}))}
+  camPic(k,cv,bx.length?bx[0]:null);var el=fe(k);if(el){el.value=res;el.dispatchEvent(new Event('input',{bubbles:true}))}
   if(k=='noRangka'&&res.length!=17)camHint(k,'Terbaca '+res.length+' dari 17 karakter: '+res+'. Lengkapi atau foto ulang lebih dekat.',1);else camHint(k,'Hasil dari kamera: '+res+'. Periksa kembali sebelum menyimpan.')
  }catch(e){camHint(k,'Gagal membaca foto. Coba lagi atau ketik manual.',1)}
  finally{CAMB=false;if(btn)btn.disabled=false}
