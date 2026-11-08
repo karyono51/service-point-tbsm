@@ -178,7 +178,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v23</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v24</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -908,7 +908,7 @@ async function akunSave(){
  var f=AK.form,m=$('ak_m'),d={name:$('ak_n').value.trim(),email:$('ak_e').value.trim(),password:$('ak_p').value,role:$('ak_r').value};m.textContent='';
  if(!d.name||!d.email){m.textContent='Nama dan email wajib diisi.';return}
  if((!f.id||d.password)&&d.password.length<8){m.textContent='Kata sandi minimal 8 karakter.';return}
- try{if(f.id){d.id=f.id;if(!d.password)delete d.password;await api('update',d)}else await api('create',d);akunRefresh()}
+ try{if(f.id){var o=AK.list.filter(function(x){return x.id==f.id})[0]||{},u={id:f.id},ch=0;if(d.name!=(o.name||'')){u.name=d.name;ch=1}if(d.email.toLowerCase()!=String(o.email||'').toLowerCase()){u.email=d.email;ch=1}if(d.password){u.password=d.password;ch=1}if(d.role!=roleOf(o.labels)&&!$('ak_r').disabled){u.role=d.role;ch=1}if(!ch){AK.form=null;render();return}await api('update',u)}else await api('create',d);akunRefresh()}
  catch(e){m.textContent=e.message||String(e)}
 }
 async function akunStatus(id,s){try{await api('update',{id:id,status:s});akunRefresh()}catch(e){alert(e.message||e)}}
