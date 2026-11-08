@@ -179,7 +179,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v33</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v34</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -367,7 +367,7 @@ function setRF(v){repF=v;$('app').innerHTML=vRep()}
 function shortRp(n){return n>=1e6?(n/1e6).toFixed(1).replace('.',',')+' jt':n>=1000?Math.round(n/1000)+' rb':String(n)}
 
 var REMK='bc_rem_m',REMC='bc_rem_c';
-function remM(){var v=kv(REMK);return(v==2||v==3||v==4)?v:3}
+function remM(){var v=kv(REMK);return(v==1||v==2||v==3||v==4)?v:3}
 function setRM(v){kv(REMK,v);$('app').innerHTML=vRem()}
 function waNo(t){var n=String(t||'').replace(/\D/g,'');if(!n)return '';if(n.indexOf('62')==0)return n;if(n.charAt(0)=='0')return '62'+n.slice(1);if(n.charAt(0)=='8')return '62'+n;return n}
 function remList(){
@@ -385,7 +385,7 @@ function remMsg(r){var d=r.x.d,nm=d.pm_nama||d.pb_nama||'';
 function remMark(k){var c=kv(REMC)||{};c[k]=Date.now();kv(REMC,c);setTimeout(function(){if(tab=='rem')$('app').innerHTML=vRem()},400)}
 function vRem(){
  var M=remM(),l=remList(),c=kv(REMC)||{};
- var chips='<div class="chps">'+[2,3,4].map(function(v){return '<button class="chp'+(M==v?' on':'')+'" onclick="setRM('+v+')">'+v+' bulan</button>'}).join('')+'</div>';
+ var chips='<div class="chps">'+[1,2,3,4].map(function(v){return '<button class="chp'+(M==v?' on':'')+'" onclick="setRM('+v+')">'+v+' bulan</button>'}).join('')+'</div>';
  var rows=l.length?l.map(function(r){var d=r.x.d,no=waNo(d.pm_hp||d.pb_hp),mo=Math.floor(r.mo),ct=c[r.k];
   var wa=no?'<a class="btn s" target="_blank" rel="noopener" href="https://wa.me/'+no+'?text='+encodeURIComponent(remMsg(r))+'" onclick="remMark(\''+r.k+'\')">Kirim WhatsApp</a>':'<span class="mut">Nomor HP belum diisi</span>';
   return '<div class="rmc"><b>'+esc(String(d.plat||'').toUpperCase())+(d.tipe?' · '+esc(d.tipe):'')+'</b><span>'+esc(d.pm_nama||d.pb_nama||'-')+'</span><span>Servis terakhir '+tglID(r.x.ts)+' · <b class="late" style="display:inline">'+mo+' bulan lalu</b>'+(d.km?' · KM '+esc(rp(num(d.km))):'')+'</span><div class="rma">'+wa+(ct?'<span class="mut">Dihubungi '+tglID(ct)+'</span>':'')+'</div></div>'}).join(''):'<p class="mut">Tidak ada unit yang sudah lewat '+M+' bulan dari servis terakhir.</p>';
@@ -645,13 +645,31 @@ async function obSend(o){
  if(o.k=='c'){a.data={payload:o.p};await AW.t.createRow(a)}
  else if(o.k=='u'){a.data={payload:o.p};await AW.t.updateRow(a)}
  else await AW.t.deleteRow(a)}
+async function fixDup(o){
+ var j;try{j=JSON.parse(o.p)}catch(e){return}
+ if(!j||!j.no||j.au)return;
+ var q=ids();q.queries=[Appwrite.Query.orderDesc('$createdAt'),Appwrite.Query.limit(500)];
+ var r;
+ try{r=await tmo(AW.t.listRows(q),12000)}catch(e){if(e&&e.code&&e.code!=401)return;throw e}
+ var used={};
+ r.rows.forEach(function(w){if(w.$id==o.id)return;try{var t=JSON.parse(w.payload);if(t&&t.no&&!t.au)used[t.no]=1}catch(e){}});
+ if(!used[j.no])return;
+ OB.forEach(function(p){if(p===o)return;try{var t=JSON.parse(p.p);if(t&&t.no&&!t.au)used[t.no]=1}catch(e){}});
+ var old=j.no,i=old.lastIndexOf('-')+1,pf=old.slice(0,i),m=0;
+ Object.keys(used).forEach(function(n){if(n.indexOf(pf)===0){var v=parseInt(n.slice(pf.length))||0;if(v>m)m=v}});
+ j.no=pf+String(m+1).padStart(4,'0');
+ j.log=j.log||[];j.log.push({t:Date.now(),u:who(),r:roleN(),a:'ubah',m:'Nomor servis disesuaikan dari '+old+' ke '+j.no+' karena sudah dipakai perangkat lain'});
+ if(j.log.length>40)j.log=j.log.slice(-40);
+ o.p=JSON.stringify(j);o.l=(j.d&&j.d.plat||'-')+' · '+j.no;
+ db.jobs.forEach(function(x){if(x.id==o.id){x.no=j.no;x.log=j.log}});
+ cacheSave();obSave()}
 async function obFlush(){
  if(!REMOTE||!AW.u||SYN.busy||!OB.length)return;
  if(!navigator.onLine){synUI();return}
  SYN.busy=true;SYN.err='';synUI();var fin=false;
  try{
   while(OB.length){var o=OB[0];
-   try{await tmo(obSend(o),20000)}
+   try{if(o.k=='c')await fixDup(o);await tmo(obSend(o),20000)}
    catch(e){var c=e&&e.code;
     if(c==401){SYN.err='auth';break}
     if(c==409&&o.k=='c'){o.k='u';continue}
