@@ -130,7 +130,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 .chps{display:flex;gap:8px;overflow-x:auto;margin:14px 0 12px;padding-bottom:4px;scrollbar-width:none}.chps::-webkit-scrollbar{display:none}
 .chp{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 15px;border-radius:999px;font:inherit;font-size:13px;cursor:pointer}.chp.on{background:var(--pri);color:var(--pt);border-color:var(--pri);font-weight:600}
 .rmc{border-top:1px solid var(--bd);padding:12px 0}.rmc:first-child{border-top:0}.rmc b{display:block;font-size:14px}.rmc span{display:block;font-size:12.5px;color:var(--mut)}.rmc .rma{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}a.btn.s{text-decoration:none;display:inline-block}.rmc .late{color:var(--red);font-weight:600}
-.fth{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:8px}.fth .ft{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--gr);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--mut)}.fth .ft img{width:100%;height:100%;object-fit:cover;cursor:pointer}.fth .ft b{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px}.fth .ft .x{position:absolute;right:4px;top:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:13px;line-height:1;cursor:pointer}.fbt{display:flex;gap:8px;flex-wrap:wrap}.fbt label.btn{cursor:pointer;display:inline-block}.fbt input{display:none}#lbx{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px}#lbx img{max-width:100%;max-height:82vh;border-radius:8px}#lbx p{color:#fff;font-size:13px;margin:10px 0 0}#lbx button{position:absolute;top:12px;right:12px}
+.fth{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:8px}.fth .ft{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--gr);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--mut)}.fth .ft img{width:100%;height:100%;object-fit:contain;background:#000;cursor:pointer}.fth .ft b{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px}.fth .ft .x{position:absolute;right:4px;top:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:13px;line-height:1;cursor:pointer}.fbt{display:flex;gap:8px;flex-wrap:wrap}.fbt label.btn{cursor:pointer;display:inline-block}.fbt input{display:none}#lbx{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px}#lbx img{max-width:100%;max-height:82vh;border-radius:8px}#lbx p{color:#fff;font-size:13px;margin:10px 0 0}#lbx button{position:absolute;top:12px;right:12px}
 .btn.xl{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:13px 20px}
 .ri .amt{display:block;margin-top:4px}
 @media(min-width:760px){.st4{grid-template-columns:repeat(4,1fr)}}
@@ -180,7 +180,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v37</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v38</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -905,16 +905,18 @@ function camTorch(){if(!CAMS)return;TORCH=!TORCH;CAMS.getVideoTracks()[0].applyC
 function camCrop(vw,vh,cw,ch,g){
  var sc=Math.max(cw/vw,ch/vh),ox=(vw*sc-cw)/2,oy=(vh*sc-ch)/2,sx=(g.left+ox)/sc,sy=(g.top+oy)/sc,sw=g.width/sc,sh=g.height/sc,mx=sw*.08,my=sh*.12;
  sx=Math.max(0,sx-mx);sy=Math.max(0,sy-my);sw=Math.min(vw-sx,sw+2*mx);sh=Math.min(vh-sy,sh+2*my);return {x:sx,y:sy,w:sw,h:sh}}
+var CAMFULL=null;
 function camShot(){
  var v=$('camv'),o=$('cam');if(!v||!v.videoWidth)return;
+ var fk=Math.min(1,1600/v.videoWidth),fc=document.createElement('canvas');fc.width=Math.round(v.videoWidth*fk);fc.height=Math.round(v.videoHeight*fk);fc.getContext('2d').drawImage(v,0,0,fc.width,fc.height);CAMFULL=fc;
  var r=camCrop(v.videoWidth,v.videoHeight,o.clientWidth,o.clientHeight,$('camg').getBoundingClientRect()),k=Math.min(1,1600/r.w),c=document.createElement('canvas');
  c.width=Math.round(r.w*k);c.height=Math.round(r.h*k);c.getContext('2d').drawImage(v,r.x,r.y,r.w,r.h,0,0,c.width,c.height);camClose();ocrGo(c)}
 async function camPick(ev){
- var f=ev.target.files&&ev.target.files[0];if(!f||!CAMK)return;
+ var f=ev.target.files&&ev.target.files[0];if(!f||!CAMK)return;CAMFULL=null;
  try{var bmp=await createImageBitmap(f),k=Math.min(1,1600/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);ocrGo(c)}
  catch(e){camHint(CAMK,'Foto tidak bisa dibaca. Coba lagi atau ketik manual.',1)}}
 async function ocrGo(cv){
- var k=CAMK,btn=document.querySelector('#fm .cam[data-for="'+k+'"]');fotoEvid(k,cv);CAMB=true;camPicOff(k);if(btn)btn.disabled=true;camHint(k,'Menyiapkan pembaca teks…');
+ var k=CAMK,btn=document.querySelector('#fm .cam[data-for="'+k+'"]');fotoEvid(k,CAMFULL||cv);CAMFULL=null;CAMB=true;camPicOff(k);if(btn)btn.disabled=true;camHint(k,'Menyiapkan pembaca teks…');
  try{
   try{await loadTess()}catch(e){camHint(k,'Pembaca teks belum bisa dimuat. Hubungkan internet satu kali, lalu coba lagi.',1);return}
   var wk=await getTW(),parse=k=='plat'?parsePlat:k=='noMesin'?parseMesin:parseRangka,G=gOf(cv),cands=[],bx=gBands(G);
