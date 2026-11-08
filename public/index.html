@@ -181,7 +181,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v40</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v41</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -530,8 +530,34 @@ async function xls(){
   var h='<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><table border="1">'+A.map(function(r,i){return '<tr>'+r.map(function(c){return (i==0?'<th>':'<td>')+esc(c)+(i==0?'</th>':'</td>')}).join('')+'</tr>'}).join('')+'</table></body></html>';
   saveBlob(new Blob(['\ufeff'+h],{type:'application/vnd.ms-excel'}),fn+'.xls')}
 }
-function pdf(i){var x=jf(i);if(!window.jspdf){alert('Pustaka PDF belum termuat. Periksa koneksi internet.');return}
- var d=new window.jspdf.jsPDF({unit:'mm',format:'a4'});pdfLayout(d,x,IMG);d.save('Form-Service-'+String(x.d.plat||'').replace(/\s+/g,'')+'.pdf')}
+function pdfWait(on){var o=document.getElementById('pdfw');if(!on){if(o)o.remove();return}if(o)return;o=document.createElement('div');o.id='pdfw';o.style.cssText='position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:99;background:#111;color:#fff;padding:10px 16px;border-radius:99px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.4)';o.textContent='Menyiapkan PDF dan foto…';document.body.appendChild(o)}
+function imgSz(du){return new Promise(function(res){var im=new Image();im.onload=function(){res({w:im.naturalWidth||im.width,h:im.naturalHeight||im.height})};im.onerror=function(){res(null)};im.src=du})}
+async function pdfFoto(d,x,a){
+ var OR=['plat','noMesin','noRangka','sebelum','sesudah'],L=[];
+ a=a.slice().sort(function(p,q){return OR.indexOf(p.k)-OR.indexOf(q.k)});
+ for(var i=0;i<a.length;i++){
+  await new Promise(function(r){fotoLoad(a[i].id,r)});
+  var du=FC[a[i].id];if(!du||du.indexOf('data:image/jpeg')!==0)continue;
+  var z=await imgSz(du);if(!z||!z.w||!z.h)continue;
+  L.push({du:du,k:a[i].k,w:z.w,h:z.h})}
+ if(!L.length)return;
+ var CW=93,CH=70,X0=[10,107],Y0=24,PH=78,pg=0;
+ for(var n=0;n<L.length;n++){
+  var pos=n%6;
+  if(pos==0){d.addPage();pg++;
+   d.setFont('helvetica','bold');d.setFontSize(11);d.text('Lampiran Foto',10,14);
+   d.setFont('helvetica','normal');d.setFontSize(8.5);d.text('No. Servis: '+(x.no||'-')+'   |   No. Polisi: '+String((x.d&&x.d.plat)||'-').toUpperCase(),10,19.5);
+   d.setFontSize(7);d.text('Business Center TBSM - SMKS Darul Fatwa  |  Lampiran halaman '+pg,10,290)}
+  var cx=X0[pos%2],cy=Y0+Math.floor(pos/2)*PH,it=L[n],sc=Math.min(CW/it.w,CH/it.h),iw=it.w*sc,ih=it.h*sc;
+  d.setDrawColor(150);d.setLineWidth(.2);d.rect(cx,cy,CW,CH,'S');
+  d.addImage(it.du,'JPEG',cx+(CW-iw)/2,cy+(CH-ih)/2,iw,ih,undefined,'FAST');
+  d.setFont('helvetica','bold');d.setFontSize(8);d.text(fotoLbl(it.k),cx,cy+CH+4.5)}
+}
+async function pdf(i){var x=jf(i);if(!window.jspdf){alert('Pustaka PDF belum termuat. Periksa koneksi internet.');return}
+ var d=new window.jspdf.jsPDF({unit:'mm',format:'a4'});pdfLayout(d,x,IMG);
+ var fa=fotoList(x.d);
+ if(fa.length&&REMOTE&&CFG.functionId){pdfWait(true);try{await pdfFoto(d,x,fa)}catch(e){}pdfWait(false)}
+ d.save('Form-Service-'+String(x.d.plat||'').replace(/\\s+/g,'')+'.pdf')}
 $('th').onclick=function(){var r=document.documentElement,d=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');var n=d=='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('bc_theme',n)}catch(e){}};
 var CFG=window.SP_CONFIG||{},REMOTE=!!(CFG.projectId&&window.Appwrite),AW={};
 function lsLoad(){try{var s=localStorage.getItem(KEY);if(s)db=JSON.parse(s)}catch(e){}}
