@@ -178,7 +178,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v21</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v22</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -394,7 +394,7 @@ $('th').onclick=function(){var r=document.documentElement,d=r.getAttribute('data
 var CFG=window.SP_CONFIG||{},REMOTE=!!(CFG.projectId&&window.Appwrite),AW={};
 function lsLoad(){try{var s=localStorage.getItem(KEY);if(s)db=JSON.parse(s)}catch(e){}}
 function lsSave(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
-function nextNo(){var m=0;db.jobs.forEach(function(x){var n=parseInt(String(x.no).split('-').pop())||0;if(n>m)m=n});return 'SP-'+new Date().getFullYear()+'-'+String(m+1).padStart(4,'0')}
+function nextNo(){var d=new Date(),pf='SPK-'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear()+'-',m=0;db.jobs.forEach(function(x){var t=String(x.no||'');if(t.indexOf(pf)!==0)return;var n=parseInt(t.slice(pf.length))||0;if(n>m)m=n});return pf+String(m+1).padStart(4,'0')}
 function pl(x){return JSON.stringify({no:x.no,ts:x.ts,status:x.status,d:x.d,tw:x.tw,log:x.log})}
 function ids(){return {databaseId:CFG.databaseId,tableId:CFG.tableId}}
 async function saveJob(x,isNew){
