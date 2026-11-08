@@ -5,5 +5,6 @@ window.SP_CONFIG = {
   projectId: '6aeec7d70036da9eb8e8',
   databaseId: '6aeecb910016e43805e4',
   tableId: '6aeee0fb002814b990b1',
+  guard: true,
   functionId: 'kelola-akun'
 };
