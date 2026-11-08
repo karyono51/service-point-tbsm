@@ -178,7 +178,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v25</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v26</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -433,7 +433,7 @@ async function del(i){if(confirm('Hapus data servis ini?')){var x=jf(i);try{awai
 var ICO={chev:'<path d="M6 9l6 6 6-6"/>',camera:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',sync:'<path d="M20 11a8 8 0 0 0-14-4M4 5v4h4M4 13a8 8 0 0 0 14 4M20 19v-4h-4"/>',cal:'<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/>',shield:'<path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',doc:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',download:'<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',wrench:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L3 17.7 6.3 21l6.3-6.3a4 4 0 0 0 5.1-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/>',check:'<path d="M20 6 9 17l-5-5"/>',box:'<path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2.4.6 4 2.2 4 5.2"/>',pulse:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',home:'<path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',plus:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',login:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'};
 function ic(n){return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICO[n]+'</svg>'}
 var ROLE_DEF={admin:{n:'Admin',create:1,edit:1,status:1,del:1,rep:1,money:1},pembimbing:{n:'Pembimbing',create:0,edit:1,status:1,del:0,rep:1,money:1},advisor:{n:'Service Advisor',create:1,edit:1,status:1,del:0,rep:1,money:1},mekanik:{n:'Mekanik / Siswa Praktik',create:0,edit:0,status:1,del:0,rep:0,money:0}};
-var TITLES={syn:'Sinkronisasi',aud:'Audit Trail',tos:'Syarat & Ketentuan',home:'Beranda',login:'Masuk',dash:'Dashboard',mon:'Monitor Servis',new:'Pendaftaran Servis',q:'Antrian Servis',rep:'Laporan',prof:'Profil & Peran'};
+var TITLES={bak:'Cadangan Data',syn:'Sinkronisasi',aud:'Audit Trail',tos:'Syarat & Ketentuan',home:'Beranda',login:'Masuk',dash:'Dashboard',mon:'Monitor Servis',new:'Pendaftaran Servis',q:'Antrian Servis',rep:'Laporan',prof:'Profil & Peran'};
 var loadErr='';
 function myRole(){if(!REMOTE)return 'admin';var l=(AW.u&&AW.u.labels)||[];for(var k in ROLE_DEF)if(l.indexOf(k)>-1)return k;return null}
 function can(a){var r=myRole();return !!(r&&ROLE_DEF[r][a])}
@@ -449,7 +449,7 @@ function buildMenu(){
  if(gu)H='<small class="sec">Menu</small>'+[['home','Beranda','home'],['tos','Syarat & Ketentuan','doc']].map(function(i){return mi(i)}).join('');
  else{
   var sv=[];if(can('create'))sv.push(['new','Pendaftaran','plus']);if(r)sv.push(['q','Antrian Servis','list']);if(r)sv.push(['mon','Monitor Servis','pulse']);if(can('rep'))sv.push(['rep','Laporan','chart']);
-  var ad=[];if(can('users')&&REMOTE)ad.push(['akun','Kelola Akun','users']);if(can('audit'))ad.push(['aud','Audit Trail','shield']);
+  var ad=[];if(can('users')&&REMOTE)ad.push(['akun','Kelola Akun','users']);if(can('audit'))ad.push(['aud','Audit Trail','shield']);if(can('bak'))ad.push(['bak','Cadangan Data','download']);
   H=mi(['dash','Dashboard','grid'])+grp('svc','Service Point','wrench',sv)+grp('adm','Administrasi','shield',ad)+mi(['prof','Profil & Peran','user'])+(REMOTE?mi(['syn','Sinkronisasi','sync']):'')+mi(['tos','Syarat & Ketentuan','doc']);
  }
  $('menu').innerHTML=H;
@@ -462,11 +462,12 @@ function render(){
  if(!gu&&(tab=='home'||tab=='login'))tab='dash';
  if(!gu&&!myRole()&&tab!='prof'&&tab!='tos')tab='prof';
  if(tab=='aud'&&!can('audit'))tab='dash';
+ if(tab=='bak'&&!can('bak'))tab='dash';
  if(tab=='syn'&&(!REMOTE||!AW.u))tab='dash';
  if(tab=='rep'&&!can('rep'))tab='dash';
  if(tab=='new'&&!(can('create')||(editId&&can('edit'))))tab='dash';
  if(tab=='akun'&&!(can('users')&&REMOTE))tab='dash';
- var V={syn:vSyn,aud:vAud,tos:vTos,akun:vAkun,home:vHome,login:vLogin,dash:vDash,mon:vMon,new:vNew,q:vQ,rep:vRep,prof:vProf};
+ var V={bak:vBak,syn:vSyn,aud:vAud,tos:vTos,akun:vAkun,home:vHome,login:vLogin,dash:vDash,mon:vMon,new:vNew,q:vQ,rep:vRep,prof:vProf};
  $('ttl').textContent=TITLES[tab];$('app').innerHTML=V[tab]();buildMenu();tog(0);scrollTo(0,0);synUI();try{history.replaceState(null,'','#'+tab)}catch(e){}
 }
 function vHome(){
@@ -805,6 +806,26 @@ setFt();addEventListener('resize',setFt);addEventListener('load',setFt);
 if('serviceWorker' in navigator)addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
 $('lgdf').src=IMG.df;$('burger').innerHTML=ic('menu');$('th').innerHTML=ic('sun');
 ROLE_DEF.admin.users=1;
+ROLE_DEF.admin.bak=1;
+function bakLast(){try{return localStorage.getItem('bc_lastbak')||''}catch(e){return ''}}
+function vBak(){var n=db.jobs.length,lb=bakLast();
+ return '<div class="card"><h3>Cadangan Data</h3><p class="mut" style="margin:0 0 10px">Simpan salinan seluruh data servis ('+n+' data) ke HP Anda. Lakukan secara rutin, misalnya seminggu sekali.</p>'+
+ '<p style="margin:0 0 12px"><small class="mut">Cadangan terakhir: '+(lb?esc(lb):'belum pernah')+'</small></p>'+
+ '<div class="acts"><button class="btn" onclick="bakJson()">'+ic('download')+'<span>Unduh cadangan (JSON)</span></button><button class="btn s" onclick="bakXls()">'+ic('download')+'<span>Unduh semua data (Excel)</span></button></div>'+
+ '<p class="mut" style="margin:12px 0 0;font-size:12px;line-height:1.5">JSON memuat semua isian dan jejak perubahan, cocok untuk arsip. Excel mudah dibaca dan dibuka di komputer. Berkas ini berisi data pribadi pelanggan, jadi simpan di tempat aman dan jangan dibagikan sembarangan. Pemulihan dari cadangan belum tersedia di aplikasi; hubungi pengembang bila perlu memulihkan.</p></div>'}
+function bakMark(){var t=tglID(Date.now())+' '+hhmm();try{localStorage.setItem('bc_lastbak',t)}catch(e){}if(tab=='bak')render()}
+function bakJson(){if(!db.jobs.length){alert('Belum ada data untuk dicadangkan.');return}
+ var o={aplikasi:'Business Center TBSM',dibuat:new Date().toISOString(),oleh:who(),jumlah:db.jobs.length,data:db.jobs};
+ saveBlob(new Blob([JSON.stringify(o,null,1)],{type:'application/json'}),'Cadangan-Business-Center-'+new Date().toISOString().slice(0,10)+'.json');bakMark()}
+async function bakXls(){if(!db.jobs.length){alert('Belum ada data untuk diunduh.');return}
+ var keys=[],seen={};db.jobs.forEach(function(x){Object.keys(x.d||{}).forEach(function(k){if(!seen[k]){seen[k]=1;keys.push(k)}})});
+ keys.sort(function(a,b){return fl(a)<fl(b)?-1:1});
+ var A=[['No. Servis','Tanggal','Status','Total (Rp)'].concat(keys.map(fl))].concat(db.jobs.slice().sort(function(a,b){return a.ts-b.ts}).map(function(x){var d=x.d||{};return [x.no,tglID(x.ts),x.status,totalOf(d)].concat(keys.map(function(k){var v=d[k];return v===true?'Ya':(v===false||v==null?'':v)}))}));
+ var fn='Semua-Data-Business-Center-'+new Date().toISOString().slice(0,10);
+ try{await loadXLSX();var ws=XLSX.utils.aoa_to_sheet(A),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Data Servis');XLSX.writeFile(wb,fn+'.xlsx')}catch(e){
+  var h='<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><table border="1">'+A.map(function(r,i){return '<tr>'+r.map(function(c){return (i==0?'<th>':'<td>')+esc(c)+(i==0?'</th>':'</td>')}).join('')+'</tr>'}).join('')+'</table></body></html>';
+  saveBlob(new Blob(['\ufeff'+h],{type:'application/vnd.ms-excel'}),fn+'.xls')}
+ bakMark()}
 ROLE_DEF.admin.audit=1;ROLE_DEF.pembimbing.audit=1;
 var AF='Semua',TS='ket';
 var AL={buat:['Dibuat','#0e8a5f'],ubah:['Diubah','#2f6fe0'],status:['Status','#d98b00'],hapus:['Dihapus','#d71920']};
