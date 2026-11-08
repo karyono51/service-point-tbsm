@@ -163,8 +163,11 @@ function chkPlat(ev){
 function upd(){var e=$('tot');if(e)e.textContent=R0(totalOf(collect()))}
 
 function edit(i){if(lockd(jf(i))){alert('Data sudah diambil dan dikunci. Hanya admin yang bisa mengubahnya.');return}editId=i;cur=jf(i).d;tab='new';render()}
-function vQ(){return '<div class="row"><input placeholder="Cari plat / nama / no. servis" value="'+esc(srch)+'" oninput="srch=this.value;rq()"><select onchange="filt=this.value;rq()">'+['Semua'].concat(ST).concat(can('del')?['Arsip']:[]).map(function(s){return '<option'+(s==filt?' selected':'')+'>'+s+'</option>'}).join('')+'</select></div><div id="ql">'+ql()+'</div>'}
-function ql(){var l=db.jobs.filter(function(x){return(filt=='Arsip'?!!x.arsip:(!x.arsip&&(filt=='Semua'||x.status==filt)))&&(!srch||(x.d.plat+x.d.pm_nama+x.no).toLowerCase().indexOf(srch.toLowerCase())>-1)});return l.length?l.map(card).join(''):'<div class="card empty">Tidak ada data.</div>'}
+function vQ(){return '<div class="row"><input placeholder="Cari plat / nama / no. servis / rangka / mesin" value="'+esc(srch)+'" oninput="srch=this.value;rq()"><select onchange="filt=this.value;rq()">'+['Semua'].concat(ST).concat(can('del')?['Arsip']:[]).map(function(s){return '<option'+(s==filt?' selected':'')+'>'+s+'</option>'}).join('')+'</select></div><div id="ql">'+ql()+'</div>'}
+function qHit(x,q){var d=x.d||{},t=String(q).toLowerCase().trim(),n=np(q);
+ if([d.plat,d.pm_nama,d.pb_nama,x.no,d.tipe,d.noRangka,d.noMesin].join(' ').toLowerCase().indexOf(t)>-1)return true;
+ return n.length>=3&&(np(d.plat)+' '+np(d.noRangka)+' '+np(d.noMesin)+' '+np(x.no)).indexOf(n)>-1}
+function ql(){var l=db.jobs.filter(function(x){return(filt=='Arsip'?!!x.arsip:(!x.arsip&&(filt=='Semua'||x.status==filt)))&&(!srch||qHit(x,srch))});return l.length?l.map(card).join(''):'<div class="card empty">Tidak ada data.</div>'}
 function rq(){$('ql').innerHTML=ql()}
 function inRep(x){var t=x.ts,n=new Date(),sod=new Date(n.getFullYear(),n.getMonth(),n.getDate()).getTime();
  if(repF=='Hari ini')return t>=sod;if(repF=='7 hari')return t>=sod-6*864e5;if(repF=='30 hari')return t>=sod-29*864e5;
