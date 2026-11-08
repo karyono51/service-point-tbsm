@@ -131,6 +131,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 .chp{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 15px;border-radius:999px;font:inherit;font-size:13px;cursor:pointer}.chp.on{background:var(--pri);color:var(--pt);border-color:var(--pri);font-weight:600}
 .rmc{border-top:1px solid var(--bd);padding:12px 0}.rmc:first-child{border-top:0}.rmc b{display:block;font-size:14px}.rmc span{display:block;font-size:12.5px;color:var(--mut)}.rmc .rma{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}a.btn.s{text-decoration:none;display:inline-block}.rmc .late{color:var(--red);font-weight:600}
 .fth{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:8px}.fth .ft{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--gr);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--mut)}.fth .ft img{width:100%;height:100%;object-fit:contain;background:#000;cursor:pointer}.fth .ft b{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px}.fth .ft .x{position:absolute;right:4px;top:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:13px;line-height:1;cursor:pointer}.fbt{display:flex;gap:8px;flex-wrap:wrap}.fbt label.btn{cursor:pointer;display:inline-block}.fbt input{display:none}#lbx{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px}#lbx img{max-width:100%;max-height:82vh;border-radius:8px}#lbx p{color:#fff;font-size:13px;margin:10px 0 0}#lbx button{position:absolute;top:12px;right:12px}
+.cm{display:flex;flex-wrap:wrap;gap:3px;margin:6px 0 2px}.cm i{font-style:normal;font-family:ui-monospace,Menlo,monospace;font-weight:700;min-width:1.6ch;text-align:center;padding:3px 5px;border-radius:5px;border:1px solid var(--bd);background:var(--gr)}.cm i.cy{background:#f5c542;color:#000;border-color:#f5c542}.cm i.cr{background:#d71920;color:#fff;border-color:#d71920}.cml{font-size:12px;color:var(--mut);margin:2px 0 6px}
 .btn.xl{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:13px 20px}
 .ri .amt{display:block;margin-top:4px}
 @media(min-width:760px){.st4{grid-template-columns:repeat(4,1fr)}}
@@ -180,7 +181,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v38</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v39</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -915,17 +916,33 @@ async function camPick(ev){
  var f=ev.target.files&&ev.target.files[0];if(!f||!CAMK)return;CAMFULL=null;
  try{var bmp=await createImageBitmap(f),k=Math.min(1,1600/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);ocrGo(c)}
  catch(e){camHint(CAMK,'Foto tidak bisa dibaca. Coba lagi atau ketik manual.',1)}}
+function camFlags(res,allv,confs){
+ var n=allv.length,out=[],cf=confs[res]||null;
+ for(var i=0;i<res.length;i++){
+  var f='',same=0;
+  allv.forEach(function(v){if(v.length==res.length&&v.charAt(i)==res.charAt(i))same++});
+  if(n>=2&&same<n)f='r';
+  else if(cf&&cf[i]!=null&&cf[i]<70)f='y';
+  out.push(f)}
+ return out}
+function camMarks(k,res,allv,confs){
+ var h=$('ch_'+k),old=$('cm_'+k);if(old)old.remove();if(!h||!res)return;
+ var fl=camFlags(res,allv,confs),bad=fl.filter(Boolean).length,d=document.createElement('div');d.id='cm_'+k;
+ d.innerHTML='<div class="cm">'+res.split('').map(function(c,i){return '<i class="'+(fl[i]=='r'?'cr':fl[i]=='y'?'cy':'')+'">'+esc(c)+'</i>'}).join('')+'</div><div class="cml">'+(bad?'Merah: hasil bacaan berbeda-beda. Kuning: kamera kurang yakin. Periksa karakter berwarna dulu, lalu cocokkan semuanya dengan aslinya.':(allv.length<2?'Hanya satu hasil bacaan, belum bisa dibandingkan. Cocokkan semua karakter dengan aslinya.':'Semua bacaan konsisten, tetapi tetap cocokkan dengan aslinya.'))+'</div>';
+ h.insertAdjacentElement('afterend',d);
+ var el=fe(k);if(el){if(el._cmh)el.removeEventListener('input',el._cmh);el._cmh=function(){if(el.value!==res){var m=$('cm_'+k);if(m)m.remove()}};el.addEventListener('input',el._cmh)}}
 async function ocrGo(cv){
- var k=CAMK,btn=document.querySelector('#fm .cam[data-for="'+k+'"]');fotoEvid(k,CAMFULL||cv);CAMFULL=null;CAMB=true;camPicOff(k);if(btn)btn.disabled=true;camHint(k,'Menyiapkan pembaca teks…');
+ var k=CAMK,btn=document.querySelector('#fm .cam[data-for="'+k+'"]');fotoEvid(k,CAMFULL||cv);CAMFULL=null;CAMB=true;camPicOff(k);var om=$('cm_'+k);if(om)om.remove();if(btn)btn.disabled=true;camHint(k,'Menyiapkan pembaca teks…');
  try{
   try{await loadTess()}catch(e){camHint(k,'Pembaca teks belum bisa dimuat. Hubungkan internet satu kali, lalu coba lagi.',1);return}
   var wk=await getTW(),parse=k=='plat'?parsePlat:k=='noMesin'?parseMesin:parseRangka,G=gOf(cv),cands=[],bx=gBands(G);
   bx.forEach(function(b){cands.push({g:gCrop(G,b),psm:'7'})});cands.push({g:G,psm:'6'});
-  var pipes=k=='noRangka'?[[130,0,-10],[130,0,-15],[100,0,-15],[90,0,-15],[130,0,-5],[130,0,-20],[100,0,-20]]:[[130,0],[180,0],[100,0],[130,1]],votes={},order=[],allv=[],n=0,max=Math.min(k=='noRangka'?14:12,cands.length*pipes.length),res=null;
+  var pipes=k=='noRangka'?[[130,0,-10],[130,0,-15],[100,0,-15],[90,0,-15],[130,0,-5],[130,0,-20],[100,0,-20]]:[[130,0],[180,0],[100,0],[130,1]],votes={},order=[],allv=[],confs={},n=0,max=Math.min(k=='noRangka'?14:12,cands.length*pipes.length),res=null;
   var att=async function(i,j){if(n>=max)return null;n++;camHint(k,'Membaca foto… '+n+'/'+max);
    await wk.setParameters({tessedit_char_whitelist:k=='noRangka'?VIN_WL:OCR_WL,tessedit_pageseg_mode:cands[i].psm});
    var r=await wk.recognize(toCv(gPrep(cands[i].g,pipes[j][0],pipes[j][1],pipes[j][2]))),p=parse(r&&r.data&&r.data.text);
-   if(p){allv.push(p);if(!votes[p]){votes[p]=0;order.push(p)}votes[p]++}return p};
+   if(p){allv.push(p);if(!votes[p]){votes[p]=0;order.push(p)}votes[p]++;
+    try{var sy=((r.data&&r.data.symbols)||[]).filter(function(q){return /[A-Za-z0-9]/.test(q.text||'')});if(sy.length==p.length){var cc=sy.map(function(q){return q.confidence}),pv=confs[p];confs[p]=pv?pv.map(function(x,ix){return Math.min(x,cc[ix])}):cc}}catch(e2){}}return p};
   var win=-1,i,j;
   for(i=0;i<cands.length&&win<0;i++){if(await att(i,0))win=i}
   if(win>=0){for(j=1;j<pipes.length&&!res;j++){await att(win,j);order.forEach(function(v){if(votes[v]>=2)res=v})}}
@@ -934,7 +951,8 @@ async function ocrGo(cv){
   if(!res&&order.length){res=order.sort(function(a,b){return votes[b]-votes[a]})[0]}
   if(!res){camHint(k,'Teks belum terbaca. Pastikan teks memenuhi kotak, cukup terang, tidak silau, atau ketik manual.',1);return}
   camPic(k,cv,bx.length?bx[0]:null);var el=fe(k);if(el){el.value=res;el.dispatchEvent(new Event('input',{bubbles:true}))}
-  if(k=='noRangka'&&res.length!=17)camHint(k,'Terbaca '+res.length+' dari 17 karakter: '+res+'. Lengkapi atau foto ulang lebih dekat.',1);else camHint(k,'Hasil dari kamera: '+res+'. Periksa kembali sebelum menyimpan.')
+  if(k=='noRangka'&&res.length!=17)camHint(k,'Terbaca '+res.length+' dari 17 karakter: '+res+'. Lengkapi atau foto ulang lebih dekat.',1);else camHint(k,'Hasil dari kamera: '+res+'. Periksa kembali sebelum menyimpan.');
+  camMarks(k,res,allv,confs)
  }catch(e){camHint(k,'Gagal membaca foto. Coba lagi atau ketik manual.',1)}
  finally{CAMB=false;if(btn)btn.disabled=false}
 }
