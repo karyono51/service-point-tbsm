@@ -178,7 +178,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v29</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v30</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -586,7 +586,7 @@ function obPush(op){
  return obSave()}
 async function obSend(o){
  var GID=CFG.guardId||(CFG.guard&&CFG.functionId);
- if(GID){var ex=await AW.f.createExecution({functionId:GID,body:JSON.stringify({action:'job',k:o.k,id:o.id,p:o.p}),async:false,path:'/',method:(Appwrite.ExecutionMethod?Appwrite.ExecutionMethod.POST:'POST')}),r={};try{r=JSON.parse(ex.responseBody||'{}')}catch(e){}var c=ex.responseStatusCode;if(c>=400||r.ok===false){var er=new Error(r.error||('Kesalahan '+c));er.code=c||500;throw er}return}
+ if(GID){var ex;try{ex=await AW.f.createExecution({functionId:GID,body:JSON.stringify({action:'job',k:o.k,id:o.id,p:o.p}),async:false,path:'/',method:(Appwrite.ExecutionMethod?Appwrite.ExecutionMethod.POST:'POST')})}catch(e0){var c0=e0&&e0.code;if(c0==401||c0==403){var live=true;try{await AW.a.get()}catch(e1){if(e1&&e1.code==401)live=false}if(live){var e2=new Error('Akun tidak boleh menjalankan function ('+(e0.type||c0)+': '+(e0.message||'')+'). Periksa Execute access function.');e2.code=424;throw e2}}throw e0}var r={};try{r=JSON.parse(ex.responseBody||'{}')}catch(e){}var c=ex.responseStatusCode;if(c>=400||r.ok===false){var er=new Error(r.error||('Kesalahan '+c));er.code=c||500;throw er}return}
  var a=ids();a.rowId=o.id;
  if(o.k=='c'){a.data={payload:o.p};await AW.t.createRow(a)}
  else if(o.k=='u'){a.data={payload:o.p};await AW.t.updateRow(a)}
