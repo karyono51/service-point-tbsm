@@ -178,7 +178,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v22</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v23</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -352,7 +352,7 @@ function chkPlat(ev){
  box.innerHTML=rwHtml(l,rwN)}
 function upd(){var e=$('tot');if(e)e.textContent=R0(totalOf(collect()))}
 
-function edit(i){editId=i;cur=jf(i).d;tab='new';render()}
+function edit(i){if(lockd(jf(i))){alert('Data sudah diambil dan dikunci. Hanya admin yang bisa mengubahnya.');return}editId=i;cur=jf(i).d;tab='new';render()}
 function vQ(){return '<div class="row"><input placeholder="Cari plat / nama / no. servis" value="'+esc(srch)+'" oninput="srch=this.value;rq()"><select onchange="filt=this.value;rq()">'+['Semua'].concat(ST).map(function(s){return '<option'+(s==filt?' selected':'')+'>'+s+'</option>'}).join('')+'</select></div><div id="ql">'+ql()+'</div>'}
 function ql(){var l=db.jobs.filter(function(x){return(filt=='Semua'||x.status==filt)&&(!srch||(x.d.plat+x.d.pm_nama+x.no).toLowerCase().indexOf(srch.toLowerCase())>-1)});return l.length?l.map(card).join(''):'<div class="card empty">Tidak ada data.</div>'}
 function rq(){$('ql').innerHTML=ql()}
@@ -419,12 +419,12 @@ async function logout(){if(!navigator.onLine){alert('Keluar membutuhkan koneksi 
 async function simpan(){
  var d=collect();if(!d.plat||!d.pm_nama){alert('No. Polisi dan Nama Pemilik wajib diisi.');return}
  try{
-  if(editId){var x=jf(editId),df=diffD(x.d,d);x.d=d;if(df.length)aud(x,'ubah','Data diubah: '+df.slice(0,8).join(', ')+(df.length>8?' dan '+(df.length-8)+' lainnya':''));await saveJob(x,false)}
+  if(editId){var x=jf(editId);if(lockd(x)){alert('Data sudah diambil dan dikunci. Hanya admin yang bisa mengubahnya.');return}var df=diffD(x.d,d);x.d=d;if(df.length)aud(x,'ubah','Data diubah: '+df.slice(0,8).join(', ')+(df.length>8?' dan '+(df.length-8)+' lainnya':''));await saveJob(x,false)}
   else{var n={no:nextNo(),ts:Date.now(),status:'Menunggu',d:d,tw:{daftar:hhmm()}};aud(n,'buat','Pendaftaran dibuat');if(!REMOTE){db.n=(db.n||0)+1;n.id=db.n}await saveJob(n,true);db.jobs.unshift(n);cacheSave()}
  }catch(e){return}
  editId=null;tab='q';render();
 }
-async function setS(i,v){var x=jf(i);if(x.status!=v)aud(x,'status',slb(x.status)+' → '+slb(v));x.status=v;x.tw=x.tw||{};if(v=='Dikerjakan'&&!x.tw.kerja)x.tw.kerja=hhmm();if((v=='Selesai'||v=='Diambil')&&!x.tw.selesai)x.tw.selesai=hhmm();try{await saveJob(x,false)}catch(e){}render()}
+async function setS(i,v){var x=jf(i);if(lockd(x)){alert('Data sudah diambil dan dikunci. Hanya admin yang bisa mengubahnya.');render();return}if(x.status!=v)aud(x,'status',slb(x.status)+' → '+slb(v));x.status=v;x.tw=x.tw||{};if(v=='Dikerjakan'&&!x.tw.kerja)x.tw.kerja=hhmm();if((v=='Selesai'||v=='Diambil')&&!x.tw.selesai)x.tw.selesai=hhmm();try{await saveJob(x,false)}catch(e){}render()}
 async function del(i){if(confirm('Hapus data servis ini?')){var x=jf(i);try{await removeJob(i)}catch(e){return}if(x)await audDel(x);render()}}
 
 
@@ -435,6 +435,7 @@ var TITLES={syn:'Sinkronisasi',aud:'Audit Trail',tos:'Syarat & Ketentuan',home:'
 var loadErr='';
 function myRole(){if(!REMOTE)return 'admin';var l=(AW.u&&AW.u.labels)||[];for(var k in ROLE_DEF)if(l.indexOf(k)>-1)return k;return null}
 function can(a){var r=myRole();return !!(r&&ROLE_DEF[r][a])}
+function lockd(x){return !!x&&x.status=='Diambil'&&myRole()!='admin'}
 function tog(o){$('sb').classList.toggle('open',!!o);$('scrim').classList.toggle('show',!!o)}
 function mgShut(id){var o=kv('bc_mg_'+PJ)||{};return o[id]!==1}
 function mgTog(id){var o=kv('bc_mg_'+PJ)||{};o[id]=(o[id]===1)?0:1;kv('bc_mg_'+PJ,o);buildMenu()}
@@ -486,7 +487,7 @@ var NX={Menunggu:['Dikerjakan','Mulai kerjakan'],Dikerjakan:['Selesai','Tandai s
 var SC={Menunggu:'#d98b00',Dikerjakan:'#2f6fe0',Selesai:'#0e8a5f',Diambil:'#778899'};
 function slb(t){return t=='Selesai'?'Siap diambil':t}
 function mcard(x){
- var d=x.d,nx=NX[x.status],ok=can('status')&&nx&&!(myRole()=='mekanik'&&nx[0]=='Diambil');
+ var d=x.d,nx=NX[x.status],ok=can('status')&&nx&&!lockd(x)&&!(myRole()=='mekanik'&&nx[0]=='Diambil');
  return '<div class="mc" style="--c:'+SC[x.status]+'"><div class="mch"><div><b>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</b><span>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</span></div><span class="tag '+x.status+'">'+slb(x.status)+'</span></div>'+
  '<p class="mcp">'+esc(d.pm_nama||'-')+(d.pm_hp?' · '+esc(d.pm_hp):'')+'</p><p class="mcw">'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+
  '<div class="mcf"><div>'+(d.mekanik?'<span class="chip">'+esc(d.mekanik)+'</span>':'')+(can('money')?'<b class="amt">'+R0(totalOf(d))+'</b>':'')+'</div><div class="acts">'+(ok?'<button class="btn s adv" onclick="setS(\''+x.id+'\',\''+nx[0]+'\')">'+nx[1]+'</button>':'')+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button></div></div></div>';
@@ -509,7 +510,7 @@ function vMon(){
 function card(x){
  var d=x.d,mk=myRole()=='mekanik'&&x.status!='Diambil',sts=mk?ST.slice(0,3):ST;
  return '<div class="card"><div class="job"><div><h3>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</p><p>Pemilik: '+esc(d.pm_nama)+(d.pm_hp?' · '+esc(d.pm_hp):'')+'</p><p>'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+(d.mekanik?'<p>Mekanik: '+esc(d.mekanik)+'</p>':'')+'</div><div style="text-align:right"><span class="tag '+x.status+'">'+x.status+'</span>'+(can('money')?'<p class="amt">'+R0(totalOf(d))+'</p>':'')+'</div></div>'+
- '<div class="acts">'+(can('status')?'<select onchange="setS(\''+x.id+'\',this.value)">'+sts.map(function(s){return '<option'+(s==x.status?' selected':'')+'>'+s+'</option>'}).join('')+'</select>':'')+(can('edit')?'<button class="btn s" onclick="edit(\''+x.id+'\')">Edit / Rincian</button>':'')+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button>'+(can('del')?'<button class="btn s dg" onclick="del(\''+x.id+'\')">Hapus</button>':'')+'</div></div>';
+ '<div class="acts">'+(lockd(x)?'<span class="chip">Terkunci · hanya lihat dan cetak PDF</span>':(can('status')?'<select onchange="setS(\''+x.id+'\',this.value)">'+sts.map(function(s){return '<option'+(s==x.status?' selected':'')+'>'+s+'</option>'}).join('')+'</select>':'')+(can('edit')?'<button class="btn s" onclick="edit(\''+x.id+'\')">Edit / Rincian</button>':''))+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button>'+(can('del')?'<button class="btn s dg" onclick="del(\''+x.id+'\')">Hapus</button>':'')+'</div></div>';
 }
 function vProf(){
  var r=myRole(),u=AW.u||{},ok=function(v){return v?'✓':'–'};
