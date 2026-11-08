@@ -178,7 +178,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v30</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v31</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -372,12 +372,32 @@ function vRep(){
  var HR=['Min','Sen','Sel','Rab','Kam','Jum','Sab'],bars=[],mx=1,i,d,n;
  if(m){for(i=6;i>=0;i--){d=new Date(Date.now()-i*864e5);n=db.jobs.filter(function(x){return (x.status=='Selesai'||x.status=='Diambil')&&new Date(x.ts).toDateString()==d.toDateString()}).reduce(function(a,x){return a+totalOf(x.d)},0);bars.push([HR[d.getDay()],n,i==0]);if(n>mx)mx=n}}
  var ch=m?'<div class="card"><h3>Pendapatan 7 hari terakhir</h3><div class="bars">'+bars.map(function(b){return '<div class="bc'+(b[2]?' td':'')+'"><em>'+(b[1]?shortRp(b[1]):'0')+'</em><i style="height:'+Math.max(4,Math.round(b[1]/mx*100))+'%"></i><span>'+b[0]+'</span></div>'}).join('')+'</div></div>':'';
+ var isDn=function(x){return x.status=='Selesai'||x.status=='Diambil'},mb=[],mmx=1,nw=new Date(),q,mm,mt;
+ if(m){for(q=5;q>=0;q--){mm=new Date(nw.getFullYear(),nw.getMonth()-q,1);mt=db.jobs.filter(function(x){var z=new Date(x.ts);return isDn(x)&&z.getMonth()==mm.getMonth()&&z.getFullYear()==mm.getFullYear()}).reduce(function(a,x){return a+totalOf(x.d)},0);mb.push([BLN[mm.getMonth()].slice(0,3),mt,q==0]);if(mt>mmx)mmx=mt}}
+ var chm=m?'<div class="card"><h3>Pendapatan 6 bulan terakhir</h3><div class="bars">'+mb.map(function(b){return '<div class="bc'+(b[2]?' td':'')+'"><em>'+(b[1]?shortRp(b[1]):'0')+'</em><i style="height:'+Math.max(4,Math.round(b[1]/mmx*100))+'%"></i><span>'+b[0]+'</span></div>'}).join('')+'</div></div>':'';
+ var mk={},jn={},JL=['KPB','Service Lengkap Ringan','Ganti Oli','Ganti Part','Turun Mesin'];
+ l.forEach(function(x){var d=x.d,nm=(d.mekanik||'').trim()||'(Belum diisi)';mk[nm]=mk[nm]||{u:0,t:0};mk[nm].u++;if(isDn(x))mk[nm].t+=totalOf(d);for(var i=0;i<6;i++){if(d['j'+i]||d['jb'+i]){var jl=i<5?JL[i]:(d.j5t||'Lainnya');jn[jl]=(jn[jl]||0)+1}}});
+ var mkr=Object.keys(mk).sort(function(a,b){return mk[b].u-mk[a].u}),jnr=Object.keys(jn).sort(function(a,b){return jn[b]-jn[a]});
+ var rk=l.length?'<div class="card"><h3>Rekap per mekanik</h3>'+mkr.map(function(k){return '<div class="ri"><div><b>'+esc(k)+'</b></div><div style="text-align:right"><span>'+mk[k].u+' unit</span>'+(m&&mk[k].t?'<b class="amt">'+R0(mk[k].t)+'</b>':'')+'</div></div>'}).join('')+'</div><div class="card"><h3>Jenis pekerjaan terbanyak</h3>'+(jnr.length?jnr.map(function(k){return '<div class="ri"><div><b>'+esc(k)+'</b></div><div style="text-align:right"><span>'+jn[k]+' kali</span></div></div>'}).join(''):'<p class="mut">Belum ada pekerjaan tercatat.</p>')+'</div>':'';
+ var pdfb='<button class="btn s w xl" style="margin-top:8px" onclick="repPdf()">'+ic('download')+'<span>Cetak PDF ('+l.length+' baris)</span></button>';
  var dl='<button class="btn w xl" onclick="xls()">'+ic('download')+'<span>Unduh Excel ('+l.length+' baris)</span></button>';
  var rows=l.length?'<div class="card rcl">'+l.map(function(x){var d=x.d;return '<div class="ri"><div><b>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</b><span>'+esc(x.no)+' · '+tglID(x.ts)+'</span><span>'+esc(d.pm_nama||'-')+' · '+esc(daftar(x))+'</span></div><div style="text-align:right"><span class="tag '+x.status+'">'+slb(x.status)+'</span>'+(m?'<b class="amt">'+R0(totalOf(d))+'</b>':'')+'</div></div>'}).join('')+'</div>':'<div class="card empty">Belum ada data pada periode ini.</div>';
- return hero+chips+ch+dl+'<h2>Rincian servis <small class="cnt">'+l.length+' unit</small></h2>'+rows;
+ return hero+chips+ch+chm+dl+pdfb+rk+'<h2>Rincian servis <small class="cnt">'+l.length+' unit</small></h2>'+rows;
 }
 function loadXLSX(){return new Promise(function(ok,no){if(window.XLSX)return ok();var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
 function saveBlob(b,fn){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1500)}
+function repPdf(){var l=repList().slice().sort(function(a,b){return a.ts-b.ts});if(!l.length){alert('Belum ada data untuk dicetak.');return}
+ if(!window.jspdf){alert('Pustaka PDF belum termuat. Periksa koneksi internet.');return}
+ var d=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),m=can('money'),y=16,cut=function(t,n){t=String(t||'-');return t.length>n?t.slice(0,n-1)+'...':t},
+  dn=l.filter(function(x){return x.status=='Selesai'||x.status=='Diambil'}),tot=dn.reduce(function(a,x){return a+totalOf(x.d)},0);
+ d.setFont('helvetica','bold');d.setFontSize(14);d.text('LAPORAN SERVIS - BUSINESS CENTER TBSM',14,y);y+=6;
+ d.setFont('helvetica','normal');d.setFontSize(9);d.text('SMKS Darul Fatwa - AHASS Daya Anugrah Mandiri Jatinangor',14,y);y+=5;
+ d.text('Periode: '+repF+'   |   Total unit: '+l.length+'   |   Selesai: '+dn.length+(m?'   |   Pendapatan: '+R0(tot):''),14,y);y+=7;
+ var head=function(){d.setFont('helvetica','bold');d.setFontSize(8.5);d.text('No. Servis',14,y);d.text('Tanggal',50,y);d.text('Plat',78,y);d.text('Pemilik',102,y);d.text('Status',142,y);if(m)d.text('Total',196,y,{align:'right'});d.setLineWidth(.2);d.line(14,y+1.5,196,y+1.5);y+=6;d.setFont('helvetica','normal')};
+ head();
+ l.forEach(function(x){if(y>280){d.addPage();y=16;head()}var z=x.d;d.setFontSize(8.5);d.text(cut(x.no,22),14,y);d.text(tglID(x.ts),50,y);d.text(cut(z.plat,14),78,y);d.text(cut(z.pm_nama,22),102,y);d.text(slb(x.status),142,y);if(m)d.text(R0(totalOf(z)),196,y,{align:'right'});y+=5.5});
+ var pg=d.internal.getNumberOfPages();for(var i=1;i<=pg;i++){d.setPage(i);d.setFontSize(7.5);d.text('Dicetak '+tglID(Date.now())+' '+hhmm()+' oleh '+cut(who(),30)+' | Business Center TBSM SMKS Darul Fatwa | Hal '+i+'/'+pg,14,291)}
+ d.save('Laporan-Servis-'+new Date().toISOString().slice(0,10)+'.pdf')}
 async function xls(){
  var l=repList();if(!l.length){alert('Belum ada data untuk diunduh.');return}
  var A=[['No','Tanggal','Plat','Type','KM','Pemilik','HP','Pekerjaan','Mekanik','Pembimbing','Status','Total (Rp)']].concat(l.map(function(x){var d=x.d;return [x.no,tglID(x.ts),d.plat,d.tipe,d.km,d.pm_nama,d.pm_hp,daftar(x),d.mekanik,d.pembimbing,x.status,totalOf(d)]}));
