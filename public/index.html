@@ -178,7 +178,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v18</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v19</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -704,13 +704,27 @@ function parseMesin(t){
   var sc=-Math.abs(s.length-12)+(/[A-Z]/.test(s)&&/[0-9]/.test(s)?3:0);
   if(!best||sc>best.sc)best={sc:sc,v:s}});
  return best?best.v:null}
+var VIN_WL='0123456789ABCDEFGHJKLMNPRSTUVWXYZ',VIN_PF=['MH1','MLH'],VCONF={M:'MNW',H:'HNM',L:'L1I',1:'1ILJ7'},D2LV={'5':'S','8':'B','2':'Z','6':'G','4':'A'};
+function vinPfx(w){var best=null;VIN_PF.forEach(function(t){var m=0;for(var j=0;j<3;j++){var c=w.charAt(j);if(c!=t.charAt(j)&&(VCONF[t.charAt(j)]||'').indexOf(c)<0)m++}if(!best||m<best.m)best={m:m,t:t}});return best}
+function vinFix(w){
+ var pf=vinPfx(w);if(pf.m>1)return null;
+ var o=pf.t,c=pf.m*1.5,j,ch;
+ for(j=3;j<8;j++)o+=w.charAt(j);
+ ch=w.charAt(8);if(/[0-9X]/.test(ch))o+=ch;else if(L2D[ch]){o+=L2D[ch];c+=1.5}else{o+=ch;c+=3}
+ ch=w.charAt(9);o+=ch;
+ ch=w.charAt(10);if(/[A-Z]/.test(ch))o+=ch;else if(D2LV[ch]){o+=D2LV[ch];c+=1.5}else{o+=ch;c+=3}
+ for(j=11;j<17;j++){ch=w.charAt(j);if(/[0-9]/.test(ch))o+=ch;else if(L2D[ch]){o+=L2D[ch];c+=1.5}else return null}
+ return {o:o,c:c}}
 function parseRangka(t){
- var best=null,lines=String(t||'').toUpperCase().split(/\n+/);
- lines.forEach(function(line){
-  var s=line.replace(/[^A-Z0-9]/g,'').replace(/O/g,'0').replace(/Q/g,'0').replace(/I/g,'1');
-  for(var i=0;i+17<=s.length;i++){var w=s.substr(i,17);if(/^[A-HJ-NPR-Z0-9]{17}$/.test(w)&&/[A-Z]/.test(w)&&/[0-9]/.test(w)){var sc=100-i;if(!best||sc>best.sc)best={sc:sc,v:w}}}
-  if(!best&&s.length>=10&&s.length<=20){var sc2=-Math.abs(s.length-17);if(!best||sc2>(best.sc2||-99))best={sc:0,sc2:sc2,v:s}}});
- return best?best.v:null}
+ var lines=String(t||'').toUpperCase().split(/\n+/).map(function(l){return l.replace(/[^A-Z0-9]/g,'').replace(/[OQ]/g,'0').replace(/I/g,'1')}).filter(function(l){return l.length>=3}),
+  src=lines.slice();
+ for(var q=0;q+1<lines.length;q++)src.push(lines[q]+lines[q+1]);
+ if(lines.length>2)src.push(lines.join(''));
+ var best=null,part=null;
+ src.forEach(function(s){
+  for(var i=0;i+17<=s.length;i++){var r=vinFix(s.substr(i,17));if(!r)continue;var sc=r.c+i*.3;if(sc<=5&&(!best||sc<best.sc))best={sc:sc,v:r.o}}
+  for(var i2=0;i2<s.length-9;i2++){var pf=vinPfx(s.substr(i2,3));if(pf.m>1)continue;var seg=pf.t+s.substr(i2+3,14);if(!part||seg.length>part.length)part=seg}});
+ return best?best.v:(part&&part.length>=12?part:null)}
 
 var TESS_JS='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',TESS_LANG='https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng/4.0.0_best_int',OCR_WL='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 var CAMK='',CAMB=false,TW=null,CAMS=null,TORCH=false;
@@ -753,19 +767,20 @@ async function ocrGo(cv){
   try{await loadTess()}catch(e){camHint(k,'Pembaca teks belum bisa dimuat. Hubungkan internet satu kali, lalu coba lagi.',1);return}
   var wk=await getTW(),parse=k=='plat'?parsePlat:k=='noMesin'?parseMesin:parseRangka,G=gOf(cv),cands=[],bx=gBands(G);
   bx.forEach(function(b){cands.push({g:gCrop(G,b),psm:'7'})});cands.push({g:G,psm:'6'});
-  var pipes=[[130,0],[180,0],[100,0],[130,1]],votes={},order=[],n=0,max=Math.min(12,cands.length*pipes.length),res=null;
+  var pipes=[[130,0],[180,0],[100,0],[130,1]],votes={},order=[],allv=[],n=0,max=Math.min(12,cands.length*pipes.length),res=null;
   var att=async function(i,j){if(n>=max)return null;n++;camHint(k,'Membaca foto… '+n+'/'+max);
-   await wk.setParameters({tessedit_char_whitelist:OCR_WL,tessedit_pageseg_mode:cands[i].psm});
+   await wk.setParameters({tessedit_char_whitelist:k=='noRangka'?VIN_WL:OCR_WL,tessedit_pageseg_mode:cands[i].psm});
    var r=await wk.recognize(toCv(gPrep(cands[i].g,pipes[j][0],pipes[j][1]))),p=parse(r&&r.data&&r.data.text);
-   if(p){if(!votes[p]){votes[p]=0;order.push(p)}votes[p]++}return p};
+   if(p){allv.push(p);if(!votes[p]){votes[p]=0;order.push(p)}votes[p]++}return p};
   var win=-1,i,j;
   for(i=0;i<cands.length&&win<0;i++){if(await att(i,0))win=i}
   if(win>=0){for(j=1;j<pipes.length&&!res;j++){await att(win,j);order.forEach(function(v){if(votes[v]>=2)res=v})}}
   else{for(j=1;j<pipes.length&&!res;j++)for(i=0;i<cands.length&&!res;i++){await att(i,j);order.forEach(function(v){if(votes[v]>=2)res=v})}}
+  if(!res&&k=='noRangka'){var c17=allv.filter(function(v){return v.length==17});if(c17.length>=2){var cs='';for(var z=0;z<17;z++){var cc={},bb='',bn=0;c17.forEach(function(v){var h=v.charAt(z);cc[h]=(cc[h]||0)+1;if(cc[h]>bn){bn=cc[h];bb=h}});cs+=bb}res=cs}}
   if(!res&&order.length){res=order.sort(function(a,b){return votes[b]-votes[a]})[0]}
   if(!res){camHint(k,'Teks belum terbaca. Pastikan teks memenuhi kotak, cukup terang, tidak silau, atau ketik manual.',1);return}
   var el=fe(k);if(el){el.value=res;el.dispatchEvent(new Event('input',{bubbles:true}))}
-  camHint(k,'Hasil dari kamera: '+res+'. Periksa kembali sebelum menyimpan.')
+  if(k=='noRangka'&&res.length!=17)camHint(k,'Terbaca '+res.length+' dari 17 karakter: '+res+'. Lengkapi atau foto ulang lebih dekat.',1);else camHint(k,'Hasil dari kamera: '+res+'. Periksa kembali sebelum menyimpan.')
  }catch(e){camHint(k,'Gagal membaca foto. Coba lagi atau ketik manual.',1)}
  finally{CAMB=false;if(btn)btn.disabled=false}
 }
