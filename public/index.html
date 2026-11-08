@@ -130,7 +130,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 .chps{display:flex;gap:8px;overflow-x:auto;margin:14px 0 12px;padding-bottom:4px;scrollbar-width:none}.chps::-webkit-scrollbar{display:none}
 .chp{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 15px;border-radius:999px;font:inherit;font-size:13px;cursor:pointer}.chp.on{background:var(--pri);color:var(--pt);border-color:var(--pri);font-weight:600}
 .rmc{border-top:1px solid var(--bd);padding:12px 0}.rmc:first-child{border-top:0}.rmc b{display:block;font-size:14px}.rmc span{display:block;font-size:12.5px;color:var(--mut)}.rmc .rma{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}a.btn.s{text-decoration:none;display:inline-block}.rmc .late{color:var(--red);font-weight:600}
-.fth{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:8px}.fth .ft{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--gr);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--mut)}.fth .ft img{width:100%;height:100%;object-fit:contain;background:#000;cursor:pointer}.fth .ft b{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px}.fth .ft .x{position:absolute;right:4px;top:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:13px;line-height:1;cursor:pointer}.fbt{display:flex;gap:8px;flex-wrap:wrap}.fbt label.btn{cursor:pointer;display:inline-block}.fbt input{display:none}#lbx{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px}#lbx img{max-width:100%;max-height:82vh;border-radius:8px}#lbx p{color:#fff;font-size:13px;margin:10px 0 0}#lbx button{position:absolute;top:12px;right:12px}
+.fth{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:8px}.fth .ft{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--gr);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--mut)}.fth .ft img{width:100%;height:100%;object-fit:contain;background:#000;cursor:pointer}.fth .ft b{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px}.fth .ft em{position:absolute;left:4px;top:4px;background:#f5c542;color:#000;font-size:10px;font-style:normal;font-weight:700;padding:1px 6px;border-radius:99px}.fth .ft .x{position:absolute;right:4px;top:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:13px;line-height:1;cursor:pointer}.fbt{display:flex;gap:8px;flex-wrap:wrap}.fbt label.btn{cursor:pointer;display:inline-block}.fbt input{display:none}#lbx{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px}#lbx img{max-width:100%;max-height:82vh;border-radius:8px}#lbx p{color:#fff;font-size:13px;margin:10px 0 0}#lbx button{position:absolute;top:12px;right:12px}
 .cm{display:flex;flex-wrap:wrap;gap:3px;margin:6px 0 2px}.cm i{font-style:normal;font-family:ui-monospace,Menlo,monospace;font-weight:700;min-width:1.6ch;text-align:center;padding:3px 5px;border-radius:5px;border:1px solid var(--bd);background:var(--gr)}.cm i.cy{background:#f5c542;color:#000;border-color:#f5c542}.cm i.cr{background:#d71920;color:#fff;border-color:#d71920}.cml{font-size:12px;color:var(--mut);margin:2px 0 6px}
 .btn.xl{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:13px 20px}
 .ri .amt{display:block;margin-top:4px}
@@ -181,7 +181,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v39</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v40</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -411,10 +411,10 @@ async function fapi(o){
 function fotoCard(){
  var hid='<input type="hidden" data-k="fotos" value="'+esc(cur.fotos||'[]')+'">';
  if(!REMOTE||!CFG.functionId)return '<div class="card"><h3>Foto Kondisi Motor</h3>'+hid+'<p class="mut">Fitur foto belum diaktifkan (functionId di config.js belum diisi).</p></div>';
- return '<div class="card"><h3>Foto Kondisi Motor</h3>'+hid+'<div class="fbt"><label class="btn s">+ Sebelum<input type="file" accept="image/*" multiple onchange="fotoAdd(this,\'sebelum\')"></label><label class="btn s">+ Sesudah<input type="file" accept="image/*" multiple onchange="fotoAdd(this,\'sesudah\')"></label></div><small class="mut" id="fmsg">Maksimal '+FMAX+' foto. Foto No. Polisi, No. Mesin, dan No. Rangka dari kamera otomatis ikut tersimpan di sini sebagai bukti klaim garansi.</small><div class="fth" id="fth"></div></div>'}
+ return '<div class="card"><h3>Foto Kondisi Motor</h3>'+hid+'<div class="fbt"><label class="btn s">+ Sebelum<input type="file" accept="image/*" multiple onchange="fotoAdd(this,\'sebelum\')"></label><label class="btn s">+ Sesudah<input type="file" accept="image/*" multiple onchange="fotoAdd(this,\'sesudah\')"></label></div><small class="mut" id="fmsg">Maksimal '+FMAX+' foto. Foto No. Polisi, No. Mesin, dan No. Rangka dari kamera otomatis ikut tersimpan di sini sebagai bukti klaim garansi. Kalau offline, foto disimpan di HP dan diunggah otomatis saat ada internet.</small><div class="fth" id="fth"></div></div>'}
 function fotoThumbs(){
  var b=$('fth');if(!b)return;var a=fotoCur();
- b.innerHTML=a.map(function(f,i){return '<div class="ft" data-id="'+esc(f.id)+'">'+(FC[f.id]?'<img src="'+FC[f.id]+'" onclick="fotoBig(\''+esc(f.id)+'\',\''+esc(f.k)+'\')" alt="">':'Memuat…')+'<b>'+fotoLbl(f.k)+'</b><button type="button" class="x" onclick="fotoDel('+i+')" aria-label="Hapus foto">×</button></div>'}).join('');
+ b.innerHTML=a.map(function(f,i){return '<div class="ft" data-id="'+esc(f.id)+'">'+(FC[f.id]?'<img src="'+FC[f.id]+'" onclick="fotoBig(\''+esc(f.id)+'\',\''+esc(f.k)+'\')" alt="">':'Memuat…')+'<b>'+fotoLbl(f.k)+'</b>'+(FQ[f.id]?'<em>Menunggu</em>':'')+'<button type="button" class="x" onclick="fotoDel('+i+')" aria-label="Hapus foto">×</button></div>'}).join('');
  a.forEach(function(f){if(!FC[f.id])fotoLoad(f.id,function(){fotoThumbs()})})}
 async function fotoLoad(id,cb){
  if(FC[id]){cb&&cb();return}
@@ -426,29 +426,45 @@ function fotoShrink(file){return new Promise(function(res,rej){
  im.onerror=function(){URL.revokeObjectURL(u);rej(new Error('Foto tidak bisa dibaca'))};im.src=u})}
 async function fotoAdd(inp,k){
  var fs=Array.prototype.slice.call(inp.files||[]);inp.value='';if(!fs.length)return;
- var msg=$('fmsg');
- if(!navigator.onLine){alert('Foto membutuhkan koneksi internet.');return}
- var a=fotoCur(),no=editId?(jf(editId)||{}).no:'baru';
  for(var i=0;i<fs.length;i++){
-  if(a.length>=FMAX){alert('Maksimal '+FMAX+' foto per servis.');break}
-  if(msg)msg.textContent='Mengunggah foto '+(i+1)+' dari '+fs.length+'…';
-  try{var du=await fotoShrink(fs[i]),r=await fapi({op:'up',k:k,no:no,data:du.split(',')[1]});FC[r.id]=du;a.push({id:r.id,k:k,t:Date.now()});fotoSet(a);fotoThumbs()}
-  catch(e){alert('Foto gagal diunggah: '+(e.message||e));break}}
- if(msg)msg.textContent='Foto tersimpan di Google Drive. Tekan Simpan untuk menautkan ke data servis.'}
+  if(fotoCur().length>=FMAX){alert('Maksimal '+FMAX+' foto per servis.');break}
+  try{await fotoPut(k,await fotoShrink(fs[i]))}catch(e){alert('Foto gagal disimpan: '+(e.message||e));break}}}
 async function fotoDel(i){
  if(!confirm('Lepas foto ini dari data servis? Berkas di Google Drive tidak dihapus.'))return;
- var a=fotoCur();a.splice(i,1);fotoSet(a);fotoThumbs()}
+ var a=fotoCur(),f=a.splice(i,1)[0];fotoSet(a);fotoThumbs();
+ if(f&&FQ[f.id]){delete FQ[f.id];try{await qDel(f.id)}catch(e){}synUI()}}
 
 async function fotoEvid(k,cv){
- var m=$('fmsg'),w=function(t){if(m)m.textContent=t};
  if(!REMOTE||!CFG.functionId||!fe('fotos')||!FLB[k])return;
  var du;try{du=cv.toDataURL('image/jpeg',.8)}catch(e){return}
- if(!navigator.onLine){w('Foto '+fotoLbl(k)+' belum diunggah karena offline. Ambil ulang saat ada internet agar tersimpan untuk klaim garansi.');return}
- w('Mengunggah foto '+fotoLbl(k)+'…');
- try{var no=editId?(jf(editId)||{}).no:'baru',r=await fapi({op:'up',k:k,no:no,data:du.split(',')[1]});
-  FC[r.id]=du;var a=fotoCur().filter(function(f){return f.k!=k});a.push({id:r.id,k:k,t:Date.now()});fotoSet(a);fotoThumbs();
-  w('Foto '+fotoLbl(k)+' tersimpan di Google Drive. Tekan Simpan untuk menautkan ke data servis.')}
- catch(e){w('Foto '+fotoLbl(k)+' gagal diunggah: '+(e.message||e)+'. Ambil ulang fotonya.')}}
+ try{await fotoPut(k,du,true)}catch(e){var m=$('fmsg');if(m)m.textContent='Foto '+fotoLbl(k)+' gagal disimpan: '+(e.message||e)}}
+var QDB=null,FQ={},FFB=false;
+function qOpen(){return new Promise(function(res,rej){if(QDB)return res(QDB);if(!window.indexedDB)return rej(new Error('Penyimpanan HP tidak tersedia'));var r=indexedDB.open('bcfoto',1);r.onupgradeneeded=function(){r.result.createObjectStore('q',{keyPath:'key'})};r.onsuccess=function(){QDB=r.result;res(QDB)};r.onerror=function(){rej(r.error)}})}
+function qTx(m,fn){return qOpen().then(function(db){return new Promise(function(res,rej){var t=db.transaction('q',m),rq=fn(t.objectStore('q'));t.oncomplete=function(){res(rq&&rq.result)};t.onerror=function(){rej(t.error)}})})}
+function qPut(o){return qTx('readwrite',function(st){return st.put(o)})}
+function qDel(k){return qTx('readwrite',function(st){return st.delete(k)})}
+function qAll(){return qTx('readonly',function(st){return st.getAll()})}
+function fotoKey(){return 'qk'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+async function fotoPut(k,du,replace){
+ if(fotoCur().length>=FMAX&&!replace)throw new Error('Maksimal '+FMAX+' foto per servis');
+ var key=fotoKey(),no=editId?(jf(editId)||{}).no:'baru',m=$('fmsg');
+ await qPut({key:key,k:k,no:no||'baru',data:du,ts:Date.now()});
+ FQ[key]=1;FC[key]=du;
+ var a=fotoCur();if(replace)a=a.filter(function(f){return f.k!=k});a.push({id:key,k:k,t:Date.now()});fotoSet(a);fotoThumbs();synUI();
+ if(m)m.textContent='Foto '+fotoLbl(k)+(navigator.onLine?' diunggah ke Google Drive…':' disimpan di HP dan akan diunggah otomatis saat ada internet')+'. Tekan Simpan untuk menautkan ke data servis.';
+ fotoFlush()}
+async function fotoFlush(){
+ if(FFB||!REMOTE||!CFG.functionId||!AW.u||!navigator.onLine)return;
+ FFB=true;
+ try{
+  var rows=await qAll();
+  for(var i=0;i<rows.length;i++){var r=rows[i];
+   try{await fapi({op:'up',key:r.key,k:r.k,no:r.no,data:r.data.split(',')[1]});await qDel(r.key);delete FQ[r.key];fotoThumbs();synUI();var m=$('fmsg');if(m)m.textContent='Foto '+fotoLbl(r.k)+' tersimpan di Google Drive.'}
+   catch(e){var t=String((e&&e.message)||e);if(/tidak valid|format JPEG/.test(t)){await qDel(r.key);delete FQ[r.key]}else break}}
+ }catch(e){}
+ FFB=false;synUI()}
+async function fotoBoot(){try{var rows=await qAll();rows.forEach(function(r){FQ[r.key]=1;FC[r.key]=r.data});synUI();fotoFlush()}catch(e){}}
+addEventListener('online',function(){setTimeout(fotoFlush,1500)});setInterval(fotoFlush,45000);
 function fotoBig(id,k){fotoLb(id,k)}
 function fotoLb(id,k){
  var o=document.createElement('div');o.id='lbx';o.onclick=function(){o.remove()};
@@ -761,7 +777,7 @@ async function syncNow(){
  synUI()}
 function synUI(){var b=$('syn');if(!b)return;
  if(!REMOTE||!AW.u){b.hidden=true;return}
- var n=OB.length,f=OFL.length,t='',c='';
+ var n=OB.length+Object.keys(FQ).length,f=OFL.length,t='',c='';
  if(f){t=f+' gagal';c='bad'}
  else if(SYN.err=='auth'){t='Masuk ulang';c='bad'}
  else if(SYN.busy){t='Mengunggah';c='wait'}
@@ -964,7 +980,7 @@ async function boot0(){
   try{AW.u=await tmo(AW.a.get(),8000);kv(USK,{$id:AW.u.$id,name:AW.u.name,email:AW.u.email,labels:AW.u.labels})}catch(e){AW.u=null;if(e&&e.code==401)kv(USK,null);else if(!(e&&e.code)){var cu=kv(USK);if(cu)AW.u=cu}}
  }
  if((!REMOTE||AW.u)&&myRole()){try{await loadAll()}catch(e){loadErr='Gagal memuat data: '+(e.message||e)}}
- var hh=(location.hash||'').slice(1);tab=(REMOTE&&!AW.u)?'home':(TITLES[hh]&&hh!='home'&&hh!='login'?hh:'dash');render();
+ fotoBoot();var hh=(location.hash||'').slice(1);tab=(REMOTE&&!AW.u)?'home':(TITLES[hh]&&hh!='home'&&hh!='login'?hh:'dash');render();
 }
 async function boot(){try{await boot0()}catch(e){$('app').innerHTML='<div class="card empty">Terjadi kesalahan: '+esc(e.message||e)+'</div>'}}
 function setFt(){var f=$('ft');if(f)document.documentElement.style.setProperty('--ftH',f.offsetHeight+'px')}

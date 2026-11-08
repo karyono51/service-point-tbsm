@@ -56,6 +56,23 @@ async function getFolder() {
   return folderId;
 }
 
+const KEY_RE = /^qk[a-z0-9]{8,40}$/;
+
+// Foto yang dikirim offline punya kunci dari HP (qk...). Cari ID Drive-nya lewat appProperties.
+async function findByKey(key) {
+  const fid = await getFolder();
+  const q = encodeURIComponent("appProperties has { key='fid' and value='" + key + "' } and '" + fid + "' in parents and trashed=false");
+  const f = await gjson('https://www.googleapis.com/drive/v3/files?fields=files(id)&pageSize=1&q=' + q);
+  return f.files && f.files.length ? f.files[0].id : '';
+}
+
+async function resolveId(v) {
+  if (!KEY_RE.test(String(v || ''))) return String(v || '');
+  const id = await findByKey(v);
+  if (!id) throw new Error('Foto belum selesai diunggah');
+  return id;
+}
+
 // Pastikan file ada di folder foto kita dan belum dibuang.
 async function assertOurs(id) {
   const fid = await getFolder();
@@ -63,13 +80,14 @@ async function assertOurs(id) {
   if (m.trashed || !(m.parents || []).includes(fid)) throw new Error('Foto tidak ditemukan');
 }
 
-async function upload(name, b64) {
+async function upload(name, b64, key) {
   const buf = Buffer.from(b64, 'base64');
   if (!buf.length || buf.length > MAX_BYTES) throw new Error('Ukuran foto tidak valid');
   if (!(buf[0] === 0xff && buf[1] === 0xd8)) throw new Error('Foto harus berformat JPEG');
   const fid = await getFolder();
+  if (key) { const ex = await findByKey(key); if (ex) return ex; }
   const bd = 'bc' + Date.now().toString(36);
-  const meta = JSON.stringify({ name, parents: [fid], mimeType: 'image/jpeg' });
+  const meta = JSON.stringify({ name, parents: [fid], mimeType: 'image/jpeg', ...(key ? { appProperties: { fid: key } } : {}) });
   const body = Buffer.concat([
     Buffer.from('--' + bd + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + meta + '\r\n--' + bd + '\r\nContent-Type: image/jpeg\r\n\r\n'),
     buf,
@@ -110,17 +128,18 @@ export async function fotoAction({ b, res, users, callerId, roleOf, error }) {
     if (b.op === 'up') {
       const k = ['sebelum', 'sesudah', 'plat', 'noMesin', 'noRangka'].includes(b.k) ? b.k : 'sebelum';
       const nm = String(b.no || 'servis').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 30) || 'servis';
-      const id = await upload(nm + '_' + k + '_' + Date.now() + '.jpg', String(b.data || ''));
+      const key = KEY_RE.test(String(b.key || '')) ? String(b.key) : '';
+      const id = await upload(nm + '_' + k + '_' + Date.now() + '.jpg', String(b.data || ''), key);
       return res.json({ ok: true, id });
     }
     if (b.op === 'get') {
       if (!idOk(b.id)) return res.json({ ok: false, error: 'ID foto tidak valid.' }, 400);
-      return res.json({ ok: true, data: await download(b.id) });
+      return res.json({ ok: true, data: await download(await resolveId(b.id)) });
     }
     if (b.op === 'del') {
       if (!CAN_DELETE.includes(role)) return res.json({ ok: false, error: 'Peran ini tidak boleh menghapus foto.' }, 403);
       if (!idOk(b.id)) return res.json({ ok: false, error: 'ID foto tidak valid.' }, 400);
-      await trash(b.id);
+      await trash(await resolveId(b.id));
       return res.json({ ok: true });
     }
     return res.json({ ok: false, error: 'Aksi foto tidak dikenal.' }, 400);
