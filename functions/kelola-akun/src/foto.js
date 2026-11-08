@@ -108,7 +108,7 @@ export async function fotoAction({ b, res, users, callerId, roleOf, error }) {
     const idOk = (v) => /^[A-Za-z0-9_-]{10,100}$/.test(String(v || ''));
 
     if (b.op === 'up') {
-      const k = b.k === 'sesudah' ? 'sesudah' : 'sebelum';
+      const k = ['sebelum', 'sesudah', 'plat', 'noMesin', 'noRangka'].includes(b.k) ? b.k : 'sebelum';
       const nm = String(b.no || 'servis').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 30) || 'servis';
       const id = await upload(nm + '_' + k + '_' + Date.now() + '.jpg', String(b.data || ''));
       return res.json({ ok: true, id });

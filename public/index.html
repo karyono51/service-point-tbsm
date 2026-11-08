@@ -180,7 +180,7 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
  <div class="brand"><img id="lgdf" alt="Logo SMKS Darul Fatwa"><div><b>Business Center TBSM</b><span>SMKS Darul Fatwa</span><small>Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363</small></div></div>
  <nav id="menu"></nav>
  <div class="acct" id="acct"></div>
- <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v36</span></div>
+ <div class="sbf"><span>©2026 | Business Center TBSM</span><span>SMKS Darul Fatwa</span><span>supported by Damkar’s Team</span><span class="ver">v37</span></div>
 </aside>
 <div class="scrim" id="scrim" onclick="tog(0)"></div>
 <div class="main">
@@ -396,7 +396,8 @@ function vRem(){
   '<p class="mut">Dihitung dari servis terakhir yang berstatus Selesai atau Diambil (termasuk data arsip). Unit yang sedang diservis tidak ditampilkan. Tanda "Dihubungi" hanya tersimpan di HP ini. Pesan WhatsApp dikirim manual oleh petugas.</p>'}
 
 /* ===== Foto kondisi motor (disimpan di Google Drive lewat function foto-drive) ===== */
-var FMAX=8,FC={};
+var FMAX=12,FC={},FLB={sebelum:'Sebelum',sesudah:'Sesudah',plat:'No. Polisi',noMesin:'No. Mesin',noRangka:'No. Rangka'};
+function fotoLbl(k){return FLB[k]||'Foto'}
 function fotoList(d){var a=[];try{a=JSON.parse((d&&d.fotos)||'[]')}catch(e){}return Array.isArray(a)?a:[]}
 function fotoCur(){var e=fe('fotos');return fotoList({fotos:e?e.value:cur.fotos})}
 function fotoSet(a){var e=fe('fotos');if(e)e.value=JSON.stringify(a)}
@@ -409,10 +410,10 @@ async function fapi(o){
 function fotoCard(){
  var hid='<input type="hidden" data-k="fotos" value="'+esc(cur.fotos||'[]')+'">';
  if(!REMOTE||!CFG.functionId)return '<div class="card"><h3>Foto Kondisi Motor</h3>'+hid+'<p class="mut">Fitur foto belum diaktifkan (functionId di config.js belum diisi).</p></div>';
- return '<div class="card"><h3>Foto Kondisi Motor</h3>'+hid+'<div class="fbt"><label class="btn s">+ Sebelum<input type="file" accept="image/*" multiple onchange="fotoAdd(this,\'sebelum\')"></label><label class="btn s">+ Sesudah<input type="file" accept="image/*" multiple onchange="fotoAdd(this,\'sesudah\')"></label></div><small class="mut" id="fmsg">Maksimal '+FMAX+' foto. Foto dikecilkan otomatis dan disimpan di Google Drive.</small><div class="fth" id="fth"></div></div>'}
+ return '<div class="card"><h3>Foto Kondisi Motor</h3>'+hid+'<div class="fbt"><label class="btn s">+ Sebelum<input type="file" accept="image/*" multiple onchange="fotoAdd(this,\'sebelum\')"></label><label class="btn s">+ Sesudah<input type="file" accept="image/*" multiple onchange="fotoAdd(this,\'sesudah\')"></label></div><small class="mut" id="fmsg">Maksimal '+FMAX+' foto. Foto No. Polisi, No. Mesin, dan No. Rangka dari kamera otomatis ikut tersimpan di sini sebagai bukti klaim garansi.</small><div class="fth" id="fth"></div></div>'}
 function fotoThumbs(){
  var b=$('fth');if(!b)return;var a=fotoCur();
- b.innerHTML=a.map(function(f,i){return '<div class="ft" data-id="'+esc(f.id)+'">'+(FC[f.id]?'<img src="'+FC[f.id]+'" onclick="fotoBig(\''+esc(f.id)+'\',\''+esc(f.k)+'\')" alt="">':'Memuat…')+'<b>'+(f.k=='sesudah'?'Sesudah':'Sebelum')+'</b><button type="button" class="x" onclick="fotoDel('+i+')" aria-label="Hapus foto">×</button></div>'}).join('');
+ b.innerHTML=a.map(function(f,i){return '<div class="ft" data-id="'+esc(f.id)+'">'+(FC[f.id]?'<img src="'+FC[f.id]+'" onclick="fotoBig(\''+esc(f.id)+'\',\''+esc(f.k)+'\')" alt="">':'Memuat…')+'<b>'+fotoLbl(f.k)+'</b><button type="button" class="x" onclick="fotoDel('+i+')" aria-label="Hapus foto">×</button></div>'}).join('');
  a.forEach(function(f){if(!FC[f.id])fotoLoad(f.id,function(){fotoThumbs()})})}
 async function fotoLoad(id,cb){
  if(FC[id]){cb&&cb();return}
@@ -436,19 +437,30 @@ async function fotoAdd(inp,k){
 async function fotoDel(i){
  if(!confirm('Lepas foto ini dari data servis? Berkas di Google Drive tidak dihapus.'))return;
  var a=fotoCur();a.splice(i,1);fotoSet(a);fotoThumbs()}
+
+async function fotoEvid(k,cv){
+ var m=$('fmsg'),w=function(t){if(m)m.textContent=t};
+ if(!REMOTE||!CFG.functionId||!fe('fotos')||!FLB[k])return;
+ var du;try{du=cv.toDataURL('image/jpeg',.8)}catch(e){return}
+ if(!navigator.onLine){w('Foto '+fotoLbl(k)+' belum diunggah karena offline. Ambil ulang saat ada internet agar tersimpan untuk klaim garansi.');return}
+ w('Mengunggah foto '+fotoLbl(k)+'…');
+ try{var no=editId?(jf(editId)||{}).no:'baru',r=await fapi({op:'up',k:k,no:no,data:du.split(',')[1]});
+  FC[r.id]=du;var a=fotoCur().filter(function(f){return f.k!=k});a.push({id:r.id,k:k,t:Date.now()});fotoSet(a);fotoThumbs();
+  w('Foto '+fotoLbl(k)+' tersimpan di Google Drive. Tekan Simpan untuk menautkan ke data servis.')}
+ catch(e){w('Foto '+fotoLbl(k)+' gagal diunggah: '+(e.message||e)+'. Ambil ulang fotonya.')}}
 function fotoBig(id,k){fotoLb(id,k)}
 function fotoLb(id,k){
  var o=document.createElement('div');o.id='lbx';o.onclick=function(){o.remove()};
- o.innerHTML='<button class="btn s" type="button">Tutup</button><img alt=""><p>'+(k=='sesudah'?'Sesudah':'Sebelum')+'</p>';
+ o.innerHTML='<button class="btn s" type="button">Tutup</button><img alt=""><p>'+fotoLbl(k)+'</p>';
  document.body.appendChild(o);var im=o.querySelector('img');
  if(FC[id])im.src=FC[id];else fotoLoad(id,function(){im.src=FC[id]})}
 function fotoView(i){
- var x=jf(i);if(!x)return;var a=fotoList(x.d);if(!a.length)return;
+ var x=jf(i);if(!x)return;var OR=['plat','noMesin','noRangka','sebelum','sesudah'],a=fotoList(x.d).sort(function(p,q){return OR.indexOf(p.k)-OR.indexOf(q.k)});if(!a.length)return;
  var o=document.createElement('div');o.id='lbx';o.style.overflow='auto';o.style.justifyContent='flex-start';
  o.innerHTML='<button class="btn s" type="button" onclick="this.parentNode.remove()">Tutup</button><p style="margin:36px 0 8px"><b>'+esc(x.d.plat)+'</b> · '+esc(x.no)+'</p><div class="fth" style="width:100%;max-width:640px" id="fvg"></div>';
  document.body.appendChild(o);
  var g=o.querySelector('#fvg');
- function draw(){g.innerHTML=a.map(function(f){return '<div class="ft">'+(FC[f.id]?'<img src="'+FC[f.id]+'" onclick="event.stopPropagation();fotoLb(\''+esc(f.id)+'\',\''+esc(f.k)+'\')" alt="">':'Memuat…')+'<b>'+(f.k=='sesudah'?'Sesudah':'Sebelum')+'</b></div>'}).join('')}
+ function draw(){g.innerHTML=a.map(function(f){return '<div class="ft">'+(FC[f.id]?'<img src="'+FC[f.id]+'" onclick="event.stopPropagation();fotoLb(\''+esc(f.id)+'\',\''+esc(f.k)+'\')" alt="">':'Memuat…')+'<b>'+fotoLbl(f.k)+'</b></div>'}).join('')}
  draw();a.forEach(function(f){fotoLoad(f.id,draw)})}
 function vRep(){
  var l=repList(),m=can('money'),dn=l.filter(function(x){return x.status=='Selesai'||x.status=='Diambil'}),t=dn.reduce(function(a,x){return a+totalOf(x.d)},0),avg=dn.length?Math.round(t/dn.length):0;
@@ -902,7 +914,7 @@ async function camPick(ev){
  try{var bmp=await createImageBitmap(f),k=Math.min(1,1600/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);ocrGo(c)}
  catch(e){camHint(CAMK,'Foto tidak bisa dibaca. Coba lagi atau ketik manual.',1)}}
 async function ocrGo(cv){
- var k=CAMK,btn=document.querySelector('#fm .cam[data-for="'+k+'"]');CAMB=true;camPicOff(k);if(btn)btn.disabled=true;camHint(k,'Menyiapkan pembaca teks…');
+ var k=CAMK,btn=document.querySelector('#fm .cam[data-for="'+k+'"]');fotoEvid(k,cv);CAMB=true;camPicOff(k);if(btn)btn.disabled=true;camHint(k,'Menyiapkan pembaca teks…');
  try{
   try{await loadTess()}catch(e){camHint(k,'Pembaca teks belum bisa dimuat. Hubungkan internet satu kali, lalu coba lagi.',1);return}
   var wk=await getTW(),parse=k=='plat'?parsePlat:k=='noMesin'?parseMesin:parseRangka,G=gOf(cv),cands=[],bx=gBands(G);
@@ -1021,7 +1033,7 @@ function vTos(){
  var P='<h3>1. Data yang kami olah</h3><ul><li><b>Akun:</b> nama, email, dan peran pengguna.</li><li><b>Data motor:</b> No. Polisi, type, tahun, KM, No. Mesin, No. Rangka.</li><li><b>Data pelanggan:</b> nama, alamat, kelurahan/kecamatan, nomor telepon, email, dan sosial media pembawa dan pemilik motor.</li><li><b>Data servis:</b> keluhan, pekerjaan, suku cadang, biaya, nama mekanik dan pembimbing, serta waktu pengerjaan.</li><li><b>Catatan audit:</b> nama pengguna, peran, tindakan, dan waktu.</li></ul>'+
  '<h3>2. Tujuan penggunaan</h3><p>Data dipakai untuk pendaftaran dan pelayanan servis, antrian, laporan, pengisian otomatis dari riwayat servis, pencetakan form, serta keamanan dan audit. Nomor telepon juga dipakai petugas untuk mengingatkan jadwal servis berikutnya lewat WhatsApp. Data tidak dipakai untuk iklan.</p>'+
  '<h3>3. Tempat penyimpanan</h3><p>Data disimpan di layanan Appwrite Cloud (server wilayah Singapura). Di perangkat Anda, aplikasi menyimpan salinan berkas aplikasi (cache) agar cepat dibuka. Aplikasi tidak memakai pelacak atau analitik pihak ketiga.</p>'+
- '<h3>4. Pihak ketiga</h3><p>Appwrite menyediakan penyimpanan data dan proses masuk. Pustaka aplikasi (Appwrite, PDF, Excel, dan pembaca teks kamera) dimuat dari jsDelivr dan cdnjs, sehingga penyedia tersebut dapat menerima alamat IP dan informasi perangkat Anda saat pustaka dimuat. Foto nomor polisi, mesin, atau rangka dari kamera dibaca langsung di HP Anda, tidak disimpan, dan tidak diunggah. Foto kondisi motor yang sengaja ditambahkan petugas pada data servis disimpan di Google Drive milik sekolah dan hanya dapat dibuka lewat aplikasi oleh pengguna yang berperan. Data servis tidak dijual. Data hanya dibuka kepada pengguna aplikasi yang berwenang, dan dapat diberikan kepada pihak lain jika diwajibkan hukum atau atas persetujuan pemilik data.</p>'+
+ '<h3>4. Pihak ketiga</h3><p>Appwrite menyediakan penyimpanan data dan proses masuk. Pustaka aplikasi (Appwrite, PDF, Excel, dan pembaca teks kamera) dimuat dari jsDelivr dan cdnjs, sehingga penyedia tersebut dapat menerima alamat IP dan informasi perangkat Anda saat pustaka dimuat. Teks pada foto nomor polisi, mesin, dan rangka dibaca langsung di HP Anda. Foto-foto itu, serta foto kondisi motor yang ditambahkan petugas, diunggah dan disimpan di Google Drive milik sekolah sebagai bukti identitas unit untuk klaim garansi servis, dan hanya dapat dibuka lewat aplikasi oleh pengguna yang berperan. Data servis tidak dijual. Data hanya dibuka kepada pengguna aplikasi yang berwenang, dan dapat diberikan kepada pihak lain jika diwajibkan hukum atau atas persetujuan pemilik data.</p>'+
  '<h3>5. Akses data</h3><p>Akses dibatasi menurut peran. Misalnya, Mekanik tidak melihat biaya dan laporan, dan hanya Admin yang dapat mengelola akun serta menghapus data servis.</p>'+
  '<h3>6. Penyimpanan dan penghapusan</h3><p>Data disimpan selama masih diperlukan untuk operasional dan pelaporan. Admin dapat mengarsipkan data servis yang sudah selesai (disembunyikan dari antrian, tetap tersimpan untuk riwayat dan laporan) atau menghapusnya. Catatan penghapusannya tetap tersimpan di audit trail.</p>'+
  '<h3>7. Keamanan</h3><p>Aplikasi memakai login email dan kata sandi, koneksi terenkripsi (HTTPS), dan pembatasan akses menurut peran. Tidak ada sistem yang sepenuhnya bebas risiko, jadi jaga kerahasiaan kata sandi Anda.</p>'+
