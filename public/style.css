@@ -178,3 +178,5 @@ button.cqn{border:0;font:inherit;cursor:pointer}button.cqn:active{filter:brightn
 .cqa{grid-template-columns:1fr 1fr}.cqp{width:100%;padding:12px 10px;border-radius:12px;font-size:15px;font-weight:600}
 
 .cqp:disabled{opacity:1;color:var(--tx);border-style:dashed}
+
+.wk{padding:12px 14px}.wk .job h3{font-size:17px}.wk .btn{margin-top:10px;padding:13px}

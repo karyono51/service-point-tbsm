@@ -515,7 +515,7 @@ function mcard(x){
  var d=x.d,nx=NX[x.status],ok=can('status')&&nx&&!lockd(x)&&!(myRole()=='mekanik'&&nx[0]=='Diambil');
  return '<div class="mc" style="--c:'+SC[x.status]+'"><div class="mch"><div><b>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</b><span>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</span></div><span class="tag '+x.status+'">'+slb(x.status)+'</span></div>'+
  '<p class="mcp">'+esc(d.pm_nama||'-')+(d.pm_hp?' · '+esc(d.pm_hp):'')+'</p><p class="mcw">'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+
- '<div class="mcf"><div>'+(d.pit?'<span class="chip">'+esc(d.pit)+'</span>':'')+(d.mekanik?'<span class="chip">'+esc(d.mekanik)+'</span>':'')+(can('money')?'<b class="amt">'+R0(totalOf(d))+'</b>':'')+'</div><div class="acts">'+(ok?'<button class="btn s adv" onclick="setS(\''+x.id+'\',\''+nx[0]+'\')">'+nx[1]+'</button>':'')+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button></div></div></div>';
+ '<div class="mcf"><div>'+(pitOf(x)?'<span class="chip">'+esc(pitOf(x))+'</span>':'')+(x.tw&&x.tw.fc&&x.status=='Dikerjakan'?'<span class="chip">Final check</span>':'')+(d.mekanik?'<span class="chip">'+esc(d.mekanik)+'</span>':'')+(can('money')?'<b class="amt">'+R0(totalOf(d))+'</b>':'')+'</div><div class="acts">'+(ok?'<button class="btn s adv" onclick="setS(\''+x.id+'\',\''+nx[0]+'\')">'+nx[1]+'</button>':'')+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button></div></div></div>';
 }
 function setMF(v){monF=(monF==v)?'Aktif':v;$('app').innerHTML=vMon()}
 function vMon(){
@@ -534,7 +534,7 @@ function vMon(){
 }
 function card(x){
  var d=x.d,mk=myRole()=='mekanik'&&x.status!='Diambil',sts=mk?ST.slice(0,3):ST;
- return '<div class="card qc"><div class="job"><div><h3>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</p><p>Pemilik: '+esc(d.pm_nama)+(d.pm_hp?' · '+esc(d.pm_hp):'')+'</p><p>'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+(d.mekanik?'<p>Mekanik: '+esc(d.mekanik)+'</p>':'')+(d.pit?'<p>'+esc(d.pit)+'</p>':'')+'</div><div style="text-align:right"><span class="tag '+x.status+'">'+x.status+'</span>'+(can('money')?'<p class="amt">'+R0(totalOf(d))+'</p>':'')+'</div></div>'+
+ return '<div class="card qc"><div class="job"><div><h3>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</p><p>Pemilik: '+esc(d.pm_nama)+(d.pm_hp?' · '+esc(d.pm_hp):'')+'</p><p>'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+(d.mekanik?'<p>Mekanik: '+esc(d.mekanik)+'</p>':'')+(pitOf(x)?'<p>'+esc(pitOf(x))+(x.tw&&x.tw.fc&&x.status=='Dikerjakan'?' · Final check advisor':'')+'</p>':'')+'</div><div style="text-align:right"><span class="tag '+x.status+'">'+x.status+'</span>'+(can('money')?'<p class="amt">'+R0(totalOf(d))+'</p>':'')+'</div></div>'+
  '<div class="acts">'+(lockd(x)?'<span class="chip">Terkunci · hanya lihat dan cetak PDF</span>':(can('status')?'<select onchange="setS(\''+x.id+'\',this.value)">'+sts.map(function(s){return '<option'+(s==x.status?' selected':'')+'>'+s+'</option>'}).join('')+'</select>':'')+(can('edit')?'<button class="btn s" onclick="edit(\''+x.id+'\')">Edit / Rincian</button>':''))+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button>'+(fotoList(d).length?'<button class="btn s" onclick="fotoView(\''+x.id+'\')">Foto ('+fotoList(d).length+')</button>':'')+(can('del')&&x.status=='Diambil'?'<button class="btn s" onclick="arsip(\''+x.id+'\','+(x.arsip?0:1)+')">'+(x.arsip?'Pulihkan':'Arsipkan')+'</button>':'')+(can('del')?'<button class="btn s dg" onclick="del(\''+x.id+'\')">Hapus</button>':'')+'</div></div>';
 }
 function vProf(){
@@ -550,7 +550,7 @@ function waitQ(){return db.jobs.filter(function(x){return x.status=='Menunggu'&&
 function spellPlat(p){var W=['nol','satu','dua','tiga','empat','lima','enam','tujuh','delapan','sembilan'];return String(p||'').toUpperCase().replace(/[^A-Z0-9]/g,'').split('').map(function(c){return /\d/.test(c)?W[+c]:c}).join(' ')}
 var PITS={'Pit 1':'mekanik1@smkdf.com','Pit 2':'mekanik2@smkdf.com'},PITSEL='';
 function say(t){try{if(window.speechSynthesis){speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)}}catch(e){}}
-function pitBusy(p,exId){return db.jobs.some(function(x){return x.status=='Dikerjakan'&&!x.arsip&&x.id!=exId&&x.d&&x.d.pit==p})}
+function pitBusy(p,exId){return db.jobs.some(function(x){return x.status=='Dikerjakan'&&!x.arsip&&x.id!=exId&&!(x.tw&&x.tw.fc)&&pitOf(x)==p})}
 function pitDef(){var ks=Object.keys(PITS);if(PITSEL&&!pitBusy(PITSEL))return PITSEL;var f=ks.filter(function(p){return !pitBusy(p)})[0];return f||''}
 function myPit(){var em=((AW.u&&AW.u.email)||'').toLowerCase(),k=Object.keys(PITS).filter(function(p){return PITS[p]==em})[0];return k||''}
 function pitVal(){var mp=myPit();if(mp)return mp;var e=document.getElementById('pitSel');return e?e.value:PITSEL}
@@ -566,10 +566,35 @@ function mulaiQ(id){
  var p=pitVal();PITSEL=p;
  if(!p){alert('Pilih Pit terlebih dahulu (Pit 1 atau Pit 2).');return}
  if(pitBusy(p,id)&&!confirm(p+' masih dipakai unit lain. Tetap lanjutkan?'))return;
- var d=x.d||(x.d={});d.pit=p;d.pitEmail=PITS[p];
+ var d=x.d||{};x.tw=x.tw||{};x.tw.pit=p;x.tw.pitEmail=PITS[p];
  try{aud(x,'ubah','Masuk '+p+' ('+PITS[p]+')')}catch(e){}
  say('Nomor antrian '+qNo(x)+'. Plat nomor '+spellPlat(d.plat)+(d.pm_nama?', atas nama '+d.pm_nama:'')+'. Lanjut ke proses pemeriksaan di '+p+'.');
  setS(id,'Dikerjakan');
+}
+function pitOf(x){return (x.tw&&x.tw.pit)||(x.d&&x.d.pit)||''}
+function selesaiQ(id){
+ var x=db.jobs.filter(function(j){return j.id==id})[0];if(!x)return;
+ var d=x.d||{};x.tw=x.tw||{};x.tw.fc=hhmm();
+ try{aud(x,'ubah','Selesai dikerjakan, menunggu final check advisor')}catch(e){}
+ say('Nomor antrian '+qNo(x)+'. Plat nomor '+spellPlat(d.plat)+(d.pm_nama?', atas nama '+d.pm_nama:'')+'. Lanjut ke proses final check oleh service advisor.');
+ saveJob(x,false).catch(function(){}).then(function(){render()});
+}
+function siapQ(id){
+ var x=db.jobs.filter(function(j){return j.id==id})[0];if(!x)return;
+ var d=x.d||{};
+ say('Nomor antrian '+qNo(x)+'. Plat nomor '+spellPlat(d.plat)+(d.pm_nama?', atas nama '+d.pm_nama:'')+'. Siap diambil. Lakukan proses pembayaran di kasir.');
+ setS(id,'Selesai');
+}
+function unitCard(x,btn,fn,pil){var d=x.d||{};return '<div class="card wk"><div class="job"><div><h3>'+esc(d.plat||'-')+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>No. '+qNo(x)+' · '+esc(d.pm_nama||'-')+'</p><p>'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+(pil?'<p><span class="chip">'+esc(pil)+'</span></p>':'')+'</div></div><button class="btn w" onclick="'+fn+'(\''+x.id+'\')">'+btn+'</button></div>'}
+function vWork(){
+ if(myRole()!='mekanik')return '';
+ var mp=myPit(),l=db.jobs.filter(function(x){return x.status=='Dikerjakan'&&!x.arsip&&!(x.tw&&x.tw.fc)&&(!mp||pitOf(x)==mp)}).sort(function(a,b){return a.ts-b.ts});
+ return '<h2>Unit Sedang Dikerjakan'+(mp?' · '+mp:'')+' <small class="cnt">'+l.length+' unit</small></h2>'+(l.length?l.map(function(x){return unitCard(x,'Selesai','selesaiQ',pitOf(x))}).join(''):'<div class="card empty">Belum ada unit yang sedang dikerjakan.</div>');
+}
+function vFc(){
+ var r=myRole();if(r!='admin'&&r!='advisor')return '';
+ var l=db.jobs.filter(function(x){return x.status=='Dikerjakan'&&!x.arsip&&x.tw&&x.tw.fc}).sort(function(a,b){return a.ts-b.ts});
+ return '<h2>Final Check Advisor <small class="cnt">'+l.length+' unit</small></h2>'+(l.length?l.map(function(x){return unitCard(x,'Siap diambil','siapQ',pitOf(x))}).join(''):'<div class="card empty">Tidak ada unit yang menunggu final check.</div>');
 }
 function vCall(){
  var w=waitQ();
@@ -608,7 +633,7 @@ function vDash(){
  ST.forEach(function(k){var v=c(k);if(v){seg.push(CL[k]+' '+(acc/tot*100)+'% '+((acc+v)/tot*100)+'%');acc+=v}});
  var dn='<div class="card"><h3>Status unit</h3><div class="dnw"><div class="dn" style="background:'+(tot?'conic-gradient('+seg.join(',')+')':'var(--gr)')+'"><div><b>'+tot+'</b><span>unit</span></div></div><ul class="lgd">'+ST.map(function(k){return '<li><i style="background:'+CL[k]+'"></i>'+(k=='Selesai'?'Siap diambil':k)+'<b>'+c(k)+'</b></li>'}).join('')+'</ul></div></div>';
  var rc=j.slice(0,5),rh='<h2>Aktivitas terbaru</h2>'+(rc.length?'<div class="card rcl">'+rc.map(function(x){return '<div class="ri"><div><b>'+esc(x.d.plat)+(x.d.tipe?' · '+esc(x.d.tipe):'')+'</b><span>'+esc(x.d.pm_nama||'-')+' · '+tglID(x.ts)+'</span></div><span class="tag '+x.status+'">'+x.status+'</span></div>'}).join('')+'</div>':'<div class="card empty">Belum ada aktivitas.</div>');
- return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hero+(can('exec')?'':vCall())+qh+'<div class="two">'+ch+dn+'</div>'+rh;
+ return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hero+vWork()+vFc()+(can('exec')?'':vCall())+qh+'<div class="two">'+ch+dn+'</div>'+rh;
 }
 async function loadAll(){
  loadErr='';
