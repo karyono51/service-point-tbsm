@@ -409,6 +409,7 @@ async function pdfFoto(d,x,a){
 }
 async function pdf(i){var x=jf(i);if(!window.jspdf){alert('Pustaka PDF belum termuat. Periksa koneksi internet.');return}
  var d=new window.jspdf.jsPDF({unit:'mm',format:'a4'});pdfLayout(d,x,IMG);
+ var pyi=payInfo(x);if(pyi){d.addPage();payRcptDraw(d,x,pyi,31,10,148,true)}
  var fa=fotoList(x.d);
  if(fa.length&&REMOTE&&CFG.functionId){pdfWait(true);try{await pdfFoto(d,x,fa)}catch(e){}pdfWait(false)}
  d.save('Form-Service-'+String(x.d.plat||'').replace(/\\s+/g,'')+'.pdf')}
@@ -647,34 +648,41 @@ function vPay(){
   return h+bel.map(function(x){var d=x.d||{};return '<div class="card"><div class="job"><div><h3>'+esc(d.plat||'-')+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>No. '+qNo(x)+' · '+esc(d.pm_nama||'-')+'</p><p>'+esc(daftar(x))+'</p></div><div style="text-align:right"><b class="amt">'+R0(totalOf(d))+'</b></div></div>'+(payOpen==x.id?payForm(x):'<button class="btn w" style="margin-top:10px" onclick="payToggle(\''+x.id+'\')">Bayar</button>')+'</div>'}).join('');
  }
  if(!sdh.length)return h+'<div class="card empty">Belum ada pembayaran tercatat.</div>';
- return h+sdh.slice(0,40).map(function(x){var d=x.d||{},p=payInfo(x);return '<div class="card"><div class="job"><div><h3>'+esc(d.plat||'-')+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>'+esc(p.no)+' · '+tglID(p.ts)+' '+new Date(p.ts).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+'</p><p>'+esc(p.m)+(p.disc?' · diskon '+R0(p.disc):'')+'</p></div><div style="text-align:right"><b class="amt">'+R0(p.due)+'</b></div></div><button class="btn w s" style="margin-top:10px" onclick="payRcpt(\''+x.id+'\')">Cetak kuitansi</button></div>'}).join('');
+ return h+sdh.slice(0,40).map(function(x){var d=x.d||{},p=payInfo(x);return '<div class="card"><div class="job"><div><h3>'+esc(d.plat||'-')+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>'+esc(p.no)+' · '+tglID(p.ts)+' '+new Date(p.ts).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+'</p><p>'+esc(p.m)+(p.disc?' · diskon '+R0(p.disc):'')+'</p></div><div style="text-align:right"><b class="amt">'+R0(p.due)+'</b></div></div><div class="cqa" style="margin-top:10px"><button class="btn s" onclick="pdf(\''+x.id+'\')">PDF Form + Kuitansi</button><button class="btn s" onclick="payRcpt(\''+x.id+'\')">Kuitansi saja</button></div></div>'}).join('');
+}
+function payRcptDraw(d,x,p,ox,oy,W,frame){
+ var s=x.d||{},L=ox+10,R=ox+W-10,cx=ox+W/2,y,
+  T=function(t,xx,yy,o,sz,b){d.setFont('helvetica',b?'bold':'normal');d.setFontSize(sz||9);d.text(String(t),xx,yy,o||{})},
+  hm=new Date(p.ts).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+ try{d.addImage(IMG.df,'JPEG',L,oy+8,18,18)}catch(e){}
+ T('Business Center TBSM',cx+6,oy+14,{align:'center'},14,1);T('SMKS Darul Fatwa',cx+6,oy+19.5,{align:'center'},10,1);
+ T('Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363',cx+6,oy+24,{align:'center'},6.5);
+ d.setLineWidth(.7);d.line(L,oy+29,R,oy+29);d.setLineWidth(.2);d.line(L,oy+30.2,R,oy+30.2);
+ T('KUITANSI PEMBAYARAN',cx,oy+38,{align:'center'},12,1);
+ T('No. Kuitansi',L,oy+46,{},9);T(': '+p.no,L+32,oy+46,{},9,1);
+ T('Tanggal',L,oy+51,{},9);T(': '+tglID(p.ts)+' '+hm,L+32,oy+51,{},9);
+ T('Diterima dari',L,oy+56,{},9);T(': '+(s.pm_nama||'-'),L+32,oy+56,{},9);
+ T('No. Polisi',L,oy+61,{},9);T(': '+(s.plat||'-')+(s.tipe?' · '+s.tipe:''),L+32,oy+61,{},9);
+ T('No. Servis',L,oy+66,{},9);T(': '+(x.no||'-'),L+32,oy+66,{},9);
+ y=oy+74;d.line(L,y-4.5,R,y-4.5);T('Rincian',L,y,{},9,1);T('Jumlah',R,y,{align:'right'},9,1);d.line(L,y+1.5,R,y+1.5);y+=6.5;
+ var items=[];[0,1,2,3,4,6,5].forEach(function(i){var v=num(s['jb'+i]);if(v>0)items.push([i==0?'KPB'+(s.kpb?' ke-'+s.kpb:''):i==1?'Servis'+(s.svc?' '+s.svc:''):i==2?'Ganti Oli'+(s.oli?' '+s.oli:''):i==3?'Ganti Part':i==4?'Turun Mesin':i==5?(s.j5t||'Lainnya'):'Cuci Motor',v])});
+ for(var k=0;k<5;k++){var pv=num(s['p'+k+'h']);if(pv>0)items.push([s['p'+k+'n']||'Suku cadang',pv])}
+ items.forEach(function(it){T(String(it[0]).slice(0,50),L,y,{},9);T(R0(it[1]),R,y,{align:'right'},9);y+=5.5});
+ d.line(L,y-2,R,y-2);y+=3;
+ var ln=function(a,b,bold){T(a,R-50,y,{align:'right'},9,bold);T(b,R,y,{align:'right'},9,bold);y+=5.5};
+ ln('Total servis',R0(p.total));if(p.disc)ln('Diskon','- '+R0(p.disc));ln('Total tagihan',R0(p.due),1);ln('Metode bayar',p.m);ln('Dibayar',R0(p.paid));if(p.change>0)ln('Kembalian',R0(p.change));
+ if(p.note){y+=1;T('Catatan: '+p.note,L,y,{},8)}
+ y=Math.max(y+10,oy+150);
+ T('Terima kasih atas kepercayaan Anda.',L,y+4,{},8);
+ T('Diterima oleh,',R-30,y,{align:'center'},9);T(p.by||'-',R-30,y+22,{align:'center'},9,1);d.line(R-52,y+23.5,R-8,y+23.5);
+ if(frame){d.setLineWidth(.2);d.rect(ox+3,oy+3,W-6,y+28-oy-3)}
+ return y+28;
 }
 function payRcpt(id){
  var x=jf(id),p=x&&payInfo(x);if(!p)return;
  if(!window.jspdf){alert('Pustaka PDF belum termuat. Periksa koneksi internet.');return}
- var s=x.d||{},d=new window.jspdf.jsPDF({unit:'mm',format:'a5'}),W=148,y,
-  T=function(t,xx,yy,o,sz,b){d.setFont('helvetica',b?'bold':'normal');d.setFontSize(sz||9);d.text(String(t),xx,yy,o||{})};
- try{d.addImage(IMG.df,'JPEG',10,8,18,18)}catch(e){}
- T('Business Center TBSM',W/2+6,14,{align:'center'},14,1);T('SMKS Darul Fatwa',W/2+6,19.5,{align:'center'},10,1);
- T('Jl. Letda Lukito No.90, Jatiroke, Kec. Jatinangor, Kab. Sumedang, Jawa Barat 45363',W/2+6,24,{align:'center'},6.5);
- d.setLineWidth(.7);d.line(10,29,W-10,29);d.setLineWidth(.2);d.line(10,30.2,W-10,30.2);
- T('KUITANSI PEMBAYARAN',W/2,38,{align:'center'},12,1);
- T('No. Kuitansi',10,46,{},9);T(': '+p.no,42,46,{},9,1);
- T('Tanggal',10,51,{},9);T(': '+tglID(p.ts)+' '+new Date(p.ts).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),42,51,{},9);
- T('Diterima dari',10,56,{},9);T(': '+(s.pm_nama||'-'),42,56,{},9);
- T('No. Polisi',10,61,{},9);T(': '+(s.plat||'-')+(s.tipe?' · '+s.tipe:''),42,61,{},9);
- T('No. Servis',10,66,{},9);T(': '+(x.no||'-'),42,66,{},9);
- y=74;d.line(10,y-4.5,W-10,y-4.5);T('Rincian',10,y,{},9,1);T('Jumlah',W-10,y,{align:'right'},9,1);d.line(10,y+1.5,W-10,y+1.5);y+=6.5;
- var items=[];[0,1,2,3,4,6,5].forEach(function(i){var v=num(s['jb'+i]);if(v>0)items.push([i==0?'KPB'+(s.kpb?' ke-'+s.kpb:''):i==1?'Servis'+(s.svc?' '+s.svc:''):i==2?'Ganti Oli'+(s.oli?' '+s.oli:''):i==3?'Ganti Part':i==4?'Turun Mesin':i==5?(s.j5t||'Lainnya'):'Cuci Motor',v])});
- for(var k=0;k<5;k++){var pv=num(s['p'+k+'h']);if(pv>0)items.push([s['p'+k+'n']||'Suku cadang',pv])}
- items.forEach(function(it){T(String(it[0]).slice(0,50),10,y,{},9);T(R0(it[1]),W-10,y,{align:'right'},9);y+=5.5});
- d.line(10,y-2,W-10,y-2);y+=3;
- var ln=function(a,b,bold){T(a,W-60,y,{align:'right'},9,bold);T(b,W-10,y,{align:'right'},9,bold);y+=5.5};
- ln('Total servis',R0(p.total));if(p.disc)ln('Diskon','- '+R0(p.disc));ln('Total tagihan',R0(p.due),1);ln('Metode bayar',p.m);ln('Dibayar',R0(p.paid));if(p.change>0)ln('Kembalian',R0(p.change));
- if(p.note){y+=1;T('Catatan: '+p.note,10,y,{},8)}
- y=Math.max(y+14,168);T('Diterima oleh,',W-40,y,{align:'center'},9);T(p.by||'-',W-40,y+22,{align:'center'},9,1);d.line(W-62,y+23.5,W-18,y+23.5);
- T('Terima kasih atas kepercayaan Anda.',10,y+4,{},8);
- d.save('Kuitansi-'+String(s.plat||'servis').replace(/\s+/g,'')+'-'+p.no+'.pdf');
+ var d=new window.jspdf.jsPDF({unit:'mm',format:'a5'});payRcptDraw(d,x,p,0,0,148,false);
+ d.save('Kuitansi-'+String((x.d||{}).plat||'servis').replace(/\s+/g,'')+'-'+p.no+'.pdf');
 }
 function payCard(dn){
  var pd=dn.filter(function(x){return payInfo(x)}),by={Tunai:0,Transfer:0,QRIS:0},dis=0;
