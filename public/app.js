@@ -515,7 +515,7 @@ function mcard(x){
  var d=x.d,nx=NX[x.status],ok=can('status')&&nx&&!lockd(x)&&!(myRole()=='mekanik'&&nx[0]=='Diambil');
  return '<div class="mc" style="--c:'+SC[x.status]+'"><div class="mch"><div><b>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</b><span>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</span></div><span class="tag '+x.status+'">'+slb(x.status)+'</span></div>'+
  '<p class="mcp">'+esc(d.pm_nama||'-')+(d.pm_hp?' · '+esc(d.pm_hp):'')+'</p><p class="mcw">'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+
- '<div class="mcf"><div>'+(d.mekanik?'<span class="chip">'+esc(d.mekanik)+'</span>':'')+(can('money')?'<b class="amt">'+R0(totalOf(d))+'</b>':'')+'</div><div class="acts">'+(ok?'<button class="btn s adv" onclick="setS(\''+x.id+'\',\''+nx[0]+'\')">'+nx[1]+'</button>':'')+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button></div></div></div>';
+ '<div class="mcf"><div>'+(d.pit?'<span class="chip">'+esc(d.pit)+'</span>':'')+(d.mekanik?'<span class="chip">'+esc(d.mekanik)+'</span>':'')+(can('money')?'<b class="amt">'+R0(totalOf(d))+'</b>':'')+'</div><div class="acts">'+(ok?'<button class="btn s adv" onclick="setS(\''+x.id+'\',\''+nx[0]+'\')">'+nx[1]+'</button>':'')+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button></div></div></div>';
 }
 function setMF(v){monF=(monF==v)?'Aktif':v;$('app').innerHTML=vMon()}
 function vMon(){
@@ -534,7 +534,7 @@ function vMon(){
 }
 function card(x){
  var d=x.d,mk=myRole()=='mekanik'&&x.status!='Diambil',sts=mk?ST.slice(0,3):ST;
- return '<div class="card qc"><div class="job"><div><h3>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</p><p>Pemilik: '+esc(d.pm_nama)+(d.pm_hp?' · '+esc(d.pm_hp):'')+'</p><p>'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+(d.mekanik?'<p>Mekanik: '+esc(d.mekanik)+'</p>':'')+'</div><div style="text-align:right"><span class="tag '+x.status+'">'+x.status+'</span>'+(can('money')?'<p class="amt">'+R0(totalOf(d))+'</p>':'')+'</div></div>'+
+ return '<div class="card qc"><div class="job"><div><h3>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>'+esc(x.no)+' · '+tglID(x.ts)+' '+esc((x.tw||{}).daftar||'')+'</p><p>Pemilik: '+esc(d.pm_nama)+(d.pm_hp?' · '+esc(d.pm_hp):'')+'</p><p>'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+(d.mekanik?'<p>Mekanik: '+esc(d.mekanik)+'</p>':'')+(d.pit?'<p>'+esc(d.pit)+'</p>':'')+'</div><div style="text-align:right"><span class="tag '+x.status+'">'+x.status+'</span>'+(can('money')?'<p class="amt">'+R0(totalOf(d))+'</p>':'')+'</div></div>'+
  '<div class="acts">'+(lockd(x)?'<span class="chip">Terkunci · hanya lihat dan cetak PDF</span>':(can('status')?'<select onchange="setS(\''+x.id+'\',this.value)">'+sts.map(function(s){return '<option'+(s==x.status?' selected':'')+'>'+s+'</option>'}).join('')+'</select>':'')+(can('edit')?'<button class="btn s" onclick="edit(\''+x.id+'\')">Edit / Rincian</button>':''))+'<button class="btn s" onclick="pdf(\''+x.id+'\')">PDF</button>'+(fotoList(d).length?'<button class="btn s" onclick="fotoView(\''+x.id+'\')">Foto ('+fotoList(d).length+')</button>':'')+(can('del')&&x.status=='Diambil'?'<button class="btn s" onclick="arsip(\''+x.id+'\','+(x.arsip?0:1)+')">'+(x.arsip?'Pulihkan':'Arsipkan')+'</button>':'')+(can('del')?'<button class="btn s dg" onclick="del(\''+x.id+'\')">Hapus</button>':'')+'</div></div>';
 }
 function vProf(){
@@ -548,20 +548,39 @@ function vProf(){
 function qNo(x){return parseInt(String(x.no||'').split('-').pop(),10)||0}
 function waitQ(){return db.jobs.filter(function(x){return x.status=='Menunggu'&&!x.arsip}).sort(function(a,b){return a.ts-b.ts})}
 function spellPlat(p){var W=['nol','satu','dua','tiga','empat','lima','enam','tujuh','delapan','sembilan'];return String(p||'').toUpperCase().replace(/[^A-Z0-9]/g,'').split('').map(function(c){return /\d/.test(c)?W[+c]:c}).join(' ')}
+var PITS={'Pit 1':'mekanik1@smkdf.com','Pit 2':'mekanik2@smkdf.com'},PITSEL='';
+function say(t){try{if(window.speechSynthesis){speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)}}catch(e){}}
+function pitBusy(p,exId){return db.jobs.some(function(x){return x.status=='Dikerjakan'&&!x.arsip&&x.id!=exId&&x.d&&x.d.pit==p})}
+function pitDef(){var ks=Object.keys(PITS);if(PITSEL&&!pitBusy(PITSEL))return PITSEL;var f=ks.filter(function(p){return !pitBusy(p)})[0];return f||''}
+function pitVal(){var e=document.getElementById('pitSel');return e?e.value:PITSEL}
 function callQ(id){
  var x=db.jobs.filter(function(j){return j.id==id})[0];if(!x)return;
  var c=kv('bc_callq')||{};c[id]=Date.now();kv('bc_callq',c);
- var d=x.d||{},t='Nomor antrian '+qNo(x)+'. Plat '+spellPlat(d.plat)+(d.pm_nama?', atas nama '+d.pm_nama:'')+'. Lanjut ke proses pemeriksaan.';
- try{if(window.speechSynthesis){speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)}}catch(e){}
+ var d=x.d||{};
+ say('Nomor antrian '+qNo(x)+'. Plat nomor '+spellPlat(d.plat)+'. Ready.');
  if(tab=='dash')$('app').innerHTML=vDash();
+}
+function mulaiQ(id){
+ var x=db.jobs.filter(function(j){return j.id==id})[0];if(!x)return;
+ var p=pitVal();PITSEL=p;
+ if(!p){alert('Pilih Pit terlebih dahulu (Pit 1 atau Pit 2).');return}
+ if(pitBusy(p,id)&&!confirm(p+' masih dipakai unit lain. Tetap lanjutkan?'))return;
+ var d=x.d||(x.d={});d.pit=p;d.pitEmail=PITS[p];
+ try{aud(x,'ubah','Masuk '+p+' ('+PITS[p]+')')}catch(e){}
+ say('Nomor antrian '+qNo(x)+'. Plat nomor '+spellPlat(d.plat)+(d.pm_nama?', atas nama '+d.pm_nama:'')+'. Lanjut ke proses pemeriksaan di '+p+'.');
+ setS(id,'Dikerjakan');
 }
 function vCall(){
  var w=waitQ();
  if(!w.length)return '<h2>Panggilan Antrian</h2><div class="card empty">Tidak ada unit yang menunggu.</div>';
  var cm=kv('bc_callq')||{},cc=can('status'),jam=function(t){return new Date(t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})};
- var f=w[0],fd=f.d||{};
- var h='<h2>Panggilan Antrian <small class="cnt">'+w.length+' menunggu</small></h2><div class="card cq"><div class="cqn"><span>Nomor berikutnya</span><b>'+qNo(f)+'</b></div><div class="cqi"><b>'+esc(fd.plat||'-')+(fd.tipe?' · '+esc(fd.tipe):'')+'</b><span>'+esc(fd.pm_nama||'-')+'</span>'+(cm[f.id]?'<em>Dipanggil '+jam(cm[f.id])+'</em>':'')+'</div>'+(cc?'<div class="cqa"><button class="btn" onclick="callQ(\''+f.id+'\')">'+(cm[f.id]?'Panggil ulang':'Panggil')+'</button><button class="btn s cqk" onclick="setS(\''+f.id+'\',\'Dikerjakan\')">Dikerjakan</button></div>':'')+'</div>';
- if(w.length>1)h+='<div class="card rcl">'+w.slice(1,6).map(function(x){var d=x.d||{};return '<div class="ri"><div><b>No. '+qNo(x)+' · '+esc(d.plat||'-')+'</b><span>'+esc(d.pm_nama||'-')+(cm[x.id]?' · dipanggil '+jam(cm[x.id]):'')+'</span></div>'+(cc?'<div class="cqs"><button class="btn s" onclick="callQ(\''+x.id+'\')">Panggil</button><button class="btn s cqk" onclick="setS(\''+x.id+'\',\'Dikerjakan\')">Dikerjakan</button></div>':'')+'</div>'}).join('')+(w.length>6?'<p class="mut" style="text-align:center;margin:8px 0 0">+'+(w.length-6)+' nomor lagi di Antrian</p>':'')+'</div>';
+ var f=w[0],fd=f.d||{},pd=pitDef();PITSEL=pd;
+ var sel='<select id="pitSel" class="cqp" onchange="PITSEL=this.value">'+(pd?'':'<option value="" selected>Pilih Pit</option>')+Object.keys(PITS).map(function(p){return '<option value="'+p+'"'+(p==pd?' selected':'')+'>'+p+(pitBusy(p)?' (terisi)':'')+'</option>'}).join('')+'</select>';
+ var h='<h2>Panggilan Antrian <small class="cnt">'+w.length+' menunggu</small></h2><div class="card cq">'+
+  (cc?'<button class="cqn" onclick="callQ(\''+f.id+'\')"><span>Ketuk untuk panggil</span><b>'+qNo(f)+'</b></button>':'<div class="cqn"><span>Nomor berikutnya</span><b>'+qNo(f)+'</b></div>')+
+  '<div class="cqi"><b>'+esc(fd.plat||'-')+(fd.tipe?' · '+esc(fd.tipe):'')+'</b><span>'+esc(fd.pm_nama||'-')+'</span>'+(cm[f.id]?'<em>Dipanggil '+jam(cm[f.id])+'</em>':'')+'</div>'+
+  (cc?'<div class="cqa">'+sel+'<button class="btn" onclick="mulaiQ(\''+f.id+'\')">Dikerjakan</button></div>':'')+'</div>';
+ if(w.length>1)h+='<div class="card rcl">'+w.slice(1,6).map(function(x){var d=x.d||{};return '<div class="ri"><div><b>No. '+qNo(x)+' · '+esc(d.plat||'-')+'</b><span>'+esc(d.pm_nama||'-')+(cm[x.id]?' · dipanggil '+jam(cm[x.id]):'')+'</span></div>'+(cc?'<div class="cqs"><button class="btn s" onclick="callQ(\''+x.id+'\')">Panggil</button><button class="btn s cqk" onclick="mulaiQ(\''+x.id+'\')">Dikerjakan</button></div>':'')+'</div>'}).join('')+(w.length>6?'<p class="mut" style="text-align:center;margin:8px 0 0">+'+(w.length-6)+' nomor lagi di Antrian</p>':'')+'</div>';
  return h;
 }
 function vDash(){
