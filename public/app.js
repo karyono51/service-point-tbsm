@@ -474,7 +474,7 @@ async function simpan(){
  }catch(e){return}
  editId=null;tab='q';render();
 }
-async function setS(i,v){var x=jf(i);if(lockd(x)){alert('Data sudah diambil dan dikunci. Hanya admin yang bisa mengubahnya.');render();return}if(x.status!=v)aud(x,'status',slb(x.status)+' → '+slb(v));x.status=v;x.tw=x.tw||{};if(v=='Dikerjakan'&&!x.tw.kerja)x.tw.kerja=hhmm();if((v=='Selesai'||v=='Diambil')&&!x.tw.selesai)x.tw.selesai=hhmm();try{await saveJob(x,false)}catch(e){}render()}
+async function setS(i,v){var x=jf(i);if(x&&v!='Diambil'&&!(x.tw&&x.tw.pay))await freshen(x);if(lockd(x)){alert('Data sudah diambil dan dikunci. Hanya admin yang bisa mengubahnya.');render();return}if(x.status!=v)aud(x,'status',slb(x.status)+' → '+slb(v));x.status=v;x.tw=x.tw||{};if(v=='Dikerjakan'&&!x.tw.kerja)x.tw.kerja=hhmm();if((v=='Selesai'||v=='Diambil')&&!x.tw.selesai)x.tw.selesai=hhmm();try{await saveJob(x,false)}catch(e){}render()}
 async function arsip(i,on){var x=jf(i);if(!x||!can('del'))return;if(on&&!confirm('Arsipkan data ini? Data disembunyikan dari Antrian, tetapi tetap tersimpan untuk riwayat servis dan laporan.'))return;if(on)x.arsip=Date.now();else delete x.arsip;aud(x,'ubah',on?'Diarsipkan':'Arsip dipulihkan');try{await saveJob(x,false)}catch(e){}cacheSave();render()}
 async function del(i){if(confirm('Hapus data servis ini secara permanen? Riwayat servis unit ini ikut hilang. Untuk data yang sudah diambil, sebaiknya pakai Arsipkan.')){var x=jf(i);try{await removeJob(i)}catch(e){return}if(x)await audDel(x);render()}}
 
@@ -655,6 +655,9 @@ function payForm(x){var tot=totalOf(x.d);return '<div class="pf"><div class="ri"
  '<div class="cqa" style="margin-top:10px"><button class="btn" onclick="paySave(\''+x.id+'\')">Simpan &amp; Diambil</button><button class="btn s" onclick="payToggle(\''+x.id+'\')">Batal</button></div></div>'}
 async function paySave(id){
  var x=jf(id);if(!x||!can('pay'))return;
+ await freshen(x);
+ if(payInfo(x)){alert('Unit ini sudah dibayar dari perangkat lain ('+payInfo(x).no+').');payOpen=null;payF='sudah';render();return}
+ if(x._rs&&x._rs!='Selesai'&&x._rs!=x.status){alert('Status unit sudah berubah di perangkat lain ('+x._rs+'). Data dimuat ulang.');try{await loadAll()}catch(e){}payOpen=null;render();return}
  var tot=totalOf(x.d),dis=num(pyv('pdis'));
  if(dis>tot){alert('Diskon tidak boleh melebihi total servis.');return}
  var due=tot-dis,paid=pyv('pbayar')===''?due:num(pyv('pbayar')),m=pyv('pmet')||'Tunai';
@@ -800,16 +803,52 @@ function vLay(){
  return '<div class="lay">'+big+'<div class="lpits">'+pits+'</div><div class="card"><h3>Antrian berikutnya</h3><div class="lrow">'+nums(wait.slice(0,10))+'</div></div><div class="two"><div class="card"><h3>Final check</h3><div class="lrow">'+nums(fc)+'</div></div><div class="card"><h3>Siap diambil</h3><div class="lrow">'+nums(rd)+'</div></div></div>'+
   '<div class="cqa"><button class="btn s" onclick="layVoice()">Suara: '+(LAY.voice?'aktif':'nonaktif')+'</button><button class="btn s" onclick="layFull()">Layar penuh</button></div><p class="mut" style="text-align:center;font-size:12px">Diperbarui otomatis tiap 10 detik.</p></div>';
 }
-var arTick=0;
-async function autoRefresh(){
- if(!REMOTE||!AW.u||document.hidden||!navigator.onLine||OB.length||SYN.busy)return;
- if(tab!='lay'&&tab!='dash')return;
- arTick++;if(tab=='dash'&&arTick%3)return;
- var ae=document.activeElement;if(tab=='dash'&&ae&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName))return;
- try{await loadAll()}catch(e){return}
- if(tab=='lay'){layCheck();$('app').innerHTML=vLay()}else if(tab=='dash')$('app').innerHTML=vDash();
+var arTick=0,selT=0,arBusy=false;
+document.addEventListener('focusin',function(e){if(e.target&&e.target.tagName=='SELECT')selT=Date.now()});
+document.addEventListener('change',function(e){var t=e.target;if(t&&t.tagName=='SELECT'&&t.type!='select-multiple')setTimeout(function(){try{t.blur()}catch(x){}},400)});
+function arTyping(){
+ var ae=document.activeElement;if(!ae)return false;
+ if(/^(INPUT|TEXTAREA)$/.test(ae.tagName)&&ae.type!='button'&&ae.type!='checkbox'&&ae.type!='radio')return true;
+ if(ae.tagName=='SELECT'&&Date.now()-selT<8000)return true;
+ return false}
+async function autoRefresh(force){
+ if(arBusy||!REMOTE||!AW.u||document.hidden||!navigator.onLine||OB.length||SYN.busy)return;
+ var T={lay:1,dash:2,q:2,mon:2,pay:2,rep:3};if(!T[tab])return;
+ if(force!==true){arTick++;if(arTick%T[tab])return}
+ if(arTyping())return;
+ if(tab=='pay'&&payOpen)return;
+ arBusy=true;var t0=tab;
+ try{await loadAll()}catch(e){arBusy=false;return}
+ arBusy=false;
+ if(tab!=t0||arTyping()||OB.length||(tab=='pay'&&payOpen))return;
+ var y=scrollY;
+ if(tab=='lay'){layCheck();$('app').innerHTML=vLay()}
+ else if(tab=='dash')$('app').innerHTML=vDash();
+ else if(tab=='q'){if($('ql'))rq()}
+ else if(tab=='mon')$('app').innerHTML=vMon();
+ else if(tab=='pay')$('app').innerHTML=vPay();
+ else if(tab=='rep'&&typeof rwKey!='undefined'&&!rwKey)$('app').innerHTML=vRep();
+ else return;
+ scrollTo(0,y);
 }
 setInterval(autoRefresh,10000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)autoRefresh(true)});
+/* Ambil data terbaru satu unit dari server sebelum menyimpan, supaya pembayaran dari HP lain tidak tertimpa data lama */
+async function freshen(x){
+ if(!REMOTE||!AW.u||!navigator.onLine||!x||!x.id)return;
+ if(OB.some(function(o){return o.id==x.id}))return;
+ var a=ids(),r;a.rowId=x.id;
+ try{r=await tmo(AW.t.getRow(a),8000)}catch(e){return}
+ var j;try{j=JSON.parse(r.payload)}catch(e){return}
+ if(!j||j.au)return;
+ x.tw=x.tw||{};var rt=j.tw||{};
+ var lv=(x.tw.payVoid||[]).length,rv=(rt.payVoid||[]).length;
+ if(rv>lv)x.tw.payVoid=rt.payVoid;
+ if(rt.pay&&!x.tw.pay&&lv<=rv){x.tw.pay=rt.pay;if(rt.ambil)x.tw.ambil=rt.ambil}
+ else if(!rt.pay&&x.tw.pay&&rv>lv){delete x.tw.pay}
+ Object.keys(rt).forEach(function(k){if(k!='pay'&&k!='payVoid'&&k!='ambil'&&x.tw[k]===undefined)x.tw[k]=rt[k]});
+ if(j.arsip&&!x.arsip)x.arsip=j.arsip;
+ x._rs=j.status}
 function vCall(){
  var w=waitQ();
  if(!w.length)return '';
