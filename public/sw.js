@@ -2,7 +2,7 @@
    - Berkas situs sendiri: jaringan dulu, cadangan dari cache.
    - Pustaka CDN (Appwrite, jsPDF, Excel): disimpan di cache, dipakai saat offline.
    - API Appwrite dan permintaan non-GET tidak disentuh. */
-var CACHE = 'bc-tbsm-v62';
+var CACHE = 'bc-tbsm-v63';
 var SHELL = ['./', 'index.html', 'style.css?v=45', 'app.js?v=45', 'config.js', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 var CDN = [
   'https://cdn.jsdelivr.net/npm/appwrite@20.0.0',

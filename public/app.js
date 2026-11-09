@@ -590,7 +590,7 @@ function vPits(){
  var r=myRole();if(r!='admin'&&r!='advisor')return '';
  var l=db.jobs.filter(function(x){return x.status=='Dikerjakan'&&!x.arsip&&!(x.tw&&x.tw.fc)}).sort(function(a,b){return a.ts-b.ts});
  if(!l.length)return '';
- var ks=Object.keys(PITS),row=function(x){var d=x.d||{};return '<div class="ri"><div><b>'+esc(d.plat||'-')+(d.tipe?' · '+esc(d.tipe):'')+'</b><span>No. '+qNo(x)+' · '+esc(d.pm_nama||'-')+(x.tw&&x.tw.kerja?' · mulai '+esc(x.tw.kerja):'')+'</span><span>'+esc(daftar(x))+'</span></div></div>'};
+ var ks=Object.keys(PITS),row=function(x){var d=x.d||{};return '<div class="ri"><div><b>'+esc(d.plat||'-')+(d.tipe?' · '+esc(d.tipe):'')+'</b><span>No. '+qNo(x)+' · '+esc(d.pm_nama||'-')+(x.tw&&x.tw.kerja?' · mulai '+esc(x.tw.kerja):'')+'</span><span>'+esc(daftar(x))+'</span></div><button class="btn s cqk" onclick="selesaiQ(\''+x.id+'\')">Selesai</button></div>'};
  var h='<h2>Unit Sedang Dikerjakan <small class="cnt">'+l.length+' unit</small></h2><div class="card pt">';
  ks.forEach(function(p){var it=l.filter(function(x){return pitOf(x)==p});h+='<div class="ps"><b class="pn">'+p+'</b>'+(it.length?it.map(row).join(''):'<span class="mut">Kosong</span>')+'</div>'});
  var np2=l.filter(function(x){return ks.indexOf(pitOf(x))<0});
