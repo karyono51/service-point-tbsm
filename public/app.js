@@ -350,11 +350,17 @@ function repPdf(){var l=repList().slice().sort(function(a,b){return a.ts-b.ts});
  d.setLineWidth(.8);d.line(14,35,196,35);d.setLineWidth(.2);d.line(14,36.2,196,36.2);
  y=45;d.setFont('helvetica','bold');d.setFontSize(12);d.text('Laporan Servis per '+tglID(Date.now()),105,y,{align:'center'});y+=7;
  d.setFont('helvetica','normal');d.setFontSize(9);
- d.text('Periode: '+repF+'   |   Total unit: '+l.length+'   |   Selesai: '+dn.length+(m?'   |   Pendapatan: '+R0(tot):''),14,y);y+=7;
- if(can('exec')){d.text('Cashback ('+dn.filter(function(x){return x.d.j1||num(x.d.jb1)}).length+' unit Service Lengkap Ringan x '+R0(CASHBACK)+'): '+R0(dn.filter(function(x){return x.d.j1||num(x.d.jb1)}).length*CASHBACK)+'   |   Cuci Motor: '+dn.filter(function(x){return x.d.j6||num(x.d.jb6)||x.d.cuci}).length+' unit',14,y);y+=7}
+ d.text('Periode: '+repF+'   |   Total unit: '+l.length+'   |   Selesai: '+dn.length,14,y);y+=6;
+ if(m){d.setFont('helvetica','bold');d.text('Pendapatan (unit selesai/diambil): '+R0(tot),14,y);d.setFont('helvetica','normal');y+=6}
+ if(can('exec')){var slc=dn.filter(function(x){return x.d.j1||num(x.d.jb1)}).length,cuc=dn.filter(function(x){return x.d.j6||num(x.d.jb6)||x.d.cuci}).length,cur=dn.reduce(function(a,x){return a+num(x.d.jb6)},0);
+  y+=1;d.setDrawColor(150);d.setLineWidth(.2);d.rect(14,y-4,182,15);
+  d.text('Cashback: '+slc+' unit Service Lengkap Ringan x '+R0(CASHBACK),17,y+1);d.setFont('helvetica','bold');d.text(R0(slc*CASHBACK),193,y+1,{align:'right'});d.setFont('helvetica','normal');
+  d.text('Cuci Motor: '+cuc+' unit',17,y+7.5);d.setFont('helvetica','bold');d.text(R0(cur),193,y+7.5,{align:'right'});d.setFont('helvetica','normal');d.setDrawColor(0);y+=17}
+ y+=2;
  var head=function(){d.setFont('helvetica','bold');d.setFontSize(8.5);d.text('No. Servis',14,y);d.text('Tanggal',50,y);d.text('Plat',78,y);d.text('Pemilik',102,y);d.text('Status',142,y);if(m)d.text('Total',196,y,{align:'right'});d.setLineWidth(.2);d.line(14,y+1.5,196,y+1.5);y+=6;d.setFont('helvetica','normal')};
  head();
  l.forEach(function(x){if(y>280){d.addPage();y=16;head()}var z=x.d;d.setFontSize(8.5);d.text(cut(x.no,22),14,y);d.text(tglID(x.ts),50,y);d.text(cut(z.plat,14),78,y);d.text(cut(z.pm_nama,22),102,y);d.text(slb(x.status),142,y);if(m)d.text(R0(totalOf(z)),196,y,{align:'right'});y+=5.5});
+ if(m){var all=l.reduce(function(a,x){return a+totalOf(x.d)},0);if(y>270){d.addPage();y=16}d.setLineWidth(.4);d.line(14,y-3.5,196,y-3.5);d.setFont('helvetica','bold');d.setFontSize(9);d.text('TOTAL'+(all!=tot?' (semua status)':''),142,y+1,{align:'right'});d.text(R0(all),196,y+1,{align:'right'});y+=6;if(all!=tot){d.text('TOTAL (selesai/diambil)',142,y+1,{align:'right'});d.text(R0(tot),196,y+1,{align:'right'});y+=6}d.setFont('helvetica','normal')}
  var pg=d.internal.getNumberOfPages();for(var i=1;i<=pg;i++){d.setPage(i);d.setFontSize(7.5);d.text('Dicetak '+tglID(Date.now())+' '+hhmm()+' oleh '+cut(who(),30)+' | Business Center TBSM SMKS Darul Fatwa | Hal '+i+'/'+pg,14,291)}
  d.save('Laporan-Servis-'+new Date().toISOString().slice(0,10)+'.pdf')}
 async function xls(){
