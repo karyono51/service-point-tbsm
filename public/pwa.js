@@ -39,13 +39,22 @@
   /* versi baru: tawarkan muat ulang, jangan paksa saat pengguna sedang mengisi form */
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready.then(function (reg) {
+      function apply() {
+        var w = reg.waiting;
+        if (!w) { location.reload(); return; }
+        var done = false;
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+          if (done) return; done = true; location.reload();
+        });
+        w.postMessage('SKIP_WAITING');
+      }
       function watch(w) {
         w.addEventListener('statechange', function () {
           if (w.state === 'installed' && navigator.serviceWorker.controller)
-            show('Versi baru tersedia.', 'Muat ulang', function () { location.reload(); });
+            show('Versi baru tersedia.', 'Muat ulang', apply);
         });
       }
-      if (reg.waiting && navigator.serviceWorker.controller) show('Versi baru tersedia.', 'Muat ulang', function () { location.reload(); });
+      if (reg.waiting && navigator.serviceWorker.controller) show('Versi baru tersedia.', 'Muat ulang', apply);
       reg.addEventListener('updatefound', function () { if (reg.installing) watch(reg.installing); });
       setInterval(function () { reg.update().catch(function () {}); }, 30 * 60 * 1000);
     });
