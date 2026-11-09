@@ -536,7 +536,7 @@ function spellPlat(p){var W=['nol','satu','dua','tiga','empat','lima','enam','tu
 function callQ(id){
  var x=db.jobs.filter(function(j){return j.id==id})[0];if(!x)return;
  var c=kv('bc_callq')||{};c[id]=Date.now();kv('bc_callq',c);
- var d=x.d||{},t='Nomor antrian '+qNo(x)+'. Plat '+spellPlat(d.plat)+(d.pm_nama?', atas nama '+d.pm_nama:'')+'. Silakan menuju ke bengkel.';
+ var d=x.d||{},t='Nomor antrian '+qNo(x)+'. Plat '+spellPlat(d.plat)+(d.pm_nama?', atas nama '+d.pm_nama:'')+'. Lanjut ke proses pemeriksaan.';
  try{if(window.speechSynthesis){speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)}}catch(e){}
  if(tab=='dash')$('app').innerHTML=vDash();
 }
@@ -545,8 +545,8 @@ function vCall(){
  if(!w.length)return '<h2>Panggilan Antrian</h2><div class="card empty">Tidak ada unit yang menunggu.</div>';
  var cm=kv('bc_callq')||{},cc=can('status'),jam=function(t){return new Date(t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})};
  var f=w[0],fd=f.d||{};
- var h='<h2>Panggilan Antrian <small class="cnt">'+w.length+' menunggu</small></h2><div class="card cq"><div class="cqn"><span>Nomor berikutnya</span><b>'+qNo(f)+'</b></div><div class="cqi"><b>'+esc(fd.plat||'-')+(fd.tipe?' · '+esc(fd.tipe):'')+'</b><span>'+esc(fd.pm_nama||'-')+'</span>'+(cm[f.id]?'<em>Dipanggil '+jam(cm[f.id])+'</em>':'')+'</div>'+(cc?'<button class="btn cqb" onclick="callQ(\''+f.id+'\')">'+(cm[f.id]?'Panggil ulang':'Panggil')+'</button>':'')+'</div>';
- if(w.length>1)h+='<div class="card rcl">'+w.slice(1,6).map(function(x){var d=x.d||{};return '<div class="ri"><div><b>No. '+qNo(x)+' · '+esc(d.plat||'-')+'</b><span>'+esc(d.pm_nama||'-')+(cm[x.id]?' · dipanggil '+jam(cm[x.id]):'')+'</span></div>'+(cc?'<button class="btn s" onclick="callQ(\''+x.id+'\')">Panggil</button>':'')+'</div>'}).join('')+(w.length>6?'<p class="mut" style="text-align:center;margin:8px 0 0">+'+(w.length-6)+' nomor lagi di Antrian</p>':'')+'</div>';
+ var h='<h2>Panggilan Antrian <small class="cnt">'+w.length+' menunggu</small></h2><div class="card cq"><div class="cqn"><span>Nomor berikutnya</span><b>'+qNo(f)+'</b></div><div class="cqi"><b>'+esc(fd.plat||'-')+(fd.tipe?' · '+esc(fd.tipe):'')+'</b><span>'+esc(fd.pm_nama||'-')+'</span>'+(cm[f.id]?'<em>Dipanggil '+jam(cm[f.id])+'</em>':'')+'</div>'+(cc?'<div class="cqa"><button class="btn" onclick="callQ(\''+f.id+'\')">'+(cm[f.id]?'Panggil ulang':'Panggil')+'</button><button class="btn s cqk" onclick="setS(\''+f.id+'\',\'Dikerjakan\')">Dikerjakan</button></div>':'')+'</div>';
+ if(w.length>1)h+='<div class="card rcl">'+w.slice(1,6).map(function(x){var d=x.d||{};return '<div class="ri"><div><b>No. '+qNo(x)+' · '+esc(d.plat||'-')+'</b><span>'+esc(d.pm_nama||'-')+(cm[x.id]?' · dipanggil '+jam(cm[x.id]):'')+'</span></div>'+(cc?'<div class="cqs"><button class="btn s" onclick="callQ(\''+x.id+'\')">Panggil</button><button class="btn s cqk" onclick="setS(\''+x.id+'\',\'Dikerjakan\')">Dikerjakan</button></div>':'')+'</div>'}).join('')+(w.length>6?'<p class="mut" style="text-align:center;margin:8px 0 0">+'+(w.length-6)+' nomor lagi di Antrian</p>':'')+'</div>';
  return h;
 }
 function vDash(){
