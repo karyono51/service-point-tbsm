@@ -1,6 +1,6 @@
 function num(v){return parseInt(String(v==null?'':v).replace(/\D/g,''))||0}
 function rp(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.')}
-function totalOf(s){var t=0,i;for(i=0;i<6;i++)t+=num(s['jb'+i]);for(i=0;i<5;i++)t+=num(s['p'+i+'h']);return t}
+function totalOf(s){var t=0,i;for(i=0;i<7;i++)t+=num(s['jb'+i]);for(i=0;i<5;i++)t+=num(s['p'+i+'h']);return t}
 var BLN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 function tglID(ts){var t=new Date(ts);return ('0'+t.getDate()).slice(-2)+' '+BLN[t.getMonth()]+' '+t.getFullYear()}
 var SPAREPART=[[8000,'Busi'],[8000,'Oli Transmisi'],[24000,'Ban Depan'],[24000,'Ban Belakang'],[24000,'Rantai'],[24000,'Drive Belt'],[12000,'Coolant'],[24000,'Kampas Rem'],[16000,'Filter Udara'],[24000,'Aki'],[0,'Lampu Depan'],[0,'Lampu Belakang']];
@@ -43,10 +43,10 @@ function pdfLayout(d,x,IMG){
  var y0=y,hh=6;
  B(M,y,60,hh,1);B(M+60,y,50,hh,1);B(M+110,y,30,hh,1);B(M+140,y,50,hh,1);
  T('Kondisi Awal SMH',M+30,y+4.3,{align:'center'},8.5,'bold');T('Pekerjaan',M+85,y+4.3,{align:'center'},8.5,'bold');T('Estimasi Biaya',M+125,y+4.3,{align:'center'},8.5,'bold');T('Saran Ganti Sparepart',M+165,y+4.3,{align:'center'},8.5,'bold');
- y+=hh;var rh=6.4;B(M+60,y,50,rh*6);B(M+110,y,30,rh*6);
- var jb=['1. KPB '+(s.kpb?'ke-'+s.kpb:'1 / 2 / 3 / 4'),'2. Service Lengkap Ringan','3. Ganti Oli '+(s.oli||'MPX / SPX'),'4. Ganti Part','5. Turun Mesin','6. '+(s.j5t||'.........................')];
- for(i=0;i<6;i++){var yy=y+i*rh+4.4;CK(M+61.5,yy,s['j'+i]||num(s['jb'+i])||(i==5&&s.j5t));T(jb[i],M+66,yy,{},8);T('Rp',M+112,yy,{},8);L(M+118,yy+1,20);if(num(s['jb'+i]))T(rp(num(s['jb'+i])),M+137.5,yy-.3,{align:'right'},9,'bold')}
- y+=rh*6;
+ y+=hh;var rh=38.4/7;B(M+60,y,50,rh*7);B(M+110,y,30,rh*7);
+ var jb=['1. KPB '+(s.kpb?'ke-'+s.kpb:'1 / 2 / 3 / 4'),'2. Service Lengkap Ringan','3. Ganti Oli '+(s.oli||'MPX / SPX'),'4. Ganti Part','5. Turun Mesin','6. Cuci Motor','7. '+(s.j5t||'.........................')];
+ var ORD=[0,1,2,3,4,6,5];for(var oi=0;oi<7;oi++){i=ORD[oi];var yy=y+oi*rh+4.1;CK(M+61.5,yy,s['j'+i]||num(s['jb'+i])||(i==5&&s.j5t)||(i==6&&s.cuci));T(jb[oi],M+66,yy,{},8);T('Rp',M+112,yy,{},8);L(M+118,yy+1,20);if(num(s['jb'+i]))T(rp(num(s['jb'+i])),M+137.5,yy-.3,{align:'right'},9,'bold')}
+ y+=rh*7;
  B(M+60,y,50,hh,1);B(M+110,y,30,hh,1);T('Suku Cadang',M+85,y+4.3,{align:'center'},8.5,'bold');T('Estimasi Harga',M+125,y+4.3,{align:'center'},8.5,'bold');y+=hh;
  B(M+60,y,50,30);B(M+110,y,30,30);
  for(i=0;i<5;i++){var y2=y+i*6+4.4;T((i+1)+'. '+(s['p'+i+'n']||'..................................'),M+62,y2,{},8,s['p'+i+'n']?'bold':'normal');T('Rp',M+112,y2,{},8);L(M+118,y2+1,20);if(num(s['p'+i+'h']))T(rp(num(s['p'+i+'h'])),M+137.5,y2-.3,{align:'right'},9,'bold')}
@@ -105,7 +105,7 @@ function jf(id){return db.jobs.filter(function(x){return x.id==id})[0]}
 function hhmm(){var t=new Date();return ('0'+t.getHours()).slice(-2)+':'+('0'+t.getMinutes()).slice(-2)}
 function sameDay(t){return new Date(t).toDateString()==new Date().toDateString()}
 function R0(n){return 'Rp '+rp(n)}
-function daftar(x){var d=x.d,o=[];['KPB','Service Lengkap Ringan','Ganti Oli','Ganti Part','Turun Mesin'].forEach(function(n,i){if(d['j'+i]||num(d['jb'+i]))o.push(n)});if(d.j5||d.j5t||num(d.jb5))o.push(d.j5t||'Lainnya');return o.join(', ')||'-'}
+function daftar(x){var d=x.d,o=[];['KPB','Service Lengkap Ringan','Ganti Oli','Ganti Part','Turun Mesin'].forEach(function(n,i){if(d['j'+i]||num(d['jb'+i]))o.push(n)});if(d.j6||num(d.jb6)||d.cuci)o.push('Cuci Motor');if(d.j5||d.j5t||num(d.jb5))o.push(d.j5t||'Lainnya');return o.join(', ')||'-'}
 
 function go(t){rwKey='';rwAuto={};rwN=0;tab=t;if(t=='new'&&!editId)cur={};if(t!='new')editId=null;render()}
 
@@ -118,7 +118,7 @@ function TA(k,l,r){return '<label>'+l+'</label><textarea data-k="'+k+'" rows="'+
 var YN=['','Ya','Tidak'];
 function vNew(){
  var no=editId?jf(editId).no:'(otomatis)';
- var job=[['j0','KPB','kpb',['','1','2','3','4']],['j1','Service Lengkap Ringan'],['j2','Ganti Oli','oli',['','MPX','SPX']],['j3','Ganti Part'],['j4','Turun Mesin'],['j5','Lainnya','j5t']];
+ var job=[['j0','KPB','kpb',['','1','2','3','4']],['j1','Service Lengkap Ringan'],['j2','Ganti Oli','oli',['','MPX','SPX']],['j3','Ganti Part'],['j4','Turun Mesin'],['j6','Cuci Motor'],['j5','Lainnya','j5t']];
  var h='<div id="rwy"></div><form id="fm" oninput="upd();chkPlat(event)" onsubmit="return false">';
  h+='<div class="card"><h3>Data Motor — No. Urut: '+no+'</h3><div class="f">'+IC('plat','No. Polisi *','style="text-transform:uppercase"')+I('tipe','Type')+I('tahun','Tahun','inputmode="numeric"')+I('km','KM','inputmode="numeric"')+IC('noMesin','No. Mesin')+IC('noRangka','No. Rangka')+I('email','Email')+I('sosmed','Sosmed')+'</div></div>';
  h+='<div class="card"><h3>Data Pembawa</h3><div class="f">'+I('pb_nama','Nama')+I('pb_hp','No. Telp/HP','inputmode="tel"')+I('pb_alamat','Alamat')+I('pb_kel','Kel / Kec')+'</div></div>';
@@ -127,8 +127,8 @@ function vNew(){
  h+='<div class="card"><h3>Kondisi Awal SMH</h3><div class="f">'+S('bbm','Posisi BBM',[['0','E (kosong)'],['1','1/4'],['2','1/2'],['3','3/4'],['4','F (penuh)']])+I('cmb','MB')+I('cwo','WO')+I('csor','SOR')+I('cwor','WOR')+'</div>'+TA('kondisi','Kondisi motor / catatan lain')+'</div>';
  h+='<div class="card"><h3>Pekerjaan & Estimasi Biaya</h3>';
  job.forEach(function(j,i){var ex='';if(j[2]=='kpb'||j[2]=='oli')ex='<select data-k="'+j[2]+'">'+j[3].map(function(v){return '<option value="'+v+'"'+(cur[j[2]]==v?' selected':'')+'>'+(v||(j[2]=='kpb'?'KPB ke-':'MPX/SPX'))+'</option>'}).join('')+'</select>';else if(j[2])ex='<input data-k="j5t" placeholder="Nama pekerjaan" value="'+esc(cur.j5t)+'">';else ex='<span></span>';
-  h+='<div class="jr"><label class="ck" style="margin:0"><input type="checkbox" data-k="'+j[0]+'"'+(cur[j[0]]?' checked':'')+'> '+(i+1)+'. '+j[1]+'</label>'+ex+'<input data-k="jb'+i+'" inputmode="numeric" placeholder="Rp" value="'+esc(cur['jb'+i])+'"></div>'});
- h+='<div style="margin-top:8px">'+K('cuci','Cuci Motor')+'</div></div><div class="card"><h3>Suku Cadang & Estimasi Harga</h3>';
+  h+='<div class="jr"><label class="ck" style="margin:0"><input type="checkbox" data-k="'+j[0]+'"'+((cur[j[0]]||(j[0]=='j6'&&cur.cuci))?' checked':'')+'> '+(i+1)+'. '+j[1]+'</label>'+ex+'<input data-k="jb'+j[0].slice(1)+'" inputmode="numeric" placeholder="Rp" value="'+esc(cur['jb'+j[0].slice(1)])+'"></div>'});
+ h+='</div><div class="card"><h3>Suku Cadang & Estimasi Harga</h3>';
  for(var i=0;i<5;i++)h+='<div class="jr p"><input data-k="p'+i+'n" placeholder="'+(i+1)+'. Nama suku cadang" value="'+esc(cur['p'+i+'n'])+'"><input data-k="p'+i+'h" inputmode="numeric" placeholder="Rp" value="'+esc(cur['p'+i+'h'])+'"></div>';
  h+='</div><div class="card"><h3>Saran Ganti Sparepart (periode KM)</h3><div class="cols">'+SPAREPART.map(function(p,k){return K('sp'+k,(p[0]?rp(p[0])+' — ':'')+p[1])}).join('')+'</div><h3 style="margin-top:10px">Paket Tambahan</h3><div class="cols">'+PAKET.map(function(p,k){return K('pk'+k,rp(p[0])+' — '+p[1])}).join('')+'</div></div>';
  h+='<div class="card"><h3>Keluhan & Analisa</h3>'+TA('keluhan','Keluhan konsumen',3)+TA('analisa','Analisa Service Advisor',3)+'<div class="f">'+S('konf','Jika ada tambahan pekerjaan / part',[['','-'],['Konfirmasi dulu','Konfirmasi dulu / telp'],['Langsung dikerjakan','Langsung dikerjakan']])+I('konf_telp','Telp ke')+S('bekas','Part bekas dibawa konsumen',YN)+'</div></div>';
@@ -328,10 +328,10 @@ function vRep(){
  if(m){for(q=5;q>=0;q--){mm=new Date(nw.getFullYear(),nw.getMonth()-q,1);mt=db.jobs.filter(function(x){var z=new Date(x.ts);return isDn(x)&&z.getMonth()==mm.getMonth()&&z.getFullYear()==mm.getFullYear()}).reduce(function(a,x){return a+totalOf(x.d)},0);mb.push([BLN[mm.getMonth()].slice(0,3),mt,q==0]);if(mt>mmx)mmx=mt}}
  var chm=m?'<div class="card"><h3>Pendapatan 6 bulan terakhir</h3><div class="bars">'+mb.map(function(b){return '<div class="bc'+(b[2]?' td':'')+'"><em>'+(b[1]?shortRp(b[1]):'0')+'</em><i style="height:'+Math.max(4,Math.round(b[1]/mmx*100))+'%"></i><span>'+b[0]+'</span></div>'}).join('')+'</div></div>':'';
  var mk={},jn={},JL=['KPB','Service Lengkap Ringan','Ganti Oli','Ganti Part','Turun Mesin'];
- l.forEach(function(x){var d=x.d,nm=(d.mekanik||'').trim()||'(Belum diisi)';mk[nm]=mk[nm]||{u:0,t:0};mk[nm].u++;if(isDn(x))mk[nm].t+=totalOf(d);for(var i=0;i<6;i++){if(d['j'+i]||d['jb'+i]){var jl=i<5?JL[i]:(d.j5t||'Lainnya');jn[jl]=(jn[jl]||0)+1}}});
+ l.forEach(function(x){var d=x.d,nm=(d.mekanik||'').trim()||'(Belum diisi)';mk[nm]=mk[nm]||{u:0,t:0};mk[nm].u++;if(isDn(x))mk[nm].t+=totalOf(d);for(var i=0;i<7;i++){if(d['j'+i]||d['jb'+i]||(i==6&&d.cuci)){var jl=i<5?JL[i]:i==5?(d.j5t||'Lainnya'):'Cuci Motor';jn[jl]=(jn[jl]||0)+1}}});
  var mkr=Object.keys(mk).sort(function(a,b){return mk[b].u-mk[a].u}),jnr=Object.keys(jn).sort(function(a,b){return jn[b]-jn[a]});
  var rk=l.length?'<div class="card"><h3>Rekap per mekanik</h3>'+mkr.map(function(k){return '<div class="ri"><div><b>'+esc(k)+'</b></div><div style="text-align:right"><span>'+mk[k].u+' unit</span>'+(m&&mk[k].t?'<b class="amt">'+R0(mk[k].t)+'</b>':'')+'</div></div>'}).join('')+'</div><div class="card"><h3>Jenis pekerjaan terbanyak</h3>'+(jnr.length?jnr.map(function(k){return '<div class="ri"><div><b>'+esc(k)+'</b></div><div style="text-align:right"><span>'+jn[k]+' kali</span></div></div>'}).join(''):'<p class="mut">Belum ada pekerjaan tercatat.</p>')+'</div>':'';
- var cu=dn.filter(function(x){return x.d.cuci}).length,cbk=can('exec')?'<div class="card"><h3>Cashback &amp; Cuci Motor</h3><div class="ri"><div><b>Cashback per unit servis</b><span>'+dn.length+' unit selesai x '+R0(CASHBACK)+'</span></div><div style="text-align:right"><b class="amt">'+R0(dn.length*CASHBACK)+'</b></div></div><div class="ri"><div><b>Cuci Motor</b><span>unit selesai yang dicuci</span></div><div style="text-align:right"><span>'+cu+' unit</span></div></div></div>':'';
+ var cuN=function(x){return x.d.j6||num(x.d.jb6)||x.d.cuci},cu=dn.filter(cuN).length,cuR=dn.reduce(function(a,x){return a+num(x.d.jb6)},0),cbk=can('exec')?'<div class="card"><h3>Cashback &amp; Cuci Motor</h3><div class="ri"><div><b>Cashback per unit servis</b><span>'+dn.length+' unit selesai x '+R0(CASHBACK)+'</span></div><div style="text-align:right"><b class="amt">'+R0(dn.length*CASHBACK)+'</b></div></div><div class="ri"><div><b>Cuci Motor</b><span>unit selesai yang dicuci</span></div><div style="text-align:right"><span>'+cu+' unit</span>'+(m&&cuR?'<b class="amt">'+R0(cuR)+'</b>':'')+'</div></div></div>':'';
  var pdfb='<button class="btn s w xl" style="margin-top:8px" onclick="repPdf()">'+ic('download')+'<span>Cetak PDF ('+l.length+' baris)</span></button>';
  var dl='<button class="btn w xl" onclick="xls()">'+ic('download')+'<span>Unduh Excel ('+l.length+' baris)</span></button>';
  var rows=l.length?'<div class="card rcl">'+l.map(function(x){var d=x.d;return '<div class="ri"><div><b>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</b><span>'+esc(x.no)+' · '+tglID(x.ts)+'</span><span>'+esc(d.pm_nama||'-')+' · '+esc(daftar(x))+'</span></div><div style="text-align:right"><span class="tag '+x.status+'">'+slb(x.status)+'</span>'+(m?'<b class="amt">'+R0(totalOf(d))+'</b>':'')+'</div></div>'}).join('')+'</div>':'<div class="card empty">Belum ada data pada periode ini.</div>';
@@ -351,7 +351,7 @@ function repPdf(){var l=repList().slice().sort(function(a,b){return a.ts-b.ts});
  y=45;d.setFont('helvetica','bold');d.setFontSize(12);d.text('Laporan Servis per '+tglID(Date.now()),105,y,{align:'center'});y+=7;
  d.setFont('helvetica','normal');d.setFontSize(9);
  d.text('Periode: '+repF+'   |   Total unit: '+l.length+'   |   Selesai: '+dn.length+(m?'   |   Pendapatan: '+R0(tot):''),14,y);y+=7;
- if(can('exec')){d.text('Cashback ('+dn.length+' unit x '+R0(CASHBACK)+'): '+R0(dn.length*CASHBACK)+'   |   Cuci Motor: '+dn.filter(function(x){return x.d.cuci}).length+' unit',14,y);y+=7}
+ if(can('exec')){d.text('Cashback ('+dn.length+' unit x '+R0(CASHBACK)+'): '+R0(dn.length*CASHBACK)+'   |   Cuci Motor: '+dn.filter(function(x){return x.d.j6||num(x.d.jb6)||x.d.cuci}).length+' unit',14,y);y+=7}
  var head=function(){d.setFont('helvetica','bold');d.setFontSize(8.5);d.text('No. Servis',14,y);d.text('Tanggal',50,y);d.text('Plat',78,y);d.text('Pemilik',102,y);d.text('Status',142,y);if(m)d.text('Total',196,y,{align:'right'});d.setLineWidth(.2);d.line(14,y+1.5,196,y+1.5);y+=6;d.setFont('helvetica','normal')};
  head();
  l.forEach(function(x){if(y>280){d.addPage();y=16;head()}var z=x.d;d.setFontSize(8.5);d.text(cut(x.no,22),14,y);d.text(tglID(x.ts),50,y);d.text(cut(z.plat,14),78,y);d.text(cut(z.pm_nama,22),102,y);d.text(slb(x.status),142,y);if(m)d.text(R0(totalOf(z)),196,y,{align:'right'});y+=5.5});
