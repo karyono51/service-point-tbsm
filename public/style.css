@@ -205,3 +205,9 @@ button.cqn{border:0;font:inherit;cursor:pointer}button.cqn:active{filter:brightn
 /* v78: layar penuh di Layar Antrian menyembunyikan bar atas */
 body.lfs:has(.lay) .top{display:none}
 body.lfs:has(.lay) #app{padding-top:calc(18px + env(safe-area-inset-top,0px))}
+
+/* v79: dialog pesan */
+.dlgo{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
+.dlg{width:100%;max-width:360px;background:var(--card,#fff);color:var(--tx,inherit);border:1px solid var(--bd,rgba(128,128,128,.3));border-radius:16px;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.dlg p{margin:0 0 16px;font-size:15px;line-height:1.5}
+.dlg .btn{width:100%}

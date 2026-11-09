@@ -649,6 +649,8 @@ function vFc(){
  return '<h2>Final Check Advisor <small class="cnt">'+l.length+' unit</small></h2>'+l.map(function(x){return unitCard(x,'Siap diambil','siapQ',pitOf(x),'<button class="btn s w" style="margin-top:8px" onclick="batalFc(\''+x.id+'\')">Kembali ke Pit</button>')}).join('');
 }
 var payF='belum',payOpen=null;
+/* v79: dialog pesan di dalam aplikasi (pengganti alert bawaan browser) */
+function infoDlg(msg){return new Promise(function(res){var o=document.createElement('div');o.className='dlgo';o.innerHTML='<div class="dlg" role="alertdialog" aria-modal="true"><p></p><button class="btn" type="button">Oke</button></div>';o.querySelector('p').textContent=msg;var b=o.querySelector('button');function done(){if(o.parentNode)o.parentNode.removeChild(o);res()}b.onclick=done;o.addEventListener('click',function(e){if(e.target==o)done()});document.body.appendChild(o);b.focus()})}
 function payInfo(x){return (x.tw&&x.tw.pay)||null}
 function pyv(i){var e=document.getElementById(i);return e?e.value:''}
 function payCalc(id){var x=jf(id);if(!x)return;var tot=totalOf(x.d),dis=Math.min(num(pyv('pdis')),tot),due=Math.max(0,tot-dis),by=pyv('pbayar')===''?due:num(pyv('pbayar'));
@@ -666,7 +668,7 @@ function payForm(x){var tot=totalOf(x.d);return '<div class="pf"><div class="ri"
 async function paySave(id){
  var x=jf(id);if(!x||!can('pay'))return;
  await freshen(x);
- if(payInfo(x)){alert('Unit ini sudah dibayar dari perangkat lain ('+payInfo(x).no+').');payOpen=null;payF='sudah';render();return}
+ if(payInfo(x)){var kn=payInfo(x).no;payOpen=null;payF='sudah';try{await loadAll()}catch(e){}render();await infoDlg('Unit ini sudah dibayar dari perangkat lain ('+kn+'). Daftar diperbarui.');return}
  if(x._rs&&x._rs!='Selesai'&&x._rs!=x.status){alert('Status unit sudah berubah di perangkat lain ('+x._rs+'). Data dimuat ulang.');try{await loadAll()}catch(e){}payOpen=null;render();return}
  var tot=totalOf(x.d),dis=num(pyv('pdis'));
  if(dis>tot){alert('Diskon tidak boleh melebihi total servis.');return}
