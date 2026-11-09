@@ -474,7 +474,7 @@ async function simpan(){
  }catch(e){return}
  editId=null;tab='q';render();
 }
-async function setS(i,v){var x=jf(i);if(x&&v!='Diambil'&&!(x.tw&&x.tw.pay))await freshen(x);if(lockd(x)){alert('Data sudah diambil dan dikunci. Hanya admin yang bisa mengubahnya.');render();return}if(x.status!=v)aud(x,'status',slb(x.status)+' → '+slb(v));x.status=v;x.tw=x.tw||{};if(v=='Dikerjakan'&&!x.tw.kerja)x.tw.kerja=hhmm();if((v=='Selesai'||v=='Diambil')&&!x.tw.selesai)x.tw.selesai=hhmm();try{await saveJob(x,false)}catch(e){}render()}
+async function setS(i,v){var x=jf(i);if(x&&v!='Diambil'&&!(x.tw&&x.tw.pay))await freshen(x);if(lockd(x)){alert('Data sudah diambil dan dikunci. Hanya admin yang bisa mengubahnya.');render();return}if(x.status!=v){aud(x,'status',slb(x.status)+' → '+slb(v));if(x.tw){if(v=='Menunggu'){delete x.tw.fc;delete x.tw.pit;delete x.tw.pitEmail;delete x.tw.mulai;delete x.tw.kerja}else if(x.status=='Menunggu'&&v=='Dikerjakan')delete x.tw.fc}}x.status=v;x.tw=x.tw||{};if(v=='Dikerjakan'&&!x.tw.kerja)x.tw.kerja=hhmm();if((v=='Selesai'||v=='Diambil')&&!x.tw.selesai)x.tw.selesai=hhmm();try{await saveJob(x,false)}catch(e){}render()}
 async function arsip(i,on){var x=jf(i);if(!x||!can('del'))return;if(on&&!confirm('Arsipkan data ini? Data disembunyikan dari Antrian, tetapi tetap tersimpan untuk riwayat servis dan laporan.'))return;if(on)x.arsip=Date.now();else delete x.arsip;aud(x,'ubah',on?'Diarsipkan':'Arsip dipulihkan');try{await saveJob(x,false)}catch(e){}cacheSave();render()}
 async function del(i){if(confirm('Hapus data servis ini secara permanen? Riwayat servis unit ini ikut hilang. Untuk data yang sudah diambil, sebaiknya pakai Arsipkan.')){var x=jf(i);try{await removeJob(i)}catch(e){return}if(x)await audDel(x);render()}}
 
