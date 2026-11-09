@@ -532,10 +532,11 @@ function vProf(){
 }
 function qNo(x){return parseInt(String(x.no||'').split('-').pop(),10)||0}
 function waitQ(){return db.jobs.filter(function(x){return x.status=='Menunggu'&&!x.arsip}).sort(function(a,b){return a.ts-b.ts})}
+function spellPlat(p){var W=['nol','satu','dua','tiga','empat','lima','enam','tujuh','delapan','sembilan'];return String(p||'').toUpperCase().replace(/[^A-Z0-9]/g,'').split('').map(function(c){return /\d/.test(c)?W[+c]:c}).join(' ')}
 function callQ(id){
  var x=db.jobs.filter(function(j){return j.id==id})[0];if(!x)return;
  var c=kv('bc_callq')||{};c[id]=Date.now();kv('bc_callq',c);
- var d=x.d||{},t='Nomor antrian '+qNo(x)+'. Plat '+(d.plat||'')+(d.pm_nama?', atas nama '+d.pm_nama:'')+'. Silakan menuju ke bengkel.';
+ var d=x.d||{},t='Nomor antrian '+qNo(x)+'. Plat '+spellPlat(d.plat)+(d.pm_nama?', atas nama '+d.pm_nama:'')+'. Silakan menuju ke bengkel.';
  try{if(window.speechSynthesis){speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)}}catch(e){}
  if(tab=='dash')$('app').innerHTML=vDash();
 }
