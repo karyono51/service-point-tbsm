@@ -454,7 +454,7 @@ function buildMenu(){
   return '<button class="mi mg'+(shut?' shut':'')+(has?' has':'')+'" onclick="mgTog(\''+id+'\')">'+ic(icn)+'<span>'+label+'</span>'+ic('chev')+'</button>'+(shut?'':'<div class="mgb">'+arr.map(function(i){return mi(i,1)}).join('')+'</div>')};
  if(gu)H='<small class="sec">Menu</small>'+[['home','Beranda','home'],['tos','Syarat & Ketentuan','doc']].map(function(i){return mi(i)}).join('');
  else{
-  var sv=[];if(can('create'))sv.push(['new','Pendaftaran','plus']);if(r)sv.push(['q','Antrian Servis','list']);if(r)sv.push(['mon','Monitor Servis','pulse']);if(can('rep'))sv.push(['rep','Laporan','chart']);if(can('rem'))sv.push(['rem','Pengingat Servis','clock']);sv.push(['gar','Cek Garansi','shield']);
+  var sv=[];if(can('create'))sv.push(['new','Pendaftaran','plus']);if(r&&!can('exec'))sv.push(['q','Antrian Servis','list']);if(r)sv.push(['mon','Monitor Servis','pulse']);if(can('rep'))sv.push(['rep','Laporan','chart']);if(can('rem'))sv.push(['rem','Pengingat Servis','clock']);sv.push(['gar','Cek Garansi','shield']);
   var ad=[];if(can('users')&&REMOTE)ad.push(['akun','Kelola Akun','users']);if(can('audit'))ad.push(['aud','Audit Trail','shield']);if(can('bak'))ad.push(['bak','Cadangan Data','download']);
   H=mi(['dash','Dashboard','grid'])+grp('svc','Service Point','wrench',sv)+grp('adm','Administrasi','shield',ad)+mi(['prof','Profil & Peran','user'])+(REMOTE?mi(['syn','Sinkronisasi','sync']):'')+mi(['tos','Syarat & Ketentuan','doc']);
  }
@@ -471,7 +471,7 @@ function render(){
  if(tab=='bak'&&!can('bak'))tab='dash';
  if(tab=='syn'&&(!REMOTE||!AW.u))tab='dash';
  if(tab=='rep'&&!can('rep'))tab='dash';
- if(tab=='rem'&&!can('rem'))tab='dash';
+ if(tab=='rem'&&!can('rem'))tab='dash';if(tab=='q'&&can('exec'))tab='dash';
  if(tab=='new'&&!(can('create')||(editId&&can('edit'))))tab='dash';
  if(tab=='akun'&&!(can('users')&&REMOTE))tab='dash';
  var V={bak:vBak,syn:vSyn,aud:vAud,tos:vTos,akun:vAkun,home:vHome,login:vLogin,dash:vDash,mon:vMon,new:vNew,q:vQ,rep:vRep,rem:vRem,gar:vGar,prof:vProf};
@@ -560,7 +560,7 @@ function vDash(){
   '<div class="kp"><div><b>'+today+'</b><span>Unit hari ini</span></div><div><b>'+aktif+'</b><span>Unit aktif</span></div>'+(m?'<div><b class="kpm">'+R0(inc)+'</b><span>Pendapatan hari ini</span></div>':'<div><b>'+c('Selesai')+'</b><span>Siap diambil</span></div>')+'</div></section>';
  var qa=[];
  if(can('create'))qa.push(['new','Pendaftaran','plus','Daftarkan unit baru']);
- qa.push(['q','Antrian Servis','list',aktif+' unit aktif']);
+ if(!can('exec'))qa.push(['q','Antrian Servis','list',aktif+' unit aktif']);
  qa.push(['mon','Monitor Servis','pulse','Pantau status']);
  if(can('rep'))qa.push(['rep','Laporan','chart','Rekap dan unduh']);
  if(can('users')&&REMOTE)qa.push(['akun','Kelola Akun','users','Atur akun dan peran']);
