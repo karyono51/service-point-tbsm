@@ -436,7 +436,7 @@ async function del(i){if(confirm('Hapus data servis ini secara permanen? Riwayat
 
 var ICO={chev:'<path d="M6 9l6 6 6-6"/>',camera:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',sync:'<path d="M20 11a8 8 0 0 0-14-4M4 5v4h4M4 13a8 8 0 0 0 14 4M20 19v-4h-4"/>',cal:'<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/>',shield:'<path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',doc:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',download:'<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',wrench:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L3 17.7 6.3 21l6.3-6.3a4 4 0 0 0 5.1-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/>',check:'<path d="M20 6 9 17l-5-5"/>',box:'<path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2.4.6 4 2.2 4 5.2"/>',pulse:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',home:'<path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',plus:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',login:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'};
 function ic(n){return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICO[n]+'</svg>'}
-var ROLE_DEF={admin:{n:'Admin',create:1,edit:1,status:1,del:1,rep:1,money:1},pembimbing:{n:'Pembimbing',create:0,edit:1,status:1,del:0,rep:1,money:1},advisor:{n:'Service Advisor',create:1,edit:1,status:1,del:0,rep:1,money:1},mekanik:{n:'Mekanik / Siswa Praktik',create:0,edit:0,status:1,del:0,rep:0,money:0}};
+var ROLE_DEF={admin:{n:'Admin',create:1,edit:1,status:1,del:1,rep:1,money:1},pembimbing:{n:'Pembimbing',create:0,edit:1,status:1,del:0,rep:1,money:1},advisor:{n:'Service Advisor',create:1,edit:1,status:1,del:0,rep:1,money:1},mekanik:{n:'Mekanik / Siswa Praktik',create:0,edit:0,status:1,del:0,rep:0,money:0},kepsek:{n:'Kepala Sekolah',create:0,edit:0,status:0,del:0,rep:1,money:1}};ROLE_DEF.admin.rem=1;ROLE_DEF.pembimbing.rem=1;ROLE_DEF.advisor.rem=1;
 var TITLES={bak:'Cadangan Data',syn:'Sinkronisasi',aud:'Audit Trail',tos:'Syarat & Ketentuan',home:'Beranda',login:'Masuk',dash:'Dashboard',mon:'Monitor Servis',new:'Pendaftaran Servis',q:'Antrian Servis',rep:'Laporan',rem:'Pengingat Servis',gar:'Cek Garansi',prof:'Profil & Peran'};
 var loadErr='';
 function myRole(){if(!REMOTE)return 'admin';var l=(AW.u&&AW.u.labels)||[];for(var k in ROLE_DEF)if(l.indexOf(k)>-1)return k;return null}
@@ -452,7 +452,7 @@ function buildMenu(){
   return '<button class="mi mg'+(shut?' shut':'')+(has?' has':'')+'" onclick="mgTog(\''+id+'\')">'+ic(icn)+'<span>'+label+'</span>'+ic('chev')+'</button>'+(shut?'':'<div class="mgb">'+arr.map(function(i){return mi(i,1)}).join('')+'</div>')};
  if(gu)H='<small class="sec">Menu</small>'+[['home','Beranda','home'],['tos','Syarat & Ketentuan','doc']].map(function(i){return mi(i)}).join('');
  else{
-  var sv=[];if(can('create'))sv.push(['new','Pendaftaran','plus']);if(r)sv.push(['q','Antrian Servis','list']);if(r)sv.push(['mon','Monitor Servis','pulse']);if(can('rep'))sv.push(['rep','Laporan','chart']);if(can('rep'))sv.push(['rem','Pengingat Servis','clock']);sv.push(['gar','Cek Garansi','shield']);
+  var sv=[];if(can('create'))sv.push(['new','Pendaftaran','plus']);if(r)sv.push(['q','Antrian Servis','list']);if(r)sv.push(['mon','Monitor Servis','pulse']);if(can('rep'))sv.push(['rep','Laporan','chart']);if(can('rem'))sv.push(['rem','Pengingat Servis','clock']);sv.push(['gar','Cek Garansi','shield']);
   var ad=[];if(can('users')&&REMOTE)ad.push(['akun','Kelola Akun','users']);if(can('audit'))ad.push(['aud','Audit Trail','shield']);if(can('bak'))ad.push(['bak','Cadangan Data','download']);
   H=mi(['dash','Dashboard','grid'])+grp('svc','Service Point','wrench',sv)+grp('adm','Administrasi','shield',ad)+mi(['prof','Profil & Peran','user'])+(REMOTE?mi(['syn','Sinkronisasi','sync']):'')+mi(['tos','Syarat & Ketentuan','doc']);
  }
@@ -469,7 +469,7 @@ function render(){
  if(tab=='bak'&&!can('bak'))tab='dash';
  if(tab=='syn'&&(!REMOTE||!AW.u))tab='dash';
  if(tab=='rep'&&!can('rep'))tab='dash';
- if(tab=='rem'&&!can('rep'))tab='dash';
+ if(tab=='rem'&&!can('rem'))tab='dash';
  if(tab=='new'&&!(can('create')||(editId&&can('edit'))))tab='dash';
  if(tab=='akun'&&!(can('users')&&REMOTE))tab='dash';
  var V={bak:vBak,syn:vSyn,aud:vAud,tos:vTos,akun:vAkun,home:vHome,login:vLogin,dash:vDash,mon:vMon,new:vNew,q:vQ,rep:vRep,rem:vRem,gar:vGar,prof:vProf};
@@ -489,7 +489,7 @@ async function login(){
  try{await AW.a.createEmailPasswordSession({email:$('le').value.trim(),password:$('lp').value});AW.u=await AW.a.get();await boot()}
  catch(e){$('lm').textContent='Login gagal: '+(e.message||e)}
 }
-function noRole(){return '<div class="card"><h3>Peran belum diatur</h3><p>Akun Anda sudah masuk tetapi belum memiliki peran (admin, pembimbing, advisor, atau mekanik). Hubungi admin untuk diberi peran, lalu keluar dan masuk kembali.</p></div>'}
+function noRole(){return '<div class="card"><h3>Peran belum diatur</h3><p>Akun Anda sudah masuk tetapi belum memiliki peran (admin, pembimbing, advisor, mekanik, atau kepala sekolah). Hubungi admin untuk diberi peran, lalu keluar dan masuk kembali.</p></div>'}
 var monF='Aktif',repF='Semua';
 var NX={Menunggu:['Dikerjakan','Mulai kerjakan'],Dikerjakan:['Selesai','Tandai selesai'],Selesai:['Diambil','Sudah diambil']};
 var SC={Menunggu:'#d98b00',Dikerjakan:'#2f6fe0',Selesai:'#0e8a5f',Diambil:'#778899'};
@@ -871,7 +871,7 @@ async function bakXls(){if(!db.jobs.length){alert('Belum ada data untuk diunduh.
   var h='<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><table border="1">'+A.map(function(r,i){return '<tr>'+r.map(function(c){return (i==0?'<th>':'<td>')+esc(c)+(i==0?'</th>':'</td>')}).join('')+'</tr>'}).join('')+'</table></body></html>';
   saveBlob(new Blob(['\ufeff'+h],{type:'application/vnd.ms-excel'}),fn+'.xls')}
  bakMark()}
-ROLE_DEF.admin.audit=1;ROLE_DEF.pembimbing.audit=1;
+ROLE_DEF.admin.audit=1;ROLE_DEF.pembimbing.audit=1;ROLE_DEF.kepsek.audit=1;
 var AF='Semua',TS='ket';
 var AL={buat:['Dibuat','#0e8a5f'],ubah:['Diubah','#2f6fe0'],status:['Status','#d98b00'],hapus:['Dihapus','#d71920']};
 var FL={fotos:'Foto kondisi motor',plat:'No. Polisi',tipe:'Type',tahun:'Tahun',km:'KM',noMesin:'No. Mesin',noRangka:'No. Rangka',email:'Email',sosmed:'Sosmed',pb_nama:'Nama pembawa',pb_hp:'Telp pembawa',pb_alamat:'Alamat pembawa',pb_kel:'Kel/Kec pembawa',pm_nama:'Nama pemilik',pm_hp:'Telp pemilik',pm_alamat:'Alamat pemilik',pm_kel:'Kel/Kec pemilik',dealer:'Dari dealer sendiri',hub:'Hubungan',always:'Always Honda',alasan:'Alasan ke AHASS',alasan_e:'Alasan lainnya',pit:'PIT Express',bbm:'BBM',cmb:'MB',cwo:'WO',csor:'SOR',cwor:'WOR',kondisi:'Kondisi motor',j5t:'Nama pekerjaan',keluhan:'Keluhan',analisa:'Analisa',konf:'Konfirmasi',konf_telp:'Telp konfirmasi',bekas:'Part bekas',sa:'Service Advisor',mekanik:'Mekanik',pembimbing:'Pembimbing',saran:'Saran mekanik',kpb:'KPB',oli:'Oli'};
@@ -962,7 +962,7 @@ function vAkun(){
 }
 function akunForm(){
  var f=AK.form;if(!f)return '';var e=!!f.id,me=e&&AW.u&&f.id==AW.u.$id;
- var ro=['admin','pembimbing','advisor','mekanik',''].map(function(k){return '<option value="'+k+'"'+(f.role==k?' selected':'')+'>'+(k?ROLE_DEF[k].n:'Tanpa peran')+'</option>'}).join('');
+ var ro=['admin','pembimbing','advisor','mekanik','kepsek',''].map(function(k){return '<option value="'+k+'"'+(f.role==k?' selected':'')+'>'+(k?ROLE_DEF[k].n:'Tanpa peran')+'</option>'}).join('');
  return '<div class="card"><h3>'+(e?'Ubah akun':'Tambah akun')+'</h3><div class="f"><div><label>Nama</label><input id="ak_n" value="'+esc(f.name)+'"></div><div><label>Email</label><input id="ak_e" type="email" value="'+esc(f.email)+'"></div><div><label>Kata sandi'+(e?' (kosongkan jika tidak diganti)':' (min. 8 karakter)')+'</label><input id="ak_p" type="password" autocomplete="new-password"></div><div><label>Peran</label><select id="ak_r"'+(me?' disabled':'')+'>'+ro+'</select></div></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" onclick="akunSave()">Simpan</button><button class="btn s" onclick="AK.form=null;render()">Batal</button></div><p id="ak_m" class="err"></p></div>';
 }
 function akunCard(u){
