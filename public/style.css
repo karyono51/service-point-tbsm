@@ -192,3 +192,5 @@ button.cqn{border:0;font:inherit;cursor:pointer}button.cqn:active{filter:brightn
 .lpits{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.lpit{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:12px;text-align:center}
 .lpit span{display:block;font-size:13px;color:var(--pri);font-weight:700}.lpit b{display:block;font-size:44px;line-height:1.1}.lpit small{font-size:14px;color:var(--mut)}
 .lrow{display:flex;flex-wrap:wrap;gap:8px}.lchip{background:var(--gr);border-radius:12px;padding:6px 14px;font-size:24px;font-weight:700}
+
+.lpits>.lpit{min-width:0;overflow:hidden}.lpit b{font-size:clamp(26px,9vw,44px);overflow-wrap:anywhere}.lpit b.mut{font-size:clamp(20px,7vw,34px)}.lay{max-width:100%;overflow-x:hidden}

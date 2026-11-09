@@ -796,7 +796,7 @@ function layCheck(){
 }
 function vLay(){
  var j=db.jobs.filter(function(x){return !x.arsip}),nums=function(l){return l.length?l.map(function(x){return '<span class="lchip">'+qNo(x)+'</span>'}).join(''):'<span class="mut">-</span>'};
- var act=j.filter(function(x){return (x.status=='Menunggu'||x.status=='Dikerjakan')&&x.tw&&x.tw.call}).sort(function(a,b){return b.tw.call-a.tw.call})[0];
+ var act=j.filter(function(x){return (x.status=='Menunggu'||x.status=='Dikerjakan')&&!(x.tw&&x.tw.fc)&&x.tw&&x.tw.call}).sort(function(a,b){return b.tw.call-a.tw.call})[0];
  var big=act?'<div class="lb"><span>Sedang dipanggil</span><b class="ln">'+qNo(act)+'</b><div class="lp">'+esc((act.d||{}).plat||'-')+((act.d||{}).tipe?' · '+esc(act.d.tipe):'')+'</div><div class="ls">'+(act.status=='Menunggu'?'Silakan menuju bengkel':'Menuju '+(pitOf(act)||'pemeriksaan'))+'</div></div>':'<div class="lb"><span>Belum ada panggilan</span></div>';
  var pits=Object.keys(PITS).map(function(p){var u=j.filter(function(x){return x.status=='Dikerjakan'&&!(x.tw&&x.tw.fc)&&pitOf(x)==p})[0];return '<div class="lpit"><span>'+p+'</span>'+(u?'<b>'+qNo(u)+'</b><small>'+esc((u.d||{}).plat||'-')+'</small>':'<b class="mut">Kosong</b>')+'</div>'}).join('');
  var wait=j.filter(function(x){return x.status=='Menunggu'}).sort(function(a,b){return a.ts-b.ts}),fc=j.filter(function(x){return x.status=='Dikerjakan'&&x.tw&&x.tw.fc}).sort(function(a,b){return a.ts-b.ts}),rd=j.filter(function(x){return x.status=='Selesai'}).sort(function(a,b){return a.ts-b.ts});
