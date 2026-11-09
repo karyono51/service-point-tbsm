@@ -407,9 +407,18 @@ async function pdfFoto(d,x,a){
   d.addImage(it.du,'JPEG',cx+(CW-iw)/2,cy+(CH-ih)/2,iw,ih,undefined,'FAST');
   d.setFont('helvetica','bold');d.setFontSize(8);d.text(fotoLbl(it.k),cx,cy+CH+4.5)}
 }
+function a5Doc(){
+ var d=new window.jspdf.jsPDF({unit:'mm',format:'a5'}),k=d.internal.scaleFactor,S=148/210,ty=(210*(1-S)*k).toFixed(3),ap=d.addPage.bind(d),sv=d.save.bind(d);
+ d._q=false;
+ d._open=function(){d.internal.write('q',S.toFixed(5),'0 0',S.toFixed(5),'0',ty,'cm');d._q=true};
+ d._close=function(){if(d._q){d.internal.write('Q');d._q=false}};
+ d.addPage=function(){d._close();var r=ap.apply(d,arguments);d._open();return r};
+ d._raw=function(){d._close();return ap()};
+ d.save=function(){d._close();return sv.apply(d,arguments)};
+ d._open();return d}
 async function pdf(i){var x=jf(i);if(!window.jspdf){alert('Pustaka PDF belum termuat. Periksa koneksi internet.');return}
- var d=new window.jspdf.jsPDF({unit:'mm',format:'a4'});pdfLayout(d,x,IMG);
- var pyi=payInfo(x);if(pyi){d.addPage();payRcptDraw(d,x,pyi,31,10,148,true)}
+ var d=a5Doc();pdfLayout(d,x,IMG);
+ var pyi=payInfo(x);if(pyi){d._raw();payRcptDraw(d,x,pyi,0,0,148,false)}
  var fa=fotoList(x.d);
  if(fa.length&&REMOTE&&CFG.functionId){pdfWait(true);try{await pdfFoto(d,x,fa)}catch(e){}pdfWait(false)}
  d.save('Form-Service-'+String(x.d.plat||'').replace(/\\s+/g,'')+'.pdf')}
