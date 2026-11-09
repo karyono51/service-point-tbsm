@@ -586,19 +586,32 @@ function siapQ(id){
  setS(id,'Selesai');
 }
 function unitCard(x,btn,fn,pil){var d=x.d||{};return '<div class="card wk"><div class="job"><div><h3>'+esc(d.plat||'-')+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>No. '+qNo(x)+' · '+esc(d.pm_nama||'-')+'</p><p>'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+(pil?'<p><span class="chip">'+esc(pil)+'</span></p>':'')+'</div></div><button class="btn w" onclick="'+fn+'(\''+x.id+'\')">'+btn+'</button></div>'}
+function vPits(){
+ var r=myRole();if(r!='admin'&&r!='advisor')return '';
+ var l=db.jobs.filter(function(x){return x.status=='Dikerjakan'&&!x.arsip&&!(x.tw&&x.tw.fc)}).sort(function(a,b){return a.ts-b.ts});
+ if(!l.length)return '';
+ var ks=Object.keys(PITS),row=function(x){var d=x.d||{};return '<div class="ri"><div><b>'+esc(d.plat||'-')+(d.tipe?' · '+esc(d.tipe):'')+'</b><span>No. '+qNo(x)+' · '+esc(d.pm_nama||'-')+(x.tw&&x.tw.kerja?' · mulai '+esc(x.tw.kerja):'')+'</span><span>'+esc(daftar(x))+'</span></div></div>'};
+ var h='<h2>Unit Sedang Dikerjakan <small class="cnt">'+l.length+' unit</small></h2><div class="card pt">';
+ ks.forEach(function(p){var it=l.filter(function(x){return pitOf(x)==p});h+='<div class="ps"><b class="pn">'+p+'</b>'+(it.length?it.map(row).join(''):'<span class="mut">Kosong</span>')+'</div>'});
+ var np2=l.filter(function(x){return ks.indexOf(pitOf(x))<0});
+ if(np2.length)h+='<div class="ps"><b class="pn">Tanpa pit</b>'+np2.map(row).join('')+'</div>';
+ return h+'</div>';
+}
 function vWork(){
  if(myRole()!='mekanik')return '';
  var mp=myPit(),l=db.jobs.filter(function(x){return x.status=='Dikerjakan'&&!x.arsip&&!(x.tw&&x.tw.fc)&&(!mp||pitOf(x)==mp)}).sort(function(a,b){return a.ts-b.ts});
- return '<h2>Unit Sedang Dikerjakan'+(mp?' · '+mp:'')+' <small class="cnt">'+l.length+' unit</small></h2>'+(l.length?l.map(function(x){return unitCard(x,'Selesai','selesaiQ',pitOf(x))}).join(''):'<div class="card empty">Belum ada unit yang sedang dikerjakan.</div>');
+ if(!l.length)return '';
+ return '<h2>Unit Sedang Dikerjakan'+(mp?' · '+mp:'')+' <small class="cnt">'+l.length+' unit</small></h2>'+l.map(function(x){return unitCard(x,'Selesai','selesaiQ',pitOf(x))}).join('');
 }
 function vFc(){
  var r=myRole();if(r!='admin'&&r!='advisor')return '';
  var l=db.jobs.filter(function(x){return x.status=='Dikerjakan'&&!x.arsip&&x.tw&&x.tw.fc}).sort(function(a,b){return a.ts-b.ts});
- return '<h2>Final Check Advisor <small class="cnt">'+l.length+' unit</small></h2>'+(l.length?l.map(function(x){return unitCard(x,'Siap diambil','siapQ',pitOf(x))}).join(''):'<div class="card empty">Tidak ada unit yang menunggu final check.</div>');
+ if(!l.length)return '';
+ return '<h2>Final Check Advisor <small class="cnt">'+l.length+' unit</small></h2>'+l.map(function(x){return unitCard(x,'Siap diambil','siapQ',pitOf(x))}).join('');
 }
 function vCall(){
  var w=waitQ();
- if(!w.length)return '<h2>Panggilan Antrian</h2><div class="card empty">Tidak ada unit yang menunggu.</div>';
+ if(!w.length)return '';
  var cm=kv('bc_callq')||{},cc=can('status'),jam=function(t){return new Date(t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})};
  var f=w[0],fd=f.d||{},mp=myPit(),pd=mp||pitDef();PITSEL=pd;
  var sel='<select id="pitSel" class="cqp" onchange="PITSEL=this.value"'+(mp?' disabled':'')+'>'+(pd?'':'<option value="" selected>Pilih Pit</option>')+Object.keys(PITS).filter(function(p){return !mp||p==mp}).map(function(p){return '<option value="'+p+'"'+(p==pd?' selected':'')+'>'+p+(pitBusy(p)?' (terisi)':'')+'</option>'}).join('')+'</select>';
@@ -633,7 +646,7 @@ function vDash(){
  ST.forEach(function(k){var v=c(k);if(v){seg.push(CL[k]+' '+(acc/tot*100)+'% '+((acc+v)/tot*100)+'%');acc+=v}});
  var dn='<div class="card"><h3>Status unit</h3><div class="dnw"><div class="dn" style="background:'+(tot?'conic-gradient('+seg.join(',')+')':'var(--gr)')+'"><div><b>'+tot+'</b><span>unit</span></div></div><ul class="lgd">'+ST.map(function(k){return '<li><i style="background:'+CL[k]+'"></i>'+(k=='Selesai'?'Siap diambil':k)+'<b>'+c(k)+'</b></li>'}).join('')+'</ul></div></div>';
  var rc=j.slice(0,5),rh='<h2>Aktivitas terbaru</h2>'+(rc.length?'<div class="card rcl">'+rc.map(function(x){return '<div class="ri"><div><b>'+esc(x.d.plat)+(x.d.tipe?' · '+esc(x.d.tipe):'')+'</b><span>'+esc(x.d.pm_nama||'-')+' · '+tglID(x.ts)+'</span></div><span class="tag '+x.status+'">'+x.status+'</span></div>'}).join('')+'</div>':'<div class="card empty">Belum ada aktivitas.</div>');
- return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hero+vWork()+vFc()+(can('exec')?'':vCall())+qh+'<div class="two">'+ch+dn+'</div>'+rh;
+ return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hero+(can('exec')?'':vCall())+vFc()+vPits()+vWork()+qh+'<div class="two">'+ch+dn+'</div>'+rh;
 }
 async function loadAll(){
  loadErr='';
