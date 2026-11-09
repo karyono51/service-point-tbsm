@@ -167,7 +167,7 @@ function vQ(){return '<div class="row"><input placeholder="Cari plat / nama / no
 function qHit(x,q){var d=x.d||{},t=String(q).toLowerCase().trim(),n=np(q);
  if([d.plat,d.pm_nama,d.pb_nama,x.no,d.tipe,d.noRangka,d.noMesin].join(' ').toLowerCase().indexOf(t)>-1)return true;
  return n.length>=3&&(np(d.plat)+' '+np(d.noRangka)+' '+np(d.noMesin)+' '+np(x.no)).indexOf(n)>-1}
-function ql(){var l=db.jobs.filter(function(x){return(filt=='Arsip'?!!x.arsip:(!x.arsip&&(filt=='Semua'||x.status==filt)))&&(!srch||qHit(x,srch))});return l.length?l.map(card).join(''):'<div class="card empty">Tidak ada data.</div>'}
+function ql(){var l=db.jobs.filter(function(x){return(filt=='Arsip'?!!x.arsip:(!x.arsip&&(filt=='Semua'||x.status==filt)))&&(!srch||qHit(x,srch))});l.sort(function(a,b){return a.ts-b.ts});return l.length?l.map(card).join(''):'<div class="card empty">Tidak ada data.</div>'}
 function rq(){$('ql').innerHTML=ql()}
 function inRep(x){var t=x.ts,n=new Date(),sod=new Date(n.getFullYear(),n.getMonth(),n.getDate()).getTime();
  if(repF=='Hari ini')return t>=sod;if(repF=='7 hari')return t>=sod-6*864e5;if(repF=='30 hari')return t>=sod-29*864e5;
@@ -530,6 +530,24 @@ function vProf(){
  if(r=='admin'&&REMOTE)h+='<div class="card"><h3>Cara mengatur peran (admin)</h3><ol class="st"><li>Buat akun dan atur peran lewat menu <b>Kelola Akun</b>.</li><li>Table → <b>Settings → Permissions</b>: ganti role Users dengan role Label. Read: semua label. Create: <code>admin</code>, <code>advisor</code>. Update: semua label. Delete: <code>admin</code>.</li><li>Pengguna keluar lalu masuk lagi agar peran terbaca.</li></ol><p class="mut">Lakukan langkah 2 setelah semua pengguna diberi label.</p></div>';
  return h;
 }
+function qNo(x){return parseInt(String(x.no||'').split('-').pop(),10)||0}
+function waitQ(){return db.jobs.filter(function(x){return x.status=='Menunggu'&&!x.arsip}).sort(function(a,b){return a.ts-b.ts})}
+function callQ(id){
+ var x=db.jobs.filter(function(j){return j.id==id})[0];if(!x)return;
+ var c=kv('bc_callq')||{};c[id]=Date.now();kv('bc_callq',c);
+ var d=x.d||{},t='Nomor antrian '+qNo(x)+'. Plat '+(d.plat||'')+(d.pm_nama?', atas nama '+d.pm_nama:'')+'. Silakan menuju ke bengkel.';
+ try{if(window.speechSynthesis){speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)}}catch(e){}
+ if(tab=='dash')$('app').innerHTML=vDash();
+}
+function vCall(){
+ var w=waitQ();
+ if(!w.length)return '<h2>Panggilan Antrian</h2><div class="card empty">Tidak ada unit yang menunggu.</div>';
+ var cm=kv('bc_callq')||{},cc=can('status'),jam=function(t){return new Date(t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})};
+ var f=w[0],fd=f.d||{};
+ var h='<h2>Panggilan Antrian <small class="cnt">'+w.length+' menunggu</small></h2><div class="card cq"><div class="cqn"><span>Nomor berikutnya</span><b>'+qNo(f)+'</b></div><div class="cqi"><b>'+esc(fd.plat||'-')+(fd.tipe?' · '+esc(fd.tipe):'')+'</b><span>'+esc(fd.pm_nama||'-')+'</span>'+(cm[f.id]?'<em>Dipanggil '+jam(cm[f.id])+'</em>':'')+'</div>'+(cc?'<button class="btn cqb" onclick="callQ(\''+f.id+'\')">'+(cm[f.id]?'Panggil ulang':'Panggil')+'</button>':'')+'</div>';
+ if(w.length>1)h+='<div class="card rcl">'+w.slice(1,6).map(function(x){var d=x.d||{};return '<div class="ri"><div><b>No. '+qNo(x)+' · '+esc(d.plat||'-')+'</b><span>'+esc(d.pm_nama||'-')+(cm[x.id]?' · dipanggil '+jam(cm[x.id]):'')+'</span></div>'+(cc?'<button class="btn s" onclick="callQ(\''+x.id+'\')">Panggil</button>':'')+'</div>'}).join('')+(w.length>6?'<p class="mut" style="text-align:center;margin:8px 0 0">+'+(w.length-6)+' nomor lagi di Antrian</p>':'')+'</div>';
+ return h;
+}
 function vDash(){
  var r=myRole();if(!r)return noRole();
  var j=db.jobs,m=can('money'),nm=AW.u?(AW.u.name||AW.u.email.split('@')[0]):'Admin';
@@ -554,7 +572,7 @@ function vDash(){
  ST.forEach(function(k){var v=c(k);if(v){seg.push(CL[k]+' '+(acc/tot*100)+'% '+((acc+v)/tot*100)+'%');acc+=v}});
  var dn='<div class="card"><h3>Status unit</h3><div class="dnw"><div class="dn" style="background:'+(tot?'conic-gradient('+seg.join(',')+')':'var(--gr)')+'"><div><b>'+tot+'</b><span>unit</span></div></div><ul class="lgd">'+ST.map(function(k){return '<li><i style="background:'+CL[k]+'"></i>'+(k=='Selesai'?'Siap diambil':k)+'<b>'+c(k)+'</b></li>'}).join('')+'</ul></div></div>';
  var rc=j.slice(0,5),rh='<h2>Aktivitas terbaru</h2>'+(rc.length?'<div class="card rcl">'+rc.map(function(x){return '<div class="ri"><div><b>'+esc(x.d.plat)+(x.d.tipe?' · '+esc(x.d.tipe):'')+'</b><span>'+esc(x.d.pm_nama||'-')+' · '+tglID(x.ts)+'</span></div><span class="tag '+x.status+'">'+x.status+'</span></div>'}).join('')+'</div>':'<div class="card empty">Belum ada aktivitas.</div>');
- return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hero+qh+'<div class="two">'+ch+dn+'</div>'+rh;
+ return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hero+vCall()+qh+'<div class="two">'+ch+dn+'</div>'+rh;
 }
 async function loadAll(){
  loadErr='';
