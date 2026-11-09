@@ -121,12 +121,12 @@ export async function fotoAction({ b, res, users, callerId, roleOf, error }) {
   try {
     const user = await users.get({ userId: callerId });
     if (user.status === false) return res.json({ ok: false, error: 'Akun dinonaktifkan.' }, 403);
-    // 'kepsek' hanya boleh melihat foto (op get); unggah dan hapus ditolak.
-    const role = roleOf(user.labels) || ((user.labels || []).includes('kepsek') ? 'kepsek' : '');
+    // 'kepsek' dan 'wakahubin' hanya boleh melihat foto (op get); unggah dan hapus ditolak.
+    const role = roleOf(user.labels) || ((user.labels || []).includes('kepsek') ? 'kepsek' : (user.labels || []).includes('wakahubin') ? 'wakahubin' : '');
     if (!role) return res.json({ ok: false, error: 'Akun belum punya peran.' }, 403);
     const idOk = (v) => /^[A-Za-z0-9_-]{10,100}$/.test(String(v || ''));
 
-    if (role === 'kepsek' && b.op !== 'get') return res.json({ ok: false, error: 'Peran Kepala Sekolah hanya dapat melihat foto.' }, 403);
+    if ((role === 'kepsek' || role === 'wakahubin') && b.op !== 'get') return res.json({ ok: false, error: 'Peran ini hanya dapat melihat foto.' }, 403);
 
     if (b.op === 'up') {
       const k = ['sebelum', 'sesudah', 'plat', 'noMesin', 'noRangka'].includes(b.k) ? b.k : 'sebelum';

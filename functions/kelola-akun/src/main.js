@@ -12,7 +12,7 @@ import { fotoAction } from './foto.js';
 
 const { Client, Users, Query, ID, Permission, Role } = SDK;
 
-const ROLES = ['admin', 'pembimbing', 'advisor', 'mekanik', 'kepsek'];
+const ROLES = ['admin', 'pembimbing', 'advisor', 'mekanik', 'kepsek', 'wakahubin'];
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DB = process.env.DATABASE_ID || '6aeecb910016e43805e4';
 const TB = process.env.TABLE_ID || '6aeee0fb002814b990b1';
@@ -50,8 +50,8 @@ async function jobAction({ b, res, client, users, callerId, log, error }) {
   try {
     const user = await users.get({ userId: callerId });
     if (user.status === false) return res.json({ ok: false, error: 'Akun dinonaktifkan.' }, 403);
-    // Kepala sekolah hanya melihat: tidak boleh menulis data servis.
-    if ((user.labels || []).includes('kepsek')) return res.json({ ok: false, error: 'Peran Kepala Sekolah hanya dapat melihat data.' }, 403);
+    // Kepala sekolah dan Wakasek Hubin hanya melihat: tidak boleh menulis data servis.
+    if ((user.labels || []).some((l) => l === 'kepsek' || l === 'wakahubin')) return res.json({ ok: false, error: 'Peran ini hanya dapat melihat data.' }, 403);
     const role = roleOf(user.labels);
     const rows = rowsApi(client);
 
