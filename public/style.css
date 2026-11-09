@@ -184,3 +184,11 @@ button.cqn{border:0;font:inherit;cursor:pointer}button.cqn:active{filter:brightn
 .pt .ps{padding:8px 0;border-top:1px dashed var(--bd)}.pt .ps:first-child{border-top:0;padding-top:0}.pt .pn{display:block;font-size:13px;color:var(--pri);margin-bottom:2px}.pt .ri span{display:block}
 
 .pf{margin-top:10px;border-top:1px dashed var(--bd);padding-top:10px}.pf label{display:block;font-size:12.5px;color:var(--mut);margin:8px 0 3px}.pf input,.pf select{width:100%}
+
+/* Layar Antrian */
+.lb{text-align:center;border-radius:22px;padding:22px 14px;color:#fff;background:linear-gradient(135deg,#0a3a2a,#0e6b4e);margin-bottom:12px}
+.lb span{display:block;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700}.ln{display:block;font-size:96px;line-height:1.05}
+.lp{font-size:24px;font-weight:700}.ls{font-size:16px;opacity:.9;margin-top:4px}
+.lpits{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.lpit{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:12px;text-align:center}
+.lpit span{display:block;font-size:13px;color:var(--pri);font-weight:700}.lpit b{display:block;font-size:44px;line-height:1.1}.lpit small{font-size:14px;color:var(--mut)}
+.lrow{display:flex;flex-wrap:wrap;gap:8px}.lchip{background:var(--gr);border-radius:12px;padding:6px 14px;font-size:24px;font-weight:700}
