@@ -155,3 +155,10 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 .mg .chv{margin-left:auto;width:18px;height:18px;opacity:.7;transition:transform .2s}.mg.shut .chv{transform:rotate(-90deg)}
 .mg{font-weight:600}.mg.has{color:#fff}
 .mi.sub{padding-left:34px;font-size:14px}.mi.sub .ic{width:19px;height:19px}.mgb{margin:0 0 4px}
+/* Antrian: kartu ringkas */
+.qc{padding:10px 12px;margin-bottom:8px;border-radius:14px}
+.qc .job{flex-wrap:nowrap;gap:8px}.qc .job>div:first-child{min-width:0;flex:1}.qc .job>div:last-child{flex:none}
+.qc .job h3{font-size:15px}.qc .job p{font-size:12px;margin:1px 0}
+.qc .tag{font-size:11px;padding:3px 8px}.qc .amt{font-size:12.5px;margin:4px 0 0}
+.qc .acts{margin-top:8px;gap:5px}.qc .acts select{padding:6px 26px 6px 9px;font-size:12.5px;border-radius:9px;min-height:0}
+.qc .btn.s{padding:6px 10px;font-size:12.5px}
