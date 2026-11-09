@@ -201,3 +201,7 @@ button.cqn{border:0;font:inherit;cursor:pointer}button.cqn:active{filter:brightn
 .lay .cqa .btn{padding:13px 8px}
 .lay>p.mut{margin:0 0 8px}
 .lay{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+
+/* v78: layar penuh di Layar Antrian menyembunyikan bar atas */
+body.lfs:has(.lay) .top{display:none}
+body.lfs:has(.lay) #app{padding-top:calc(18px + env(safe-area-inset-top,0px))}

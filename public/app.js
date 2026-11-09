@@ -795,6 +795,7 @@ var LAY={init:false,call:0,mulai:0,voice:false};
 function sayq(t){try{if(window.speechSynthesis){var u=new SpeechSynthesisUtterance(t);u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)}}catch(e){}}
 function layVoice(){LAY.voice=!LAY.voice;if(LAY.voice)sayq('Suara layar antrian aktif.');$('app').innerHTML=vLay()}
 function layFull(){try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen()}catch(e){}}
+document.addEventListener('fullscreenchange',function(){document.body.classList.toggle('lfs',!!document.fullscreenElement)});
 function layCheck(){
  var mc=0,mm=0;db.jobs.forEach(function(x){var t=x.tw||{};if(t.call>mc)mc=t.call;if(t.mulai>mm)mm=t.mulai});
  if(!LAY.init){LAY.init=true;LAY.call=mc;LAY.mulai=mm;return}
