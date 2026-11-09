@@ -346,7 +346,7 @@ function vRep(){
  var rows=l.length?'<div class="card rcl">'+l.map(function(x){var d=x.d;return '<div class="ri"><div><b>'+esc(d.plat)+(d.tipe?' · '+esc(d.tipe):'')+'</b><span>'+esc(x.no)+' · '+tglID(x.ts)+'</span><span>'+esc(d.pm_nama||'-')+' · '+esc(daftar(x))+'</span></div><div style="text-align:right"><span class="tag '+x.status+'">'+slb(x.status)+'</span>'+(m?'<b class="amt">'+R0(totalOf(d))+'</b>':'')+'</div></div>'}).join('')+'</div>':'<div class="card empty">Belum ada data pada periode ini.</div>';
  return hero+chips+cbk+(m?payCard(dn):'')+ch+chm+dl+pdfb+rk+'<h2>Rincian servis <small class="cnt">'+l.length+' unit</small></h2>'+rows;
 }
-function loadXLSX(){return new Promise(function(ok,no){if(window.XLSX)return ok();var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+function loadXLSX(){return new Promise(function(ok,no){if(window.XLSX)return ok();var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.crossOrigin='anonymous';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
 function saveBlob(b,fn){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1500)}
 function repPdf(){var l=repList().slice().sort(function(a,b){return a.ts-b.ts});if(!l.length){alert('Belum ada data untuk dicetak.');return}
  if(!window.jspdf){alert('Pustaka PDF belum termuat. Periksa koneksi internet.');return}
