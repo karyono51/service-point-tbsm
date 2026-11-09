@@ -573,7 +573,7 @@ function vDash(){
  ST.forEach(function(k){var v=c(k);if(v){seg.push(CL[k]+' '+(acc/tot*100)+'% '+((acc+v)/tot*100)+'%');acc+=v}});
  var dn='<div class="card"><h3>Status unit</h3><div class="dnw"><div class="dn" style="background:'+(tot?'conic-gradient('+seg.join(',')+')':'var(--gr)')+'"><div><b>'+tot+'</b><span>unit</span></div></div><ul class="lgd">'+ST.map(function(k){return '<li><i style="background:'+CL[k]+'"></i>'+(k=='Selesai'?'Siap diambil':k)+'<b>'+c(k)+'</b></li>'}).join('')+'</ul></div></div>';
  var rc=j.slice(0,5),rh='<h2>Aktivitas terbaru</h2>'+(rc.length?'<div class="card rcl">'+rc.map(function(x){return '<div class="ri"><div><b>'+esc(x.d.plat)+(x.d.tipe?' · '+esc(x.d.tipe):'')+'</b><span>'+esc(x.d.pm_nama||'-')+' · '+tglID(x.ts)+'</span></div><span class="tag '+x.status+'">'+x.status+'</span></div>'}).join('')+'</div>':'<div class="card empty">Belum ada aktivitas.</div>');
- return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hero+vCall()+qh+'<div class="two">'+ch+dn+'</div>'+rh;
+ return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hero+(can('exec')?'':vCall())+qh+'<div class="two">'+ch+dn+'</div>'+rh;
 }
 async function loadAll(){
  loadErr='';
