@@ -194,3 +194,10 @@ button.cqn{border:0;font:inherit;cursor:pointer}button.cqn:active{filter:brightn
 .lrow{display:flex;flex-wrap:wrap;gap:8px}.lchip{background:var(--gr);border-radius:12px;padding:6px 14px;font-size:24px;font-weight:700}
 
 .lpits>.lpit{min-width:0;overflow:hidden}.lpit b{font-size:clamp(26px,9vw,44px);overflow-wrap:anywhere}.lpit b.mut{font-size:clamp(20px,7vw,34px)}.lay{max-width:100%;overflow-x:hidden}
+
+/* v74: Layar Antrian - jarak antar bagian bawah */
+.lay .two{margin-bottom:16px}
+.lay .cqa{margin:18px 0 12px;gap:12px}
+.lay .cqa .btn{padding:13px 8px}
+.lay>p.mut{margin:0 0 8px}
+.lay{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
