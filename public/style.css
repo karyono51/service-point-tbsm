@@ -182,3 +182,5 @@ button.cqn{border:0;font:inherit;cursor:pointer}button.cqn:active{filter:brightn
 .wk{padding:12px 14px}.wk .job h3{font-size:17px}.wk .btn{margin-top:10px;padding:13px}
 
 .pt .ps{padding:8px 0;border-top:1px dashed var(--bd)}.pt .ps:first-child{border-top:0;padding-top:0}.pt .pn{display:block;font-size:13px;color:var(--pri);margin-bottom:2px}.pt .ri span{display:block}
+
+.pf{margin-top:10px;border-top:1px dashed var(--bd);padding-top:10px}.pf label{display:block;font-size:12.5px;color:var(--mut);margin:8px 0 3px}.pf input,.pf select{width:100%}
