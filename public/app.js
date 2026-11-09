@@ -651,6 +651,8 @@ function vFc(){
 var payF='belum',payOpen=null;
 /* v79: dialog pesan di dalam aplikasi (pengganti alert bawaan browser) */
 function infoDlg(msg){return new Promise(function(res){var o=document.createElement('div');o.className='dlgo';o.innerHTML='<div class="dlg" role="alertdialog" aria-modal="true"><p></p><button class="btn" type="button">Oke</button></div>';o.querySelector('p').textContent=msg;var b=o.querySelector('button');function done(){if(o.parentNode)o.parentNode.removeChild(o);res()}b.onclick=done;o.addEventListener('click',function(e){if(e.target==o)done()});document.body.appendChild(o);b.focus()})}
+/* v81: semua alert() bawaan browser diganti dialog sendiri (antre satu per satu) */
+var _dq=Promise.resolve();window.alert=function(m){_dq=_dq.then(function(){return infoDlg(String(m))})};
 function payInfo(x){return (x.tw&&x.tw.pay)||null}
 function pyv(i){var e=document.getElementById(i);return e?e.value:''}
 function payCalc(id){var x=jf(id);if(!x)return;var tot=totalOf(x.d),dis=Math.min(num(pyv('pdis')),tot),due=Math.max(0,tot-dis),by=pyv('pbayar')===''?due:num(pyv('pbayar'));
@@ -904,13 +906,24 @@ function vDash(){
  var rc=j.slice(0,5),rh='<h2>Aktivitas terbaru</h2>'+(rc.length?'<div class="card rcl">'+rc.map(function(x){return '<div class="ri"><div><b>'+esc(x.d.plat)+(x.d.tipe?' · '+esc(x.d.tipe):'')+'</b><span>'+esc(x.d.pm_nama||'-')+' · '+tglID(x.ts)+'</span></div><span class="tag '+x.status+'">'+x.status+'</span></div>'}).join('')+'</div>':'<div class="card empty">Belum ada aktivitas.</div>');
  return (loadErr?'<div class="card err">'+esc(loadErr)+'</div>':'')+hero+(can('exec')?'':vCall())+vFc()+vPits()+vWork()+qh+'<div class="two">'+ch+dn+'</div>'+rh;
 }
+/* v81: muat semua baris secara bertahap (500 per permintaan), supaya data lama tidak terpotong */
+async function listAllRows(base){
+ var rows=[],off=0,r;
+ for(var p=0;p<20;p++){
+  var q={};for(var k in base)q[k]=base[k];
+  q.queries=[Appwrite.Query.orderDesc('$createdAt'),Appwrite.Query.limit(500),Appwrite.Query.offset(off)];
+  r=await tmo(AW.t.listRows(q),12000);
+  rows=rows.concat(r.rows||[]);
+  if(!r.rows||r.rows.length<500)break;
+  off+=500}
+ return{rows:rows}}
 async function loadAll(){
  loadErr='';
  if(!REMOTE){lsLoad();return}
  if(OB.length&&AW.u)await obFlush();
- var o=ids();o.queries=[Appwrite.Query.orderDesc('$createdAt'),Appwrite.Query.limit(500)];
+ var o=ids();
  var r;
- try{r=await tmo(AW.t.listRows(o),12000)}
+ try{r=await listAllRows(o)}
  catch(e){if(e&&e.code)throw e;if(cacheLoad()){OB.forEach(function(){});return}throw e}
  db.jobs=[];db.audx=[];r.rows.forEach(function(w){var j;try{j=JSON.parse(w.payload)}catch(e){return}if(j.au){db.audx.push(j);return}j.id=w.$id;db.jobs.push(j)});
  OB.forEach(function(o){var i=-1;db.jobs.forEach(function(j,n){if(j.id==o.id)i=n});
@@ -948,9 +961,9 @@ async function obSend(o){
 async function fixDup(o){
  var j;try{j=JSON.parse(o.p)}catch(e){return}
  if(!j||!j.no||j.au)return;
- var q=ids();q.queries=[Appwrite.Query.orderDesc('$createdAt'),Appwrite.Query.limit(500)];
+ var q=ids();
  var r;
- try{r=await tmo(AW.t.listRows(q),12000)}catch(e){if(e&&e.code&&e.code!=401)return;throw e}
+ try{r=await listAllRows(q)}catch(e){if(e&&e.code&&e.code!=401)return;throw e}
  var used={};
  r.rows.forEach(function(w){if(w.$id==o.id)return;try{var t=JSON.parse(w.payload);if(t&&t.no&&!t.au)used[t.no]=1}catch(e){}});
  if(!used[j.no])return;

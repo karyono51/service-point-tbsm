@@ -2,8 +2,8 @@
    - Berkas situs sendiri: jaringan dulu, cadangan dari cache.
    - Pustaka CDN (Appwrite, jsPDF, Excel): disimpan di cache, dipakai saat offline.
    - API Appwrite dan permintaan non-GET tidak disentuh. */
-var CACHE = 'bc-tbsm-v80';
-var SHELL = ['./', 'index.html', 'style.css?v=46', 'app.js?v=46', 'config.js', 'manifest.json', 'icon-192.png', 'icon-512.png'];
+var CACHE = 'bc-tbsm-v81';
+var SHELL = ['./', 'index.html', 'style.css?v=47', 'app.js?v=47', 'config.js', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 var CDN = [
   'https://cdn.jsdelivr.net/npm/appwrite@20.0.0',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
