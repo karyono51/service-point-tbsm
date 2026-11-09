@@ -176,3 +176,5 @@ ol.st{margin:0;padding-left:20px;font-size:14px}ol.st li{margin-bottom:6px}code{
 
 button.cqn{border:0;font:inherit;cursor:pointer}button.cqn:active{filter:brightness(.9)}
 .cqa{grid-template-columns:1fr 1fr}.cqp{width:100%;padding:12px 10px;border-radius:12px;font-size:15px;font-weight:600}
+
+.cqp:disabled{opacity:1;color:var(--tx);border-style:dashed}

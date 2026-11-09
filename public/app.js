@@ -552,7 +552,8 @@ var PITS={'Pit 1':'mekanik1@smkdf.com','Pit 2':'mekanik2@smkdf.com'},PITSEL='';
 function say(t){try{if(window.speechSynthesis){speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)}}catch(e){}}
 function pitBusy(p,exId){return db.jobs.some(function(x){return x.status=='Dikerjakan'&&!x.arsip&&x.id!=exId&&x.d&&x.d.pit==p})}
 function pitDef(){var ks=Object.keys(PITS);if(PITSEL&&!pitBusy(PITSEL))return PITSEL;var f=ks.filter(function(p){return !pitBusy(p)})[0];return f||''}
-function pitVal(){var e=document.getElementById('pitSel');return e?e.value:PITSEL}
+function myPit(){var em=((AW.u&&AW.u.email)||'').toLowerCase(),k=Object.keys(PITS).filter(function(p){return PITS[p]==em})[0];return k||''}
+function pitVal(){var mp=myPit();if(mp)return mp;var e=document.getElementById('pitSel');return e?e.value:PITSEL}
 function callQ(id){
  var x=db.jobs.filter(function(j){return j.id==id})[0];if(!x)return;
  var c=kv('bc_callq')||{};c[id]=Date.now();kv('bc_callq',c);
@@ -574,8 +575,8 @@ function vCall(){
  var w=waitQ();
  if(!w.length)return '<h2>Panggilan Antrian</h2><div class="card empty">Tidak ada unit yang menunggu.</div>';
  var cm=kv('bc_callq')||{},cc=can('status'),jam=function(t){return new Date(t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})};
- var f=w[0],fd=f.d||{},pd=pitDef();PITSEL=pd;
- var sel='<select id="pitSel" class="cqp" onchange="PITSEL=this.value">'+(pd?'':'<option value="" selected>Pilih Pit</option>')+Object.keys(PITS).map(function(p){return '<option value="'+p+'"'+(p==pd?' selected':'')+'>'+p+(pitBusy(p)?' (terisi)':'')+'</option>'}).join('')+'</select>';
+ var f=w[0],fd=f.d||{},mp=myPit(),pd=mp||pitDef();PITSEL=pd;
+ var sel='<select id="pitSel" class="cqp" onchange="PITSEL=this.value"'+(mp?' disabled':'')+'>'+(pd?'':'<option value="" selected>Pilih Pit</option>')+Object.keys(PITS).filter(function(p){return !mp||p==mp}).map(function(p){return '<option value="'+p+'"'+(p==pd?' selected':'')+'>'+p+(pitBusy(p)?' (terisi)':'')+'</option>'}).join('')+'</select>';
  var h='<h2>Panggilan Antrian <small class="cnt">'+w.length+' menunggu</small></h2><div class="card cq">'+
   (cc?'<button class="cqn" onclick="callQ(\''+f.id+'\')"><span>Ketuk untuk panggil</span><b>'+qNo(f)+'</b></button>':'<div class="cqn"><span>Nomor berikutnya</span><b>'+qNo(f)+'</b></div>')+
   '<div class="cqi"><b>'+esc(fd.plat||'-')+(fd.tipe?' · '+esc(fd.tipe):'')+'</b><span>'+esc(fd.pm_nama||'-')+'</span>'+(cm[f.id]?'<em>Dipanggil '+jam(cm[f.id])+'</em>':'')+'</div>'+
