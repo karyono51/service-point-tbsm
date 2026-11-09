@@ -603,9 +603,19 @@ function mulaiQ(id){
 function pitOf(x){return (x.tw&&x.tw.pit)||(x.d&&x.d.pit)||''}
 function selesaiQ(id){
  var x=db.jobs.filter(function(j){return j.id==id})[0];if(!x)return;
+ if(x.status!='Dikerjakan'||(x.tw&&x.tw.fc))return;
+ var dd=x.d||{},mn=x.tw&&x.tw.mulai?Math.round((Date.now()-x.tw.mulai)/60000):null;
+ if(!confirm('Pemeriksaan No. '+qNo(x)+' ('+(dd.plat||'-')+') sudah selesai di '+(pitOf(x)||'pit')+'?'+(mn!==null&&mn<5?'\n\nBaru '+mn+' menit sejak masuk pit.':'')+'\n\nUnit akan dipindah ke Final check.'))return;
  var d=x.d||{};x.tw=x.tw||{};x.tw.fc=hhmm();
  try{aud(x,'ubah','Selesai dikerjakan, menunggu final check advisor')}catch(e){}
  say('Nomor antrian '+qNo(x)+'. Plat nomor '+spellPlat(d.plat)+(d.pm_nama?', atas nama '+d.pm_nama:'')+'. Lanjut ke proses final check oleh service advisor.');
+ saveJob(x,false).catch(function(){}).then(function(){render()});
+}
+function batalFc(id){
+ var x=jf(id);if(!x||x.status!='Dikerjakan'||!(x.tw&&x.tw.fc))return;
+ if(!confirm('Kembalikan No. '+qNo(x)+' ke '+(pitOf(x)||'pit')+' (belum selesai diperiksa)?'))return;
+ delete x.tw.fc;
+ try{aud(x,'ubah','Final check dibatalkan, kembali ke '+(pitOf(x)||'pit'))}catch(e){}
  saveJob(x,false).catch(function(){}).then(function(){render()});
 }
 function siapQ(id){
@@ -614,7 +624,7 @@ function siapQ(id){
  say('Nomor antrian '+qNo(x)+'. Plat nomor '+spellPlat(d.plat)+(d.pm_nama?', atas nama '+d.pm_nama:'')+'. Siap diambil. Lakukan proses pembayaran di kasir.');
  setS(id,'Selesai');
 }
-function unitCard(x,btn,fn,pil){var d=x.d||{};return '<div class="card wk"><div class="job"><div><h3>'+esc(d.plat||'-')+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>No. '+qNo(x)+' · '+esc(d.pm_nama||'-')+'</p><p>'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+(pil?'<p><span class="chip">'+esc(pil)+'</span></p>':'')+'</div></div><button class="btn w" onclick="'+fn+'(\''+x.id+'\')">'+btn+'</button></div>'}
+function unitCard(x,btn,fn,pil,ex){var d=x.d||{};return '<div class="card wk"><div class="job"><div><h3>'+esc(d.plat||'-')+(d.tipe?' · '+esc(d.tipe):'')+'</h3><p>No. '+qNo(x)+' · '+esc(d.pm_nama||'-')+'</p><p>'+esc(daftar(x))+(d.keluhan?' — '+esc(d.keluhan):'')+'</p>'+(pil?'<p><span class="chip">'+esc(pil)+'</span></p>':'')+'</div></div><button class="btn w" onclick="'+fn+'(\''+x.id+'\')">'+btn+'</button>'+(ex||'')+'</div>'}
 function vPits(){
  var r=myRole();if(r!='admin'&&r!='advisor')return '';
  var l=db.jobs.filter(function(x){return x.status=='Dikerjakan'&&!x.arsip&&!(x.tw&&x.tw.fc)}).sort(function(a,b){return a.ts-b.ts});
@@ -636,7 +646,7 @@ function vFc(){
  var r=myRole();if(r!='admin'&&r!='advisor')return '';
  var l=db.jobs.filter(function(x){return x.status=='Dikerjakan'&&!x.arsip&&x.tw&&x.tw.fc}).sort(function(a,b){return a.ts-b.ts});
  if(!l.length)return '';
- return '<h2>Final Check Advisor <small class="cnt">'+l.length+' unit</small></h2>'+l.map(function(x){return unitCard(x,'Siap diambil','siapQ',pitOf(x))}).join('');
+ return '<h2>Final Check Advisor <small class="cnt">'+l.length+' unit</small></h2>'+l.map(function(x){return unitCard(x,'Siap diambil','siapQ',pitOf(x),'<button class="btn s w" style="margin-top:8px" onclick="batalFc(\''+x.id+'\')">Kembali ke Pit</button>')}).join('');
 }
 var payF='belum',payOpen=null;
 function payInfo(x){return (x.tw&&x.tw.pay)||null}
