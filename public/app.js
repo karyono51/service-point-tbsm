@@ -474,7 +474,7 @@ async function simpan(){
  }catch(e){return}
  editId=null;tab='q';render();
 }
-async function setS(i,v){var x=jf(i);if(x&&v!='Diambil'&&!(x.tw&&x.tw.pay))await freshen(x);if(lockd(x)){alert('Data sudah diambil dan dikunci. Hanya admin yang bisa mengubahnya.');render();return}if(x.status!=v){aud(x,'status',slb(x.status)+' → '+slb(v));if(x.tw){if(v=='Menunggu'){delete x.tw.fc;delete x.tw.pit;delete x.tw.pitEmail;delete x.tw.mulai;delete x.tw.kerja}else if(x.status=='Menunggu'&&v=='Dikerjakan')delete x.tw.fc}}x.status=v;x.tw=x.tw||{};if(v=='Dikerjakan'&&!x.tw.kerja)x.tw.kerja=hhmm();if((v=='Selesai'||v=='Diambil')&&!x.tw.selesai)x.tw.selesai=hhmm();try{await saveJob(x,false)}catch(e){}render()}
+async function setS(i,v){var x=jf(i);if(x&&v!='Diambil'&&!(x.tw&&x.tw.pay))await freshen(x);if(lockd(x)){alert('Data sudah diambil dan dikunci. Hanya admin yang bisa mengubahnya.');render();return}if(x.status!=v){aud(x,'status',slb(x.status)+' → '+slb(v));if(x.status=='Diambil'&&v!='Diambil'&&x.tw&&x.tw.pay){var pv=x.tw.pay;x.tw.payVoid=(x.tw.payVoid||[]).concat([{no:pv.no,m:pv.m,total:pv.total,disc:pv.disc,due:pv.due,paid:pv.paid,ts:pv.ts,by:pv.by,voidTs:Date.now(),voidBy:who(),alasan:'Status unit diubah dari Diambil ke '+slb(v)}]);delete x.tw.pay;delete x.tw.ambil;try{aud(x,'ubah','Pembayaran '+pv.no+' dibatalkan otomatis (status diubah)')}catch(e){}}if(x.tw){if(v=='Menunggu'){delete x.tw.fc;delete x.tw.pit;delete x.tw.pitEmail;delete x.tw.mulai;delete x.tw.kerja}else if(x.status=='Menunggu'&&v=='Dikerjakan')delete x.tw.fc}}x.status=v;x.tw=x.tw||{};if(v=='Dikerjakan'&&!x.tw.kerja)x.tw.kerja=hhmm();if((v=='Selesai'||v=='Diambil')&&!x.tw.selesai)x.tw.selesai=hhmm();try{await saveJob(x,false)}catch(e){}render()}
 async function arsip(i,on){var x=jf(i);if(!x||!can('del'))return;if(on&&!confirm('Arsipkan data ini? Data disembunyikan dari Antrian, tetapi tetap tersimpan untuk riwayat servis dan laporan.'))return;if(on)x.arsip=Date.now();else delete x.arsip;aud(x,'ubah',on?'Diarsipkan':'Arsip dipulihkan');try{await saveJob(x,false)}catch(e){}cacheSave();render()}
 async function del(i){if(confirm('Hapus data servis ini secara permanen? Riwayat servis unit ini ikut hilang. Untuk data yang sudah diambil, sebaiknya pakai Arsipkan.')){var x=jf(i);try{await removeJob(i)}catch(e){return}if(x)await audDel(x);render()}}
 
@@ -668,6 +668,8 @@ function payForm(x){var tot=totalOf(x.d);return '<div class="pf"><div class="ri"
 async function paySave(id){
  var x=jf(id);if(!x||!can('pay'))return;
  await freshen(x);
+ var po=payInfo(x);
+ if(po&&x._rs&&x._rs!='Diambil'){x.tw.payVoid=(x.tw.payVoid||[]).concat([{no:po.no,m:po.m,total:po.total,disc:po.disc,due:po.due,paid:po.paid,ts:po.ts,by:po.by,voidTs:Date.now(),voidBy:who(),alasan:'Status unit diubah ulang sebelum dibayar'}]);delete x.tw.pay;delete x.tw.ambil}
  if(payInfo(x)){var kn=payInfo(x).no;payOpen=null;payF='sudah';try{await loadAll()}catch(e){}render();await infoDlg('Unit ini sudah dibayar dari perangkat lain ('+kn+'). Daftar diperbarui.');return}
  if(x._rs&&x._rs!='Selesai'&&x._rs!=x.status){alert('Status unit sudah berubah di perangkat lain ('+x._rs+'). Data dimuat ulang.');try{await loadAll()}catch(e){}payOpen=null;render();return}
  var tot=totalOf(x.d),dis=num(pyv('pdis'));
