@@ -158,15 +158,36 @@ function chkPlat(ev){
   rwKey=k;rwN=0;var na={};
   RWF.forEach(function(f){var el=fe(f);if(!el)return;var v='';for(var i=0;i<l.length;i++){if(l[i].d[f]){v=l[i].d[f];break}}
    if(!el.value.trim()||(rwAuto[f]!=null&&el.value==rwAuto[f])){el.value=v;if(v){na[f]=v;rwN++}}});
-  rwAuto=na;if(km)km.placeholder=l[0].d.km?'Terakhir: '+l[0].d.km:'';upd()}
+  rwAuto=na;if(km)km.placeholder=l[0].d.km?'Terakhir: '+l[0].d.km:'';autoSvc();upd()}
  box.innerHTML=rwHtml(l,rwN)}
 var DEFP={MPX:78500,SPX:93500};
+/* Tarif Jasa Service Lengkap per type motor (acuan). Kunci = nama tanpa spasi/simbol. */
+var TARIF=[[['BEATCARBU'],85000],[['BEATFI'],95000],[['VARIOCW'],85000],[['VARIO110FI'],95000],[['VARIO125FI'],110000],[['VARIO150FI'],120000],
+ [['SPACY','SPACYFI','SPACYCARBU'],80000],[['VERZA','VERZAFI','CBVERZA'],95000],[['MEGAPROFI'],95000],[['MEGAPROCARBU'],85000],
+ [['CB150RFI'],145000],[['CBR150RFI'],155000],[['SONIC150FI'],135000],[['SUPRAGTR'],135000],[['TIGER'],125000],[['PCX150FI'],150000],
+ [['SUPRAX125FI'],80000],[['SUPRAXCARBU'],75000],[['SUPRA100'],70000],[['REVOFI'],80000],[['REVOCARBU'],70000],[['BLADEFI'],80000],[['BLADECARBU'],70000]];
+var SVCALL={60000:1};TARIF.forEach(function(e){SVCALL[e[1]]=1});
+function tarif(v){
+ var c=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/^(HONDA)?(ALL)?(NEW)?/,'');
+ if(c.length<3)return 0;
+ var ex={},inc={},pre={},ml=0,n=function(o){return Object.keys(o)};
+ TARIF.forEach(function(e,i){e[0].forEach(function(a){
+  if(c==a)ex[i]=1;
+  else if(c.indexOf(a)>-1){if(a.length>ml){ml=a.length;inc={}}if(a.length==ml)inc[i]=1}
+  else if(a.indexOf(c)==0)pre[i]=1})});
+ var r=n(ex).length?ex:n(inc).length?inc:pre,k=n(r);
+ return k.length==1?TARIF[k[0]][1]:0}
+function svcDef(f){var s=f.querySelector('[data-k="svc"]'),t=f.querySelector('[data-k="tipe"]');
+ var p=(s&&s.value=='Ringan')?0:tarif(t&&t.value);return p||60000}
+function autoSvc(){var f=document.getElementById('fm');if(!f)return;var j=f.querySelector('[data-k="j1"]'),p=f.querySelector('[data-k="jb1"]');
+ if(!j||!p||!j.checked)return;var v=String(p.value||'').replace(/\D/g,'');if(!v||SVCALL[v])p.value=String(svcDef(f))}
 function autoPrice(e){var t=e.target,k=t.dataset&&t.dataset.k;if(!k)return;var f=document.getElementById('fm');if(!f)return;
  var q=function(n){return f.querySelector('[data-k="'+n+'"]')};
  var isDef=function(v){v=String(v||'').replace(/\D/g,'');return !v||v=='60000'||v=='78500'||v=='93500'};
  var setP=function(n,val){var p=q('jb'+n);if(p&&isDef(p.value))p.value=val?String(val):''};
- if(k=='j1')setP(1,t.checked?60000:0);
- else if(k=='svc'){if(t.value){q('j1').checked=true;setP(1,60000)}}
+ if(k=='j1'){var p1=q('jb1'),v1=String(p1.value||'').replace(/\D/g,'');if(!v1||SVCALL[v1])p1.value=t.checked?String(svcDef(f)):''}
+ else if(k=='svc'){if(t.value){q('j1').checked=true;autoSvc()}}
+ else if(k=='tipe')autoSvc();
  else if(k=='j2'){var o=q('oli').value;setP(2,t.checked?(DEFP[o]||0):0)}
  else if(k=='oli'){if(t.value){q('j2').checked=true;setP(2,DEFP[t.value])}}}
 function upd(){var e=$('tot');if(e)e.textContent=R0(totalOf(collect()))}
