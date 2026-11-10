@@ -2,10 +2,10 @@
    - Berkas situs sendiri: jaringan dulu (batas 4 detik), lalu cadangan dari cache.
    - Pustaka CDN & font: cache dulu, jaringan kalau belum ada.
    - API Appwrite dan permintaan non-GET tidak disentuh. */
-var VER = 'v84';
+var VER = 'v86';
 var CACHE = 'bc-tbsm-' + VER;
 var NET_TIMEOUT = 4000;
-var SHELL = ['./', 'index.html', 'style.css?v=47', 'app.js?v=48', 'pwa.js?v=1', 'config.js',
+var SHELL = ['./', 'index.html', 'style.css?v=47', 'app.js?v=50', 'pwa.js?v=1', 'config.js',
   'manifest.json', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 var CDN = [
   'https://cdn.jsdelivr.net/npm/appwrite@20.0.0',

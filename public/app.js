@@ -162,21 +162,28 @@ function chkPlat(ev){
  box.innerHTML=rwHtml(l,rwN)}
 var DEFP={MPX:78500,SPX:93500};
 /* Tarif Jasa Service Lengkap per type motor (acuan). Kunci = nama tanpa spasi/simbol. */
-var TARIF=[[['BEATCARBU'],85000],[['BEATFI'],95000],[['VARIOCW'],85000],[['VARIO110FI'],95000],[['VARIO125FI'],110000],[['VARIO150FI'],120000],
- [['SPACY','SPACYFI','SPACYCARBU'],80000],[['VERZA','VERZAFI','CBVERZA'],95000],[['MEGAPROFI'],95000],[['MEGAPROCARBU'],85000],
- [['CB150RFI'],145000],[['CBR150RFI'],155000],[['SONIC150FI'],135000],[['SUPRAGTR'],135000],[['TIGER'],125000],[['PCX150FI'],150000],
- [['SUPRAX125FI'],80000],[['SUPRAXCARBU'],75000],[['SUPRA100'],70000],[['REVOFI'],80000],[['REVOCARBU'],70000],[['BLADEFI'],80000],[['BLADECARBU'],70000]];
+var TARIF=[[['BEATCARBU'],85000,'BEAT',1],[['BEATFI'],95000,'BEAT'],[['VARIOCW','VARIO110'],85000,'VARIO',1],[['VARIO110FI'],95000,'VARIO'],[['VARIO125FI'],110000,'VARIO'],[['VARIO150FI'],120000,'VARIO'],
+ [['SPACY','SPACYFI','SPACYCARBU'],80000,'SPACY'],[['VERZA','VERZAFI','CBVERZA'],95000,'VERZA'],[['MEGAPROFI'],95000,'MEGAPRO'],[['MEGAPROCARBU'],85000,'MEGAPRO',1],
+ [['CB150RFI'],145000,'CB150R'],[['CBR150RFI'],155000,'CBR150R'],[['SONIC150FI'],135000,'SONIC'],[['SUPRAGTR'],135000,'SUPRAGTR'],[['TIGER'],125000,'TIGER'],[['PCX150FI'],150000,'PCX'],
+ [['SUPRAX125FI'],80000,'SUPRAX'],[['SUPRAXCARBU'],75000,'SUPRAX',1],[['SUPRA100'],70000,'SUPRA100'],[['REVOFI'],80000,'REVO'],[['REVOCARBU'],70000,'REVO',1],[['BLADEFI'],80000,'BLADE'],[['BLADECARBU'],70000,'BLADE',1]];
 var SVCALL={60000:1};TARIF.forEach(function(e){SVCALL[e[1]]=1});
 function tarif(v){
- var c=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/^(HONDA)?(ALL)?(NEW)?/,'');
- if(c.length<3)return 0;
- var ex={},inc={},pre={},ml=0,n=function(o){return Object.keys(o)};
- TARIF.forEach(function(e,i){e[0].forEach(function(a){
-  if(c==a)ex[i]=1;
-  else if(c.indexOf(a)>-1){if(a.length>ml){ml=a.length;inc={}}if(a.length==ml)inc[i]=1}
-  else if(a.indexOf(c)==0)pre[i]=1})});
- var r=n(ex).length?ex:n(inc).length?inc:pre,k=n(r);
- return k.length==1?TARIF[k[0]][1]:0}
+ var c=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/ESP/g,'FI').replace(/^(HONDA)?(ALL)?(NEW)?/,'');
+ var m=function(c,fi){
+  if(c.length<3)return 0;
+  var ex={},inc={},pre={},ml=0,n=function(o){return Object.keys(o)};
+  TARIF.forEach(function(e,i){e[0].forEach(function(a){
+   if(c==a)ex[i]=1;
+   else if(c.indexOf(a)>-1){if(a.length>ml){ml=a.length;inc={}}if(a.length==ml)inc[i]=1}
+   else if(a.indexOf(c)==0)pre[i]=1})});
+  var r=n(ex).length?ex:n(inc).length?inc:pre,k=n(r);
+  /* tanpa tambahan FI/ESP dan masih ambigu dalam satu keluarga model -> rujuk ke varian carbu */
+  if(k.length>1&&!fi){var fam=TARIF[k[0]][2];
+   if(k.every(function(i){return TARIF[i][2]==fam})){var cb=k.filter(function(i){return TARIF[i][3]});if(cb.length==1)k=cb}}
+  return k.length==1?TARIF[k[0]][1]:0};
+ var fi=/FI/.test(c),p=m(c,fi);
+ if(!p&&/FI$/.test(c))p=m(c.slice(0,-2),true);
+ return p}
 function svcDef(f){var s=f.querySelector('[data-k="svc"]'),t=f.querySelector('[data-k="tipe"]');
  var p=(s&&s.value=='Ringan')?0:tarif(t&&t.value);return p||60000}
 function autoSvc(){var f=document.getElementById('fm');if(!f)return;var j=f.querySelector('[data-k="j1"]'),p=f.querySelector('[data-k="jb1"]');
